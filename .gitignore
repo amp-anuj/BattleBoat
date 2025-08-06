@@ -1,0 +1,39 @@
+*.xlsx
+*.xls
+*.csv
+
+# Android build artifacts
+BattleboatAndroid/app/build/
+BattleboatAndroid/build/
+BattleboatAndroid/.gradle/
+BattleboatAndroid/local.properties
+BattleboatAndroid/.idea/
+*.iml
+*.apk
+*.aab
+
+# iOS build artifacts
+BattleboatIOS/BattleboatIOS.xcodeproj/project.xcworkspace/xcuserdata/
+BattleboatIOS/BattleboatIOS.xcodeproj/xcuserdata/
+BattleboatIOS/Build/
+BattleboatIOS/DerivedData/
+*.xccheckout
+*.moved-aside
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

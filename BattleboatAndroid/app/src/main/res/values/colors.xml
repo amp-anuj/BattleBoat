@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary Colors -->
+    <color name="primary">#1976D2</color>
+    <color name="primary_dark">#0D47A1</color>
+    <color name="primary_light">#BBDEFB</color>
+    <color name="accent">#FF5722</color>
+    
+    <!-- Game Colors -->
+    <color name="water">#4FC3F7</color>
+    <color name="water_dark">#29B6F6</color>
+    <color name="ship">#424242</color>
+    <color name="ship_dark">#212121</color>
+    <color name="hit">#F44336</color>
+    <color name="miss">#FFFFFF</color>
+    <color name="sunk">#B71C1C</color>
+    
+    <!-- Probability Colors -->
+    <color name="prob_0">#E3F2FD</color>
+    <color name="prob_1">#BBDEFB</color>
+    <color name="prob_2">#90CAF9</color>
+    <color name="prob_3">#64B5F6</color>
+    <color name="prob_4">#42A5F5</color>
+    <color name="prob_5">#2196F3</color>
+    <color name="prob_6">#1E88E5</color>
+    <color name="prob_7">#1976D2</color>
+    <color name="prob_8">#1565C0</color>
+    <color name="prob_9">#0D47A1</color>
+    
+    <!-- UI Colors -->
+    <color name="background">#FAFAFA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_secondary">#000000</color>
+    <color name="on_background">#000000</color>
+    <color name="on_surface">#000000</color>
+    
+    <!-- Status Colors -->
+    <color name="success">#4CAF50</color>
+    <color name="warning">#FF9800</color>
+    <color name="error">#F44336</color>
+    <color name="info">#2196F3</color>
+    
+    <!-- Transparent -->
+    <color name="transparent">#00000000</color>
+    <color name="semi_transparent">#80000000</color>
+    
+    <!-- Grid Lines -->
+    <color name="grid_line">#BDBDBD</color>
+    <color name="grid_line_thick">#757575</color>
+</resources> 

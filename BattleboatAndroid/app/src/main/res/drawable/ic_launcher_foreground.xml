@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    
+    <!-- Ship/Anchor silhouette -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,30C48,30 43,35 43,41C43,47 48,52 54,52C60,52 65,47 65,41C65,35 60,30 54,30Z" />
+    
+    <!-- Anchor body -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M52,52L56,52L56,70L60,70L60,74L48,74L48,70L52,70Z" />
+    
+    <!-- Anchor arms -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M40,65L44,69L48,65L48,62L44,66L40,62Z" />
+    
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M60,62L64,66L68,62L68,65L64,69L60,65Z" />
+    
+    <!-- Chain/rope -->
+    <path
+        android:fillColor="#E0E0E0"
+        android:pathData="M52,25L56,25L56,30L52,30Z" />
+    
+</vector> 

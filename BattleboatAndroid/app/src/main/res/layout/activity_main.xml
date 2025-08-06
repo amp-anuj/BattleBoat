@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:gravity="center"
+    android:padding="@dimen/padding_large">
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚓ BATTLEBOAT ⚓"
+        android:textSize="@dimen/text_size_header"
+        android:textStyle="bold"
+        android:textColor="@color/primary"
+        android:layout_marginBottom="@dimen/margin_xl"
+        android:gravity="center" />
+
+    <!-- Subtitle -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Naval Combat Strategy"
+        android:textSize="@dimen/text_size_subtitle"
+        android:textColor="@color/on_background"
+        android:layout_marginBottom="@dimen/margin_xl"
+        android:gravity="center" />
+
+    <!-- Menu Buttons Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginTop="@dimen/margin_large">
+
+        <!-- Play Game Button -->
+        <Button
+            android:id="@+id/button_play"
+            style="@style/PrimaryButton"
+            android:text="@string/play_game"
+            android:drawableStart="@android:drawable/ic_media_play"
+            android:drawablePadding="@dimen/padding_small" />
+
+        <!-- Tutorial Button -->
+        <Button
+            android:id="@+id/button_tutorial"
+            style="@style/SecondaryButton"
+            android:text="@string/tutorial"
+            android:drawableStart="@android:drawable/ic_dialog_info"
+            android:drawablePadding="@dimen/padding_small" />
+
+        <!-- Statistics Button -->
+        <Button
+            android:id="@+id/button_statistics"
+            style="@style/SecondaryButton"
+            android:text="@string/statistics"
+            android:drawableStart="@android:drawable/ic_menu_view"
+            android:drawablePadding="@dimen/padding_small" />
+
+        <!-- Settings Button -->
+        <Button
+            android:id="@+id/button_settings"
+            style="@style/SecondaryButton"
+            android:text="@string/settings"
+            android:drawableStart="@android:drawable/ic_menu_preferences"
+            android:drawablePadding="@dimen/padding_small" />
+
+    </LinearLayout>
+
+    <!-- Footer -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🚢 Ready for Battle? 🚢"
+        android:textSize="@dimen/text_size_body"
+        android:textColor="@color/on_background"
+        android:layout_marginTop="@dimen/margin_xl"
+        android:gravity="center"
+        android:alpha="0.7" />
+
+</LinearLayout> 

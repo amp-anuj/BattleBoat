@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Battleboat</string>
+    
+    <!-- Main Menu -->
+    <string name="play_game">Play Game</string>
+    <string name="tutorial">Tutorial</string>
+    <string name="statistics">Statistics</string>
+    <string name="settings">Settings</string>
+    
+    <!-- Game Setup -->
+    <string name="place_your_ships">Place Your Ships</string>
+    <string name="drag_ships_to_board">Drag ships to the board. Tap to rotate.</string>
+    <string name="ready_to_battle">Ready to Battle!</string>
+    <string name="start_game">Start Game</string>
+    
+    <!-- Game Play -->
+    <string name="your_turn">Your Turn</string>
+    <string name="enemy_turn">Enemy Turn</string>
+    <string name="hit">Hit!</string>
+    <string name="miss">Miss!</string>
+    <string name="sunk">Ship Sunk!</string>
+    <string name="you_win">Victory!</string>
+    <string name="you_lose">Defeat!</string>
+    <string name="game_over">Game Over</string>
+    
+    <!-- Ship Names -->
+    <string name="carrier">Carrier (5)</string>
+    <string name="battleship">Battleship (4)</string>
+    <string name="cruiser">Cruiser (3)</string>
+    <string name="submarine">Submarine (3)</string>
+    <string name="destroyer">Destroyer (2)</string>
+    
+    <!-- Statistics -->
+    <string name="games_played">Games Played</string>
+    <string name="games_won">Games Won</string>
+    <string name="win_percentage">Win Percentage</string>
+    <string name="total_shots">Total Shots</string>
+    <string name="hit_percentage">Hit Percentage</string>
+    <string name="ships_sunk">Ships Sunk</string>
+    <string name="longest_win_streak">Longest Win Streak</string>
+    <string name="reset_stats">Reset Statistics</string>
+    
+    <!-- Tutorial -->
+    <string name="tutorial_welcome">Welcome to Battleboat!</string>
+    <string name="tutorial_objective">The objective is to sink all enemy ships before they sink yours.</string>
+    <string name="tutorial_placement">First, place your 5 ships on your grid by dragging them from the dock.</string>
+    <string name="tutorial_rotation">Tap a ship to rotate it before placing.</string>
+    <string name="tutorial_shooting">Tap enemy grid cells to fire. Hit all parts of a ship to sink it.</string>
+    <string name="tutorial_ai">The AI gets smarter as the game progresses!</string>
+    <string name="got_it">Got it!</string>
+    <string name="next">Next</string>
+    <string name="skip_tutorial">Skip Tutorial</string>
+    
+    <!-- Settings -->
+    <string name="sound_effects">Sound Effects</string>
+    <string name="vibration">Vibration</string>
+    <string name="analytics">Analytics</string>
+    <string name="analytics_description">Help improve the game by sharing anonymous usage data</string>
+    
+    <!-- Dialogs -->
+    <string name="new_game">New Game</string>
+    <string name="quit_game">Quit Game</string>
+    <string name="confirm_new_game">Start a new game? Current progress will be lost.</string>
+    <string name="confirm_quit">Quit the current game?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="cancel">Cancel</string>
+    
+    <!-- Errors -->
+    <string name="invalid_placement">Cannot place ship here</string>
+    <string name="ship_overlap">Ships cannot overlap</string>
+    <string name="already_shot">You\'ve already shot here</string>
+    
+    <!-- Accessibility -->
+    <string name="grid_cell_description">Grid cell %1$d, %2$d</string>
+    <string name="ship_description">%1$s ship</string>
+    <string name="hit_cell">Hit cell</string>
+    <string name="miss_cell">Miss cell</string>
+    <string name="unknown_cell">Unknown cell</string>
+</resources> 
