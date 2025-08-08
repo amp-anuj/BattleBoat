@@ -153,7 +153,7 @@ class GameModel: ObservableObject {
         guard gameState == .placingShips else { return }
         
         // Track random placement
-        AnalyticsManager.shared.trackRandomPlacement()
+        AnalyticsManager.shared.trackRandomShipPlacement()
         
         if humanFleet.placeShipsRandomlyWithRetries() {
             for shipType in GameConstants.ShipType.allCases {
@@ -207,7 +207,7 @@ class GameModel: ObservableObject {
         let isHit = result == .hit
         
         // Track shooting
-        AnalyticsManager.shared.trackShootShip(x: x, y: y, hit: isHit, consecutiveHits: stats.consecutiveHits)
+        AnalyticsManager.shared.trackPlayerShoot(x: x, y: y, hit: isHit, consecutiveHits: stats.consecutiveHits)
         
         switch result {
         case .hit:
@@ -299,7 +299,7 @@ class GameModel: ObservableObject {
         delegate?.gameModel(self, didUpdateState: gameState)
         
         // Track game over
-        AnalyticsManager.shared.trackGameOver(win: playerWon, shotsTaken: stats.shotsTaken)
+        AnalyticsManager.shared.trackGameEnd(playerWon: playerWon, shotsTaken: stats.shotsTaken)
         
         if playerWon {
             stats.wonGame()
@@ -398,7 +398,7 @@ class GameModel: ObservableObject {
     
     func resetAllStats() {
         // Track stats reset
-        AnalyticsManager.shared.trackStatsReset()
+        AnalyticsManager.shared.trackResetStatistics()
         
         stats.resetAllStats()
         delegate?.gameModel(self, didUpdateStats: stats)

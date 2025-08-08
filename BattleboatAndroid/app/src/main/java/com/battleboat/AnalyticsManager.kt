@@ -186,60 +186,67 @@ class AnalyticsManager private constructor(private val context: Context) {
     }
     
     /**
-     * Track game start - matches JS: amplitude.track('Start Game')
+     * Track game start - matches standardized naming
      */
     fun trackStartGame() {
-        trackEvent("Start Game")
+        trackEvent("Game Started")
     }
-    
+
     /**
-     * Track game end - matches JS: amplitude.track('Game Over', {win: true/false, shotsTaken: shots})
+     * Track game end - matches standardized naming
      */
-    fun trackGameOver(win: Boolean, shotsTaken: Int) {
-        trackEvent("Game Over", mapOf(
-            "win" to win,
-            "shotsTaken" to shotsTaken
+    fun trackGameEnd(playerWon: Boolean, shotsTaken: Int) {
+        trackEvent("Game Ended", mapOf(
+            "Win" to playerWon,
+            "Shots Taken" to shotsTaken
         ))
     }
-    
+
     /**
-     * Track shot fired - matches JS: amplitude.track('Shoot Ship', {x: x, y: y, hit: hit, consecutiveHits: hits})
+     * Track shot fired - matches standardized naming
      */
-    fun trackShootShip(x: Int, y: Int, hit: Boolean, consecutiveHits: Int = 0) {
-        trackEvent("Shoot Ship", mapOf(
-            "x" to x,
-            "y" to y,
-            "hit" to hit,
-            "consecutiveHits" to consecutiveHits
+    fun trackPlayerShoot(x: Int, y: Int, hit: Boolean, consecutiveHits: Int = 0) {
+        trackEvent("Shot Fired", mapOf(
+            "X" to x,
+            "Y" to y,
+            "Hit" to hit,
+            "Consecutive Hits" to consecutiveHits,
+            "Player" to "human"
         ))
     }
-    
+
     /**
-     * Track ship selection - matches JS: amplitude.track('Select Ship', {ship: shipType, ship2: shipType})
+     * Track ship selection - matches standardized naming
      */
-    fun trackSelectShip(ship: String) {
-        trackEvent("Select Ship", mapOf(
-            "ship" to ship,
-            "ship2" to ship
+    fun trackSelectShip(shipType: String) {
+        trackEvent("Ship Selected", mapOf(
+            "Ship" to shipType
         ))
     }
-    
+
     /**
-     * Track ship placement - matches JS: amplitude.track('Place Ship', {ship: shipType, success: success})
+     * Track ship placement - matches standardized naming
      */
-    fun trackPlaceShip(ship: String, success: Boolean) {
-        trackEvent("Place Ship", mapOf(
-            "ship" to ship,
-            "success" to success
-        ))
+    fun trackPlaceShip(shipType: String, success: Boolean, x: Int? = null, y: Int? = null) {
+        val properties = mutableMapOf<String, Any>(
+            "Ship" to shipType,
+            "Success" to success
+        )
+        
+        if (x != null && y != null) {
+            properties["X"] = x
+            properties["Y"] = y
+        }
+        
+        trackEvent("Ship Placed", properties)
     }
-    
+
     /**
-     * Track ship rotation - matches JS: amplitude.track('Rotate Ship', {ship: shipType})
+     * Track ship rotation - matches standardized naming
      */
-    fun trackRotateShip(ship: String) {
-        trackEvent("Rotate Ship", mapOf(
-            "ship" to ship
+    fun trackRotateShip(shipType: String) {
+        trackEvent("Ship Rotated", mapOf(
+            "Ship" to shipType
         ))
     }
     

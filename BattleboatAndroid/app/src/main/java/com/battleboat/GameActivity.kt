@@ -176,6 +176,7 @@ class GameActivity : AppCompatActivity() {
         if (currentShip != null) {
             statusText.text = "Place your ${currentShip.displayName} (${currentShip.size} cells)"
             actionButton.text = if (isHorizontal) "Rotate ↻" else "Rotate ↻"
+            // Track ship selection
             analyticsManager.trackSelectShip(currentShip.name.lowercase())
         } else if (playerFleet.allShipsPlaced()) {
             statusText.text = "All ships placed! Ready to start?"
@@ -197,7 +198,7 @@ class GameActivity : AppCompatActivity() {
         
         val orientation = if (isHorizontal) Orientation.HORIZONTAL else Orientation.VERTICAL
         val success = playerFleet.placeShip(ship, row, col, orientation)
-        analyticsManager.trackPlaceShip(shipType.name.lowercase(), success)
+        analyticsManager.trackPlaceShip(shipType.name.lowercase(), success, col, row)
         
         if (success) {
             // Update grid
@@ -291,7 +292,7 @@ class GameActivity : AppCompatActivity() {
         
         // Track shot
         gameStats.recordShot(result == ShotResult.HIT)
-        analyticsManager.trackShootShip(col, row, result == ShotResult.HIT)
+        analyticsManager.trackPlayerShoot(col, row, result == ShotResult.HIT)
         
         var message = when (result) {
             ShotResult.HIT -> {
@@ -346,7 +347,7 @@ class GameActivity : AppCompatActivity() {
         
         // Track shot
         gameStats.recordShot(result == ShotResult.HIT)
-        analyticsManager.trackShootShip(col, row, result == ShotResult.HIT)
+        analyticsManager.trackPlayerShoot(col, row, result == ShotResult.HIT)
         
         var message = when (result) {
             ShotResult.HIT -> {
@@ -434,7 +435,7 @@ class GameActivity : AppCompatActivity() {
         
         // Record game end
         gameStats.endGame(playerWon, if (playerWon) aiFleet.sunkShipCount() else 0)
-        analyticsManager.trackGameOver(playerWon, currentStats.shots)
+        analyticsManager.trackGameEnd(playerWon, currentStats.shots)
         
         val message = when (result) {
             GameResult.PLAYER_WIN -> "Victory! You sunk all enemy ships!"

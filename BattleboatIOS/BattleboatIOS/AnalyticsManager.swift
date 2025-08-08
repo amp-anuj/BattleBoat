@@ -70,13 +70,12 @@ class AnalyticsManager {
                 print("✅ Carrier successfully placed horizontally at position (\(x), \(y)) via Amplitude Guide!")
                 
                 // Track the callback action
-                self.trackEvent(name: "Amplitude_Callback_Ship_Placed", properties: [
-                    "ship_type": "carrier",
-                    "position_x": x,
-                    "position_y": y,
-                    "direction": "horizontal",
-                    "callback_name": "place_ship",
-                    "source": "amplitude_guides_surveys"
+                self.trackEvent(name: "Ship Placed", properties: [
+                    "Ship": "carrier",
+                    "X": x,
+                    "Y": y,
+                    "Success": true,
+                    "Source": "amplitude_guides_surveys"
                 ])
             } else {
                 print("❌ Failed to place carrier at position (\(x), \(y)) - position might be occupied or invalid")
@@ -111,9 +110,9 @@ class AnalyticsManager {
     
     func trackSelectShip(shipType: GameConstants.ShipType) {
         let event = BaseEvent(
-            eventType: "Select Ship",
+            eventType: "Ship Selected",
             eventProperties: [
-                "ship": shipType.rawValue,
+                "Ship": shipType.rawValue,
             ]
         )
         amplitude.track(event: event)
@@ -122,17 +121,17 @@ class AnalyticsManager {
     
     func trackPlaceShip(shipType: GameConstants.ShipType, success: Bool, x: Int? = nil, y: Int? = nil) {
         var properties: [String: Any] = [
-            "ship": shipType.rawValue,
-            "success": success
+            "Ship": shipType.rawValue,
+            "Success": success
         ]
         
         if let x = x, let y = y {
-            properties["x"] = x
-            properties["y"] = y
+            properties["X"] = x
+            properties["Y"] = y
         }
         
         let event = BaseEvent(
-            eventType: "Place Ship",
+            eventType: "Ship Placed",
             eventProperties: properties
         )
         amplitude.track(event: event)
@@ -140,37 +139,51 @@ class AnalyticsManager {
     
     func trackRotateShip(shipType: GameConstants.ShipType) {
         let event = BaseEvent(
-            eventType: "Rotate Ship",
+            eventType: "Ship Rotated",
             eventProperties: [
-                "ship": shipType.rawValue
+                "Ship": shipType.rawValue,
             ]
         )
         amplitude.track(event: event)
     }
     
     func trackStartGame() {
-        amplitude.track(event: BaseEvent(eventType: "Start Game"))
+        amplitude.track(event: BaseEvent(eventType: "Game Started"))
     }
     
-    func trackShootShip(x: Int, y: Int, hit: Bool, consecutiveHits: Int) {
+    func trackPlayerShoot(x: Int, y: Int, hit: Bool, consecutiveHits: Int = 0) {
         let event = BaseEvent(
-            eventType: "Shoot Ship",
+            eventType: "Shot Fired",
             eventProperties: [
-                "x": x,
-                "y": y,
-                "hit": hit,
-                "consecutiveHits": consecutiveHits
+                "X": x,
+                "Y": y,
+                "Hit": hit,
+                "Consecutive Hits": consecutiveHits,
+                "Player": "human"
             ]
         )
         amplitude.track(event: event)
     }
     
-    func trackGameOver(win: Bool, shotsTaken: Int) {
+    func trackGameEnd(playerWon: Bool, shotsTaken: Int) {
         let event = BaseEvent(
-            eventType: "Game Over",
+            eventType: "Game Ended",
             eventProperties: [
-                "win": win,
-                "shotsTaken": shotsTaken
+                "Win": playerWon,
+                "Shots Taken": shotsTaken
+            ]
+        )
+        amplitude.track(event: event)
+    }
+    
+    func trackComputerShoot(x: Int, y: Int, hit: Bool) {
+        let event = BaseEvent(
+            eventType: "Shot Fired",
+            eventProperties: [
+                "X": x,
+                "Y": y,
+                "Hit": hit,
+                "Player": "computer"
             ]
         )
         amplitude.track(event: event)
@@ -197,20 +210,20 @@ class AnalyticsManager {
         amplitude.track(event: BaseEvent(eventType: "Tutorial Completed"))
     }
     
-    func trackRandomPlacement() {
-        amplitude.track(event: BaseEvent(eventType: "Random Ship Placement"))
+    func trackRandomShipPlacement() {
+        amplitude.track(event: BaseEvent(eventType: "Ships Placed Randomly"))
     }
     
     func trackShowProbabilityHeatmap() {
-        amplitude.track(event: BaseEvent(eventType: "Show Probability Heatmap"))
+        amplitude.track(event: BaseEvent(eventType: "Probability Heatmap Shown"))
     }
     
     func trackHideProbabilityHeatmap() {
-        amplitude.track(event: BaseEvent(eventType: "Hide Probability Heatmap"))
+        amplitude.track(event: BaseEvent(eventType: "Probability Heatmap Hidden"))
     }
     
-    func trackStatsReset() {
-        amplitude.track(event: BaseEvent(eventType: "Reset Statistics"))
+    func trackResetStatistics() {
+        amplitude.track(event: BaseEvent(eventType: "Statistics Reset"))
     }
     
     // MARK: - User Properties

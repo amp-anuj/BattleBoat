@@ -368,9 +368,9 @@ class GameViewController: UIViewController {
         AnalyticsManager.shared.configure()
         AnalyticsManager.shared.gameModel = gameModel  // Connect gameModel for callbacks
         AnalyticsManager.shared.trackEvent(name: "Game Started", properties: [
-            "platform": "iOS",
-            "version": "1.0",
-            "timestamp": Date().timeIntervalSince1970
+            "Platform": "iOS",
+            "Version": "1.0",
+            "Timestamp": Date().timeIntervalSince1970
         ])
     }
     

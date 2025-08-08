@@ -29,8 +29,11 @@ class MainActivity : AppCompatActivity() {
         // Test analytics integration
         analyticsManager.testAnalytics()
         
-        // Track main menu opened event
+        // Track main menu opened
         analyticsManager.trackEvent("Main Menu Opened")
+
+        // Hide the action bar if it exists
+        supportActionBar?.hide()
         
         setupButtons()
     }
@@ -42,23 +45,19 @@ class MainActivity : AppCompatActivity() {
         val settingsButton = findViewById<Button>(R.id.button_settings)
         
         playButton.setOnClickListener {
-            analyticsManager.trackEvent("Play Button Pressed")
-            startGame()
+            navigateToGame()
         }
         
         tutorialButton.setOnClickListener {
-            analyticsManager.trackEvent("Tutorial Button Pressed")
-            startTutorial()
+            navigateToTutorial()
         }
         
         statisticsButton.setOnClickListener {
-            analyticsManager.trackEvent("Statistics Button Pressed")
-            showStatistics()
+            navigateToStatistics()
         }
         
         settingsButton.setOnClickListener {
-            analyticsManager.trackEvent("Settings Button Pressed")
-            showSettings()
+            navigateToSettings()
         }
         
         // Long press on settings to show analytics debug
@@ -68,15 +67,25 @@ class MainActivity : AppCompatActivity() {
         }
     }
     
-    private fun startGame() {
+    private fun navigateToGame() {
+        analyticsManager.trackEvent("Play Button Pressed")
         val intent = Intent(this, GameActivity::class.java)
         startActivity(intent)
     }
-    
-    private fun startTutorial() {
-        val intent = Intent(this, GameActivity::class.java)
-        intent.putExtra("tutorial_mode", true)
-        startActivity(intent)
+
+    private fun navigateToTutorial() {
+        analyticsManager.trackEvent("Tutorial Button Pressed")
+        // TODO: Implement tutorial
+    }
+
+    private fun navigateToStatistics() {
+        analyticsManager.trackEvent("Statistics Button Pressed")
+        // TODO: Implement statistics
+    }
+
+    private fun navigateToSettings() {
+        analyticsManager.trackEvent("Settings Button Pressed")
+        // TODO: Implement settings
     }
     
     private fun showStatistics() {

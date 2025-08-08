@@ -190,7 +190,7 @@ function Game(size) {
 	this.shotsTaken = 0;
 	this.createGrid();
 	this.init();
-	amplitude.track('Initialize Game');
+	amplitude.track('Game Initialized');
 }
 
 Game.size = 10; // Default grid size is 10x10
@@ -198,9 +198,9 @@ Game.gameOver = false;
 // Checks if the game is won, and if it is, re-initializes the game
 Game.prototype.checkIfWon = function() {
 	if (this.computerFleet.allShipsSunk()) {
-		amplitude.track('Game Over', {
-			win: true,
-			shotsTaken: Game.stats.shotsTaken,
+		amplitude.track('Game Ended', {
+			Win: true,
+			"Shots Taken": Game.stats.shotsTaken,
 		});		
 		alert('Congratulations, you win!');
 		Game.gameOver = true;
@@ -209,9 +209,9 @@ Game.prototype.checkIfWon = function() {
 		Game.stats.updateStatsSidebar();
 		this.showRestartSidebar();
 	} else if (this.humanFleet.allShipsSunk()) {
-		amplitude.track('Game Over', {
-			win: false,
-			shotsTaken: Game.stats.shotsTaken,
+		amplitude.track('Game Ended', {
+			Win: false,
+			"Shots Taken": Game.stats.shotsTaken,
 		});		
 		alert('Yarr! The computer sank all your ships. Try again.');
 		Game.gameOver = true;
@@ -276,11 +276,11 @@ Game.prototype.shootListener = function(e) {
 		self.consecutiveHits = 0;
 	}
 	
-	amplitude.track('Shoot Ship', {
-		x: x,
-		y: y,
-		hit: result === CONST.TYPE_HIT,
-		consecutiveHits: self.consecutiveHits,
+	amplitude.track('Shot Fired', {
+		X: x,
+		Y: y,
+		Hit: result === CONST.TYPE_HIT,
+		"Consecutive Hits": self.consecutiveHits,
 	});
 	if (result !== null && !Game.gameOver) {
 		Game.stats.incrementShots();
@@ -316,13 +316,13 @@ Game.prototype.rosterListener = function(e) {
 	document.getElementById(Game.placeShipType).setAttribute('class', 'placing');
 	Game.placeShipDirection = parseInt(document.getElementById('rotate-button').getAttribute('data-direction'), 10);
 	self.placingOnGrid = true;
-	amplitude.track('Select Ship', {
-		ship: Game.placeShipType,
-		ship2: Game.placeShipType
+	amplitude.track('Ship Selected', {
+		Ship: Game.placeShipType,
+		"Ship Type": Game.placeShipType
 	});
-	amplitudeEngagement.forwardEvent('Select Ship', {
-		ship: Game.placeShipType,
-		ship2: Game.placeShipType
+	amplitudeEngagement.forwardEvent('Ship Selected', {
+		Ship: Game.placeShipType,
+		"Ship Type": Game.placeShipType
 	});
 };
 // Creates click event listeners on the human player's grid to handle
@@ -336,11 +336,13 @@ Game.prototype.placementListener = function(e) {
 		
 		// Don't screw up the direction if the user tries to place again.
 		var successful = self.humanFleet.placeShip(x, y, Game.placeShipDirection, Game.placeShipType);
-		amplitude.track('Place Ship', {
-			ship: Game.placeShipType,
-			success: true,
-		});	
 		if (successful) {
+			amplitude.track('Ship Placed', {
+				Ship: Game.placeShipType,
+				Success: true,
+				X: x,
+				Y: y,
+			});	
 			// Done placing this ship
 			self.endPlacing(Game.placeShipType);
 
@@ -363,9 +365,11 @@ Game.prototype.placementListener = function(e) {
 				el.setAttribute('class', 'invisible');
 			}		
 		} else {
-			amplitude.track('Place Ship', {
-				ship: Game.placeShipType,
-				success: false,
+			amplitude.track('Ship Placed', {
+				Ship: Game.placeShipType,
+				Success: false,
+				X: x,
+				Y: y,
 			});
 		}
 		
@@ -431,8 +435,8 @@ Game.prototype.toggleRotation = function(e) {
 		e.target.setAttribute('data-direction', '0');
 		Game.placeShipDirection = Ship.DIRECTION_VERTICAL;
 	}
-	amplitude.track('Rotate Ship', {
-		ship: Game.placeShipType
+	amplitude.track('Ship Rotated', {
+		Ship: Game.placeShipType
 	});
 	
 };
@@ -450,7 +454,7 @@ Game.prototype.startGame = function(e) {
 		gameTutorial.nextStep();
 	}
 	el.removeEventListener(transitionEndEventName(),fn,false);
-	amplitude.track('Start Game');
+	amplitude.track('Game Started');
 };
 // Click handler for Restart Game button
 Game.prototype.restartGame = function(e) {
