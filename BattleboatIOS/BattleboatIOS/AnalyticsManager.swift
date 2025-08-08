@@ -16,20 +16,22 @@ class AnalyticsManager {
     static let shared = AnalyticsManager()
     
     private var amplitude: Amplitude
-    //private var amplitudeEngagement: AmplitudeEngagement
+    private var amplitudeEngagement: AmplitudeEngagement
     private var sessionReplayPlugin: AmplitudeSwiftSessionReplayPlugin? = nil
+    
+    // MARK: - Game Model Reference for Callbacks
+    weak var gameModel: GameModel?
     
     // Configure your Amplitude API key here
     private let amplitudeAPIKey = "909b2239fab57efd4268eb75dbc28d30"
     
     private init() {
-        let amplitudeEngagement = AmplitudeEngagement(amplitudeAPIKey)
+        // Initialize AmplitudeEngagement first and store it
+        amplitudeEngagement = AmplitudeEngagement(amplitudeAPIKey)
+        
         amplitude = Amplitude(configuration: Configuration(
             apiKey: amplitudeAPIKey,
-            logLevel: LogLevelEnum.DEBUG,
-            autocapture: [.networkTracking],
-            networkTrackingOptions: .init(captureRules:
-                                            [.init(hosts: ["*"], statusCodeRange: "400-599")])
+            logLevel: LogLevelEnum.DEBUG
         ))
         amplitude.add(plugin: amplitudeEngagement.getPlugin())
         
@@ -37,9 +39,55 @@ class AnalyticsManager {
         sessionReplayPlugin = AmplitudeSwiftSessionReplayPlugin(sampleRate: 1.0)
         amplitude.add(plugin: sessionReplayPlugin!)
         
+        amplitudeEngagement.addCallback("place_ship") {
+            print("🎯 Amplitude Guide Callback: Placing carrier ship horizontally at second position")
+            
+            guard let gameModel = self.gameModel else {
+                print("❌ GameModel not available for callback")
+                return
+            }
+            
+            // Check if we're in the ship placement phase
+            guard gameModel.gameState == .placingShips else {
+                print("❌ Not in ship placement phase - current state: \(gameModel.gameState)")
+                return
+            }
+            
+            // Select the carrier ship
+            gameModel.selectShip(type: .carrier)
+            
+            // Set direction to horizontal (should already be default)
+            if gameModel.selectedShipDirection != .horizontal {
+                gameModel.rotateSelectedShip()
+            }
+            
+            // Place the ship at second position (1,1) - horizontal placement
+            let x = 1  // Second column (0-indexed)
+            let y = 1  // Second row (0-indexed)
+            let success = gameModel.placeShip(at: x, y: y)
+            
+            if success {
+                print("✅ Carrier successfully placed horizontally at position (\(x), \(y)) via Amplitude Guide!")
+                
+                // Track the callback action
+                self.trackEvent(name: "Amplitude_Callback_Ship_Placed", properties: [
+                    "ship_type": "carrier",
+                    "position_x": x,
+                    "position_y": y,
+                    "direction": "horizontal",
+                    "callback_name": "place_ship",
+                    "source": "amplitude_guides_surveys"
+                ])
+            } else {
+                print("❌ Failed to place carrier at position (\(x), \(y)) - position might be occupied or invalid")
+            }
+        }
+        
+        print("📹 Session Replay: Recording 100% of sessions")
+        print("Analytics ready for tracking")
     }
     
-    // MARK: - Initialization
+    // MARK: - Configuration
     
     func configure() {
         // Set user properties similar to the original JS version
@@ -47,14 +95,22 @@ class AnalyticsManager {
         identify.set(property: "Game", value: "BattleBoat iOS")
         amplitude.identify(identify: identify)
         
-        print("Analytics ready for tracking")
-        
+        print("AnalyticsManager configured")
     }
     
     // MARK: - Game Events (matching original JS events exactly)
     
+    /// Generic event tracking method
+    func trackEvent(name: String, properties: [String: Any] = [:]) {
+        let event = BaseEvent(
+            eventType: name,
+            eventProperties: properties
+        )
+        amplitude.track(event: event)
+    }
+    
     func trackSelectShip(shipType: GameConstants.ShipType) {
-        var event = BaseEvent(
+        let event = BaseEvent(
             eventType: "Select Ship",
             eventProperties: [
                 "ship": shipType.rawValue,
@@ -189,7 +245,11 @@ class AnalyticsManager {
     // MARK: - Session Replay Management
     
     func getSessionReplayStatus() -> String {
-        return "📦 Session Replay: Manual package installation required"
+        if sessionReplayPlugin != nil {
+            return "✅ Session Replay: Active (100% capture rate)"
+        } else {
+            return "❌ Session Replay: Not initialized"
+        }
     }
     
     // MARK: - Custom Events for Ship Placement Analysis

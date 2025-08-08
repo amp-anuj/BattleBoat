@@ -159,6 +159,10 @@ class GameViewController: UIViewController {
             button.titleLabel?.adjustsFontSizeToFitWidth = true
             button.titleLabel?.minimumScaleFactor = 0.7
             button.addTarget(self, action: #selector(shipButtonTapped(_:)), for: .touchUpInside)
+            
+            // Add accessibility identifier for UI testing
+            button.accessibilityIdentifier = "\(shipType.rawValue)_ship_button"
+            
             shipSelectionStackView.addArrangedSubview(button)
         }
     }
@@ -359,6 +363,15 @@ class GameViewController: UIViewController {
     private func initializeGame() {
         gameModel = GameModel()
         gameModel.delegate = self
+        
+        // MARK: - Analytics
+        AnalyticsManager.shared.configure()
+        AnalyticsManager.shared.gameModel = gameModel  // Connect gameModel for callbacks
+        AnalyticsManager.shared.trackEvent(name: "Game Started", properties: [
+            "platform": "iOS",
+            "version": "1.0",
+            "timestamp": Date().timeIntervalSince1970
+        ])
     }
     
     private func setupGridViews() {

@@ -16,7 +16,7 @@ protocol GameModelDelegate: AnyObject {
     func gameModel(_ gameModel: GameModel, didUpdateShipPlacement ship: GameConstants.ShipType, isPlaced: Bool)
 }
 
-class GameModel {
+class GameModel: ObservableObject {
     weak var delegate: GameModelDelegate?
     
     // Game components
@@ -35,6 +35,15 @@ class GameModel {
     // Ship placement state
     private(set) var selectedShipType: GameConstants.ShipType?
     private(set) var selectedShipDirection: GameConstants.ShipDirection = .horizontal
+    
+    // Fleet configuration
+    private let fleetConfiguration: [GameConstants.ShipType: Int] = [
+        .carrier: 1,
+        .battleship: 1,  
+        .destroyer: 1,
+        .submarine: 1,
+        .patrolboat: 1
+    ]
     
     init() {
         // Initialize grids
