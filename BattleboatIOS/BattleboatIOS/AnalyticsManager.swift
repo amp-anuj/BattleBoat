@@ -195,8 +195,8 @@ class AnalyticsManager {
         let event = BaseEvent(
             eventType: "Tutorial Step",
             eventProperties: [
-                "step": step.rawValue,
-                "stepName": tutorialStepName(step)
+                "Step": step.rawValue,
+                "Step Name": tutorialStepName(step)
             ]
         )
         amplitude.track(event: event)
@@ -274,14 +274,14 @@ class AnalyticsManager {
         for ship in humanFleet.getShips() {
             if ship.isPlaced {
                 let shipKey = ship.type.rawValue
-                gridData["\(shipKey)_x"] = ship.x
-                gridData["\(shipKey)_y"] = ship.y
-                gridData["\(shipKey)_direction"] = ship.direction.rawValue
+                gridData["\(shipKey) X"] = ship.x
+                gridData["\(shipKey) Y"] = ship.y
+                gridData["\(shipKey) Direction"] = ship.direction.rawValue
             }
         }
         
-        gridData["user_id"] = gameStats.userID
-        gridData["game_performance"] = gameStats.getPerformanceLevel()
+        gridData["User ID"] = gameStats.userID
+        gridData["Game Performance"] = gameStats.getPerformanceLevel()
         
         let event = BaseEvent(
             eventType: "Human Grid Analysis",

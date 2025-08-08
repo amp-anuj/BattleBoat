@@ -298,7 +298,7 @@ class GameActivity : AppCompatActivity() {
             ShotResult.HIT -> {
                 if (hitShip?.isSunk() == true) {
                     aiGrid.markShipAsSunk(hitShip)
-                    analyticsManager.trackEvent("Ship Sunk", mapOf("ship_type" to hitShip.type.name))
+                    analyticsManager.trackEvent("Ship Sunk", mapOf("Ship Type" to hitShip.type.name))
                     "Hit and Sunk ${hitShip.displayName}!"
                 } else {
                     "Hit!"
@@ -353,7 +353,7 @@ class GameActivity : AppCompatActivity() {
             ShotResult.HIT -> {
                 if (hitShip?.isSunk() == true) {
                     aiGrid.markShipAsSunk(hitShip)
-                    analyticsManager.trackEvent("Ship Sunk", mapOf("ship_type" to hitShip.type.name))
+                    analyticsManager.trackEvent("Ship Sunk", mapOf("Ship Type" to hitShip.type.name))
                     "Hit and Sunk ${hitShip.displayName}!"
                 } else {
                     "Hit!"
@@ -489,7 +489,7 @@ class GameActivity : AppCompatActivity() {
     }
     
     private fun showTutorialStep(step: Int) {
-        analyticsManager.trackEvent("Tutorial Step", mapOf("step" to step))
+        analyticsManager.trackEvent("Tutorial Step", mapOf("Step" to step))
         
         val messages = arrayOf(
             "Welcome to Battleboat! This tutorial will teach you the basics.",
@@ -511,7 +511,7 @@ class GameActivity : AppCompatActivity() {
                     }
                 }
                 .setNegativeButton("Skip") { _, _ ->
-                    analyticsManager.trackEvent("Tutorial Skipped", mapOf("step" to step))
+                    analyticsManager.trackEvent("Tutorial Skipped", mapOf("Step" to step))
                     startShipPlacement()
                 }
                 .show()
