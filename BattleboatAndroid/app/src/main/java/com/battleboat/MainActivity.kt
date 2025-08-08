@@ -134,16 +134,6 @@ class MainActivity : AppCompatActivity() {
             .show()
     }
     
-    override fun onResume() {
-        super.onResume()
-        analyticsManager.trackEvent("App Foregrounded")
-    }
-    
-    override fun onPause() {
-        super.onPause()
-        analyticsManager.trackEvent("App Backgrounded")
-    }
-    
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
         // Handle Amplitude Guides and Surveys preview links

@@ -42,8 +42,6 @@
 | **Tutorial Button Pressed** | None | User selects tutorial option |
 | **Statistics Button Pressed** | None | User selects statistics view |
 | **Settings Button Pressed** | None | User accesses settings |
-| **App Foregrounded** | None | App becomes active |
-| **App Backgrounded** | None | App goes to background |
 | **Ship Sunk** | "Ship Type" | Specific ship destroyed |
 | **Tutorial Step** | Step | Individual tutorial step |
 | **Tutorial Completed** | None | Tutorial finished |
@@ -104,7 +102,7 @@
 |----------|-------------|---------------|-------------------|
 | **Web** | 7 | 7 | 0 |
 | **iOS** | 15 | 7 | 8 |
-| **Android** | 18 | 7 | 11 |
+| **Android** | 16 | 7 | 9 |
 
 ---
 
@@ -165,4 +163,4 @@ analyticsManager.trackEvent("Ship Sunk", mapOf("Ship Type" to "destroyer"))
 ---
 
 **Last Updated**: August 2025  
-**Total Events Tracked**: 25+ unique events across all platforms 
+**Total Events Tracked**: 23+ unique events across all platforms 
