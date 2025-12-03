@@ -144,6 +144,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // to restore the scene back to its current state.
         // Background tracking handled automatically by Amplitude
     }
+    
+    // MARK: - URL Handling for Amplitude Guides and Surveys Preview
+    
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        guard let url = URLContexts.first?.url else { return }
+        
+        // Handle Amplitude Guides and Surveys preview URLs
+        if AnalyticsManager.shared.handleAmplitudeURL(url) {
+            return
+        }
+        
+        // Handle other URL schemes here if needed
+    }
 }
 
 // MARK: - UIViewController Extension

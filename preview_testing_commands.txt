@@ -1,0 +1,20 @@
+# Battleboat Preview URL Testing Commands
+
+## Test the preview URL with ADB:
+adb shell am start -W -a android.intent.action.VIEW -d "amp-5ca0d2531a1b801e://gs/preview/12474" com.battleboat
+
+## Check if the app is running:
+adb shell ps | grep battleboat
+
+## Force stop the app first (if needed):
+adb shell am force-stop com.battleboat
+
+## Check Android logs for intent handling:
+adb logcat | grep -i battleboat
+
+## List all installed packages to verify app is installed:
+adb shell pm list packages | grep battleboat
+
+## Test with a simpler URL structure:
+adb shell am start -W -a android.intent.action.VIEW -d "amp-5ca0d2531a1b801e://test" com.battleboat
+

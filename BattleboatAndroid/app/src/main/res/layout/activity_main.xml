@@ -39,6 +39,8 @@
         <!-- Play Game Button -->
         <Button
             android:id="@+id/button_play"
+            android:tag="amplitude_play_button"
+            android:contentDescription="play_game_button"
             style="@style/PrimaryButton"
             android:text="@string/play_game"
             android:drawableStart="@android:drawable/ic_media_play"

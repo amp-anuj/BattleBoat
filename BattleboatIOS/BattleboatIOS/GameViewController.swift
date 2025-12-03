@@ -65,6 +65,9 @@ class GameViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         setupGridViews()
+        
+        // Track screen view for Amplitude Guides and Surveys
+        AnalyticsManager.shared.trackScreen(name: "GameScreen")
     }
     
     // MARK: - Setup
@@ -707,6 +710,20 @@ extension GameViewController: GridViewDelegate {
 extension GameViewController: GameModelDelegate {
     func gameModel(_ gameModel: GameModel, didUpdateState state: GameConstants.GameState) {
         updateUIForGameState(state)
+        
+        // Track screen changes based on game state
+        switch state {
+        case .placingShips:
+            AnalyticsManager.shared.trackScreen(name: "ShipPlacementScreen")
+        case .readyToPlay:
+            AnalyticsManager.shared.trackScreen(name: "ReadyToPlayScreen")
+        case .playerTurn:
+            AnalyticsManager.shared.trackScreen(name: "PlayerTurnScreen")
+        case .computerTurn:
+            AnalyticsManager.shared.trackScreen(name: "ComputerTurnScreen")
+        case .gameOver:
+            AnalyticsManager.shared.trackScreen(name: "GameOverScreen")
+        }
         
         // Update grid displays
         DispatchQueue.main.async {

@@ -1,6 +1,7 @@
 package com.battleboat
 
 import android.content.Context
+import android.content.Intent
 import android.content.SharedPreferences
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -10,10 +11,11 @@ import com.amplitude.android.Amplitude
 import com.amplitude.android.Configuration
 import com.amplitude.android.AutocaptureOption
 import com.amplitude.android.TrackingOptions
+import com.amplitude.android.engagement.AmplitudeEngagement
 import com.amplitude.android.engagement.AmplitudeBootOptions
 import com.amplitude.android.engagement.AmplitudeEndUser
-import com.amplitude.android.engagement.AmplitudeEngagement
 import com.amplitude.android.plugins.SessionReplayPlugin
+import com.amplitude.core.events.BaseEvent
 import com.amplitude.core.network.NetworkTrackingPlugin
 import com.amplitude.core.network.NetworkTrackingOptions
 import com.amplitude.core.network.NetworkTrackingOptions.CaptureRule
@@ -46,12 +48,16 @@ class AnalyticsManager private constructor(private val context: Context) {
     private var amplitude: Amplitude? = null
     private var sessionReplayPlugin: SessionReplayPlugin? = null
     private var isInitialized = false
+    private var amplitudeEngagement: AmplitudeEngagement? = null
+    
+    // MARK: - Game Activity Reference for Callbacks
+    var gameActivity: GameActivity? = null
 
     val options = NetworkTrackingOptions(
         captureRules = listOf(
         // Track all responses from your API domain with status code from 400 to 599
             CaptureRule(
-                hosts = listOf("*.example.com", "example.com"),
+                hosts = listOf("*.example.com", "example.com", "*.amplitude.com"),
                 statusCodeRange = (400..599).toList()
             )
         ),
@@ -88,16 +94,40 @@ class AnalyticsManager private constructor(private val context: Context) {
         Log.d(TAG, "📊 API Key: ${key.take(8)}...")
         
         try {
+            Log.d(TAG, "🔧 Creating AmplitudeEngagement instance...")
+            Log.d(TAG, "📱 Context: ${context}")
+            Log.d(TAG, "🔑 API Key length: ${key.length}")
+            
             val amplitudeEngagement = AmplitudeEngagement(
                 context = context,
                 apiKey = key
             )
             
+            // Element targeting is automatically supported for non-Jetpack Compose views
+            // using tag, contentDescription, or resourceName fields
+            Log.d(TAG, "🎯 Element targeting ready for Guides (using tag/contentDescription)")
+            
+            // Store the engagement instance for callbacks
+            this.amplitudeEngagement = amplitudeEngagement
+            Log.d(TAG, "✅ AmplitudeEngagement instance created successfully")
+            
+            // Note: Callbacks will be added after boot to avoid NullPointerException
+
+            
             // Initialize Session Replay plugin
+            // DISABLED: Compose Alpha support still has reflection access issues
+            // Error: "Field 'androidx.compose.runtime.collection.MutableVector.content' is inaccessible"
+            // Waiting for stable Compose support from Amplitude
+            Log.d(TAG, "⚠️ Session Replay disabled - Jetpack Compose Alpha has known issues")
+            /*
+            Log.d(TAG, "🔧 Creating Session Replay plugin...")
             sessionReplayPlugin = SessionReplayPlugin(
                 sampleRate = 1.0  // Record 100% of sessions for full coverage
             )
+            Log.d(TAG, "✅ Session Replay plugin created successfully")
+            */
             
+            Log.d(TAG, "🔧 Creating main Amplitude instance...")
             amplitude = Amplitude(
                 Configuration(
                     apiKey = key,
@@ -105,33 +135,55 @@ class AnalyticsManager private constructor(private val context: Context) {
                     autocapture = setOf(
                         AutocaptureOption.SESSIONS,
                         AutocaptureOption.APP_LIFECYCLES,
-                        AutocaptureOption.SCREEN_VIEWS
+                        AutocaptureOption.FRUSTRATION_INTERACTIONS
                     ),
                     optOut = false
                 )
             )
+            Log.d(TAG, "✅ Main Amplitude instance created successfully")
+            
+            Log.d(TAG, "🔧 Adding plugins to Amplitude...")
             amplitude!!.add(amplitudeEngagement.getPlugin())
-            amplitude!!.add(sessionReplayPlugin!!)
+            Log.d(TAG, "✅ AmplitudeEngagement plugin added")
+            // Session Replay disabled - Compose Alpha issues
+            // amplitude!!.add(sessionReplayPlugin!!)
+            // Log.d(TAG, "✅ Session Replay plugin added")
             amplitude!!.add(networkPlugin)
+            Log.d(TAG, "✅ Network plugin added")
             
             // Set user ID if exists
             val userId = getUserId()
             if (userId.isNotEmpty()) {
                 amplitude?.setUserId(userId)
+                Log.d(TAG, "👤 User ID set: $userId")
             }
-            
+            val sessionId = amplitude!!.sessionId
+            Log.d(TAG, "👤 Session ID set: $sessionId")
             isInitialized = true
+            Log.d(TAG, "🏁 Analytics marked as initialized")
 
+            // Boot AmplitudeEngagement with device and user IDs
+            Log.d(TAG, "🔧 Booting AmplitudeEngagement...")
             val bootOptions = AmplitudeBootOptions(
                 user = AmplitudeEndUser(
                     userId = amplitude!!.getUserId(),
                     deviceId = amplitude!!.getDeviceId()
-                )
+                ),
+                integrations = arrayOf({ event: BaseEvent ->
+                    // Forward Guides & Surveys events to Amplitude
+                    Log.d(TAG, "📊 Guides & Surveys event: ${event.eventType}")
+                    amplitude?.track(event)
+                })
             )
             amplitudeEngagement.boot(bootOptions)
+            Log.d(TAG, "✅ AmplitudeEngagement booted with Device ID: ${amplitude!!.getDeviceId()}")
+            
+            // Delay callback setup to allow JS engine to fully initialize
+            setupCallbacksDelayed()
             
             Log.d(TAG, "✅ Analytics initialized successfully!")
             Log.d(TAG, "👤 Device ID: ${amplitude!!.getDeviceId()}")
+            Log.d(TAG, "👤 Session ID: ${amplitude!!.sessionId}")
             Log.d(TAG, "🎯 User ID: ${amplitude!!.getUserId() ?: "Anonymous"}")
             Log.d(TAG, "📹 Session Replay: Recording 100% of sessions")
         } catch (e: Exception) {
@@ -159,6 +211,15 @@ class AnalyticsManager private constructor(private val context: Context) {
     }
     
     /**
+     * Check if Amplitude is properly initialized
+     */
+    fun isAmplitudeInitialized(): Boolean {
+        val initialized = isInitialized && amplitude != null && amplitudeEngagement != null
+        Log.d(TAG, "🔍 Amplitude initialization check: $initialized (isInitialized=$isInitialized, amplitude=${amplitude != null}, engagement=${amplitudeEngagement != null})")
+        return initialized
+    }
+    
+    /**
      * Track a custom event
      */
     fun trackEvent(eventName: String, properties: Map<String, Any> = emptyMap()) {
@@ -167,8 +228,8 @@ class AnalyticsManager private constructor(private val context: Context) {
             return
         }
         
-        if (amplitude == null) {
-            Log.e(TAG, "❌ Analytics not initialized - skipping event: $eventName")
+        if (!isAmplitudeInitialized()) {
+            Log.e(TAG, "❌ Amplitude not initialized - skipping event: $eventName")
             Log.e(TAG, "💡 Make sure to call analyticsManager.initialize() first")
             return
         }
@@ -182,6 +243,22 @@ class AnalyticsManager private constructor(private val context: Context) {
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to track event: $eventName", e)
             e.printStackTrace()
+        }
+    }
+    
+    /**
+     * Track screen views for Guides and Surveys targeting
+     */
+    fun trackScreen(screenName: String) {
+        if (!isAnalyticsEnabled() || !isAmplitudeInitialized()) {
+            return
+        }
+        
+        try {
+            amplitudeEngagement?.screen(screenName)
+            Log.d(TAG, "📱 Screen tracked: $screenName")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to track screen: $screenName", e)
         }
     }
     
@@ -306,6 +383,13 @@ class AnalyticsManager private constructor(private val context: Context) {
             "❌ Session Replay: Not initialized"
         }
     }
+
+    /**
+     * Guides and Surveys Preview Link Handling
+     */
+    fun handlePreviewLink(intent: Intent): Boolean {
+        return amplitudeEngagement?.handlePreviewLinkIntent(intent) ?: true
+    }
     
     /**
      * Get detailed analytics status for debugging
@@ -378,5 +462,95 @@ class AnalyticsManager private constructor(private val context: Context) {
         Log.d(TAG, "   1. API key mismatch with your Amplitude project")
         Log.d(TAG, "   2. Network/firewall blocking requests to api2.amplitude.com")
         Log.d(TAG, "   3. App is in debug mode and events are filtered")
+    }
+    
+    /**
+     * Setup callbacks with delay to allow JS engine to fully initialize
+     * This prevents NullPointerException during initialization
+     */
+    private fun setupCallbacksDelayed() {
+        // Use a handler to delay callback setup by 1 second
+        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            setupCallbacks()
+        }, 1000)
+    }
+    
+    /**
+     * Setup callbacks after AmplitudeEngagement is properly booted
+     * This prevents NullPointerException during initialization
+     */
+    private fun setupCallbacks() {
+        try {
+            Log.d(TAG, "🔧 Setting up Amplitude callbacks...")
+            
+            // Re-enable callbacks now that JS engine is loaded ('Engagement bundle loaded')
+            Log.d(TAG, "🎯 JavaScript engine is ready, attempting to add callbacks...")
+            
+            amplitudeEngagement?.addCallback("place_ship") {
+                Log.d(TAG, "🎯 Amplitude Guide Callback: Placing carrier ship horizontally at second position")
+                
+                val activity = gameActivity
+                if (activity == null) {
+                    Log.e(TAG, "❌ GameActivity not available for callback")
+                    return@addCallback
+                }
+                
+                // Check if we're in the ship placement phase
+                if (activity.getCurrentGameState() != GameState.SETUP) {
+                    Log.e(TAG, "❌ Not in ship placement phase - current state: ${activity.getCurrentGameState()}")
+                    return@addCallback
+                }
+                
+                // Get the carrier ship from the player fleet
+                val carrierShip = activity.getPlayerFleet().getShip(ShipType.CARRIER)
+                if (carrierShip == null) {
+                    Log.e(TAG, "❌ Carrier ship not found in fleet")
+                    return@addCallback
+                }
+                
+                // Check if carrier is already placed
+                if (carrierShip.isPlaced) {
+                    Log.d(TAG, "ℹ️ Carrier already placed, skipping callback action")
+                    return@addCallback
+                }
+                
+                // Place the ship at second position (1,1) - horizontal placement
+                val row = 1  // Second row (0-indexed)
+                val col = 1  // Second column (0-indexed)
+                val orientation = Orientation.HORIZONTAL
+                
+                val success = activity.getPlayerFleet().placeShip(carrierShip, row, col, orientation)
+                
+                if (success) {
+                    // Update the grid
+                    activity.getPlayerGrid().placeShip(carrierShip)
+                    
+                    // Move to the next unplaced ship (skip the carrier that was just placed)
+                    activity.moveToNextUnplacedShip()
+                    
+                    // Refresh the UI
+                    activity.refreshUI()
+                    
+                    Log.d(TAG, "✅ Carrier successfully placed horizontally at position ($col, $row) via Amplitude Guide!")
+                    Log.d(TAG, "🎯 Moving to next ship: ${activity.getCurrentShipType()?.displayName ?: "All ships placed"}")
+                    
+                    // Track the callback action
+                    trackEvent("Ship Placed", mapOf(
+                        "Ship" to "carrier",
+                        "X" to col,
+                        "Y" to row,
+                        "Success" to true,
+                        "Source" to "amplitude_guides_surveys"
+                    ))
+                } else {
+                    Log.e(TAG, "❌ Failed to place carrier at position ($col, $row) - position might be occupied or invalid")
+                }
+            }
+            
+            Log.d(TAG, "✅ Callbacks setup completed successfully")
+            
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to setup callbacks: ${e.message}", e)
+        }
     }
 } 

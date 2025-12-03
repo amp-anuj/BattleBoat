@@ -57,9 +57,15 @@ class GameActivity : AppCompatActivity() {
             // Check if tutorial mode
             isTutorialMode = intent.getBooleanExtra("tutorial_mode", false)
             
-            // Initialize managers
+                    // Initialize managers
             gameStats = GameStats.getInstance(this)
             analyticsManager = AnalyticsManager.getInstance(this)
+            
+            // Set this activity reference for Amplitude callbacks
+            analyticsManager.gameActivity = this
+            
+            // Track screen view for Amplitude Guides and Surveys
+            analyticsManager.trackScreen("GameScreen")
             
             setupUI()
             initializeGame()
@@ -157,6 +163,9 @@ class GameActivity : AppCompatActivity() {
         placingShips = true
         currentShipType = getNextShipToPlace()
         
+        // Track ship placement screen
+        analyticsManager.trackScreen("ShipPlacementScreen")
+        
         updateShipPlacementUI()
         
         // Set up player grid click listener for ship placement
@@ -234,6 +243,8 @@ class GameActivity : AppCompatActivity() {
         gameState = GameState.PLAYER_TURN
         updateUI()
         
+        // Track player turn screen
+        analyticsManager.trackScreen("PlayerTurnScreen")
         analyticsManager.trackStartGame()
     }
     
@@ -321,6 +332,7 @@ class GameActivity : AppCompatActivity() {
         
         // Switch to AI turn
         gameState = GameState.AI_TURN
+        analyticsManager.trackScreen("AITurnScreen")
         updateUI()
         
         // AI turn after delay
@@ -373,6 +385,7 @@ class GameActivity : AppCompatActivity() {
         
         // Switch to AI turn
         gameState = GameState.AI_TURN
+        analyticsManager.trackScreen("AITurnScreen")
         updateUI()
         
         // AI turn after delay
@@ -423,11 +436,13 @@ class GameActivity : AppCompatActivity() {
         
         // Switch back to player turn
         gameState = GameState.PLAYER_TURN
+        analyticsManager.trackScreen("PlayerTurnScreen")
         updateUI()
     }
     
     private fun endGame(result: GameResult) {
         gameState = GameState.GAME_OVER
+        analyticsManager.trackScreen("GameOverScreen")
         
         val gameTime = System.currentTimeMillis() - gameStartTime
         val playerWon = result == GameResult.PLAYER_WIN
@@ -568,5 +583,68 @@ class GameActivity : AppCompatActivity() {
             }
             .setNegativeButton("No", null)
             .show()
+    }
+    
+    // MARK: - Public methods for Amplitude Guides and Surveys callbacks
+    
+    /**
+     * Public access to game state for callbacks
+     */
+    fun getCurrentGameState(): GameState = gameState
+    
+    /**
+     * Public access to player fleet for callbacks
+     */
+    fun getPlayerFleet(): Fleet = playerFleet
+    
+    /**
+     * Public access to player grid for callbacks
+     */
+    fun getPlayerGrid(): Grid = playerGrid
+    
+    /**
+     * Public access to current ship type for callbacks
+     */
+    fun getCurrentShipType(): ShipType? = currentShipType
+    
+    /**
+     * Public method to set current ship type for callbacks
+     */
+    fun setCurrentShipType(shipType: ShipType?) {
+        currentShipType = shipType
+    }
+    
+    /**
+     * Public method to refresh UI for callbacks
+     */
+    fun refreshUI() {
+        runOnUiThread {
+            playerGridView.setGrid(playerGrid, playerFleet, isPlayerGrid = true, showShips = true)
+            updateShipPlacementUI()
+        }
+    }
+    
+    /**
+     * Move to the next unplaced ship in the sequence
+     * Used by callbacks to properly advance the game state
+     */
+    fun moveToNextUnplacedShip() {
+        currentShipType = getNextShipToPlace()
+        
+        // If all ships are placed, update game state
+        if (currentShipType == null && playerFleet.allShipsPlaced()) {
+            placingShips = false
+            
+            // Update UI to show game is ready to start
+            runOnUiThread {
+                updateShipPlacementUI()
+            }
+        }
+    }
+    
+    override fun onDestroy() {
+        super.onDestroy()
+        // Clear the activity reference to avoid memory leaks
+        analyticsManager.gameActivity = null
     }
 } 

@@ -26,11 +26,21 @@ class MainActivity : AppCompatActivity() {
         // Initialize analytics
         analyticsManager.initialize()
         
+        // Check if initialization was successful
+        if (analyticsManager.isAmplitudeInitialized()) {
+            android.util.Log.d("MainActivity", "✅ Analytics initialization successful")
+        } else {
+            android.util.Log.e("MainActivity", "❌ Analytics initialization failed")
+        }
+        
         // Test analytics integration
         analyticsManager.testAnalytics()
         
         // Track main menu opened
         analyticsManager.trackEvent("Main Menu Opened")
+        
+        // Track screen view for Amplitude Guides and Surveys
+        analyticsManager.trackScreen("MainMenuScreen")
 
         // Hide the action bar if it exists
         supportActionBar?.hide()
@@ -139,5 +149,6 @@ class MainActivity : AppCompatActivity() {
         // Handle Amplitude Guides and Surveys preview links
         // This will be handled by the AmplitudeEngagement instance
         // when preview links are opened from the Amplitude dashboard
+        analyticsManager.handlePreviewLink(intent)
     }
 } 

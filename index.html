@@ -23,18 +23,22 @@
 	<link href="css/styles.css" rel="stylesheet" media="all" />
 
 	<script src="https://cdn.amplitude.com/libs/analytics-browser-2.20.1-min.js.gz"></script>
-	<script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.6.24-min.js.gz"></script>
+	<script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.22.4-min.js.gz"></script>
 	<script src="https://cdn.amplitude.com/script/909b2239fab57efd4268eb75dbc28d30.engagement.js"></script>
-	
-	<script>	
-	
-		window.amplitude.init("909b2239fab57efd4268eb75dbc28d30",null,{
+	<script src="https://cdn.amplitude.com/script/909b2239fab57efd4268eb75dbc28d30.experiment.js"></script>
+	<script>
+
+		window.amplitude.init("909b2239fab57efd4268eb75dbc28d30", null, {
 			autocapture: true,
-			autocapture: {networkTracking: {
-				captureRules: [
-					{ hosts: ['*'], statusCodeRange: '400-599' }
-				]
-			}}
+			autocapture: {
+				frustrationInteractions: true,
+				networkTracking: true,
+				networkTracking: {
+					captureRules: [
+						{ statusCodeRange: '0,200-299,400-499,500-599' }
+					]
+				}
+			}
 		});
 		//window.amplitude.add(sessionReplayTracking);
 		const sessionReplayTracking = window.sessionReplay.plugin({
@@ -65,21 +69,40 @@
 			amplitude.identify(identifyEvent);
 			identifyEvent.set()
 
+			const testidentifyEvent = new amplitude.Identify();
+			identifyEvent.set('platform', 'Test Website');
+			amplitude.identify(testidentifyEvent);
+			identifyEvent.set()
+
 			//Object array example
 			let SportsbookPersonalizationArray = [
-            {
-              "Is Personalized": "false",
-              "Module": "popular"
-            },
-            {
-              "Is Personalized": "true",
-              "Module": "page_tabs"
-            }]
+				{
+					"Is Personalized": "false",
+					"Module": "popular"
+				},
+				{
+					"Is Personalized": "true",
+					"Module": "page_tabs"
+				}]
 			const identifyEventArray = new amplitude.Identify();
 			identifyEventArray.set('Sportsbook Personalization', SportsbookPersonalizationArray);
 			identifyEventArray.set()
 			amplitude.identify(identifyEventArray);
 			experiment.fetch();
+			const variant = experiment.variant('battleboat-test');
+			const payload = variant.payload;
+			setTimeout(function () {
+				if (variant.value === 'treatment') {
+				console.log(variant.value)
+				console.log(variant.payload)
+				engagement.gs.show(variant.payload.nudge);
+			} else {
+				console.log(variant.value)
+				console.log(variant.payload)
+				engagement.gs.show(variant.payload.nudge)
+			}
+			}, 2000);
+			
 
 		</script>
 		<p class="tagline">A JavaScript AI that beats humans at battleship.</p>

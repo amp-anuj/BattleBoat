@@ -22,10 +22,10 @@
 		1D1A5B4C2B8E4FE000F4B8C7 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B4B2B8E4FE000F4B8C7 /* GridView.swift */; };
 		1D1A5B4E2B8E4FEC00F4B8C7 /* GameConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B4D2B8E4FEC00F4B8C7 /* GameConstants.swift */; };
 		1D1A5B502B8E500000F4B8C7 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B4F2B8E500000F4B8C7 /* AnalyticsManager.swift */; };
+		F1A8A3332E8EB80500FC9B28 /* Experiment in Frameworks */ = {isa = PBXBuildFile; productRef = F1A8A3322E8EB80500FC9B28 /* Experiment */; };
 		F1CF84EE2DF21E2A00D4776B /* AmplitudeSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F1CF84ED2DF21E2A00D4776B /* AmplitudeSwift */; };
 		F1D7E9022E3BBF9D005322D1 /* AmplitudeEngagementSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F1D7E9012E3BBF9D005322D1 /* AmplitudeEngagementSwift */; };
-		F1D7E9052E429894005322D1 /* AmplitudeSwiftSessionReplayPlugin in Frameworks */ = {isa = PBXBuildFile; productRef = F1D7E9042E429894005322D1 /* AmplitudeSwiftSessionReplayPlugin */; };
-		F1SR24A22E5CCF8D005322D1 /* (null) in Frameworks */ = {isa = PBXBuildFile; };
+		F1D7E9052E429894005322D1 /* AmplitudeSessionReplay in Frameworks */ = {isa = PBXBuildFile; productRef = F1D7E9042E429894005322D1 /* AmplitudeSessionReplay */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -53,10 +53,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F1A8A3332E8EB80500FC9B28 /* Experiment in Frameworks */,
 				F1CF84EE2DF21E2A00D4776B /* AmplitudeSwift in Frameworks */,
-				F1D7E9052E429894005322D1 /* AmplitudeSwiftSessionReplayPlugin in Frameworks */,
+				F1D7E9052E429894005322D1 /* AmplitudeSessionReplay in Frameworks */,
 				F1D7E9022E3BBF9D005322D1 /* AmplitudeEngagementSwift in Frameworks */,
-				F1SR24A22E5CCF8D005322D1 /* (null) in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -150,6 +150,7 @@
 				F1CF84EC2DF21E2A00D4776B /* XCRemoteSwiftPackageReference "Amplitude-Swift" */,
 				F1D7E9002E3BBF9D005322D1 /* XCRemoteSwiftPackageReference "Amplitude-Engagement-Swift" */,
 				F1D7E9032E429894005322D1 /* XCRemoteSwiftPackageReference "AmplitudeSessionReplay-iOS" */,
+				F1A8A3312E8EB80500FC9B28 /* XCRemoteSwiftPackageReference "experiment-ios-client" */,
 			);
 			productRefGroup = 1D1A5B272B8E4F3C00F4B8C7 /* Products */;
 			projectDirPath = "";
@@ -343,11 +344,18 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BattleboatIOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Battleboat;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Battleboat Team. All rights reserved.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -370,11 +378,18 @@
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BattleboatIOS/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Battleboat;
+				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2024 Battleboat Team. All rights reserved.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Automatic;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -412,20 +427,28 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		F1A8A3312E8EB80500FC9B28 /* XCRemoteSwiftPackageReference "experiment-ios-client" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/amplitude/experiment-ios-client";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		F1CF84EC2DF21E2A00D4776B /* XCRemoteSwiftPackageReference "Amplitude-Swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/amplitude/Amplitude-Swift";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.15.0;
 			};
 		};
 		F1D7E9002E3BBF9D005322D1 /* XCRemoteSwiftPackageReference "Amplitude-Engagement-Swift" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/amplitude/Amplitude-Engagement-Swift";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.7.0;
 			};
 		};
 		F1D7E9032E429894005322D1 /* XCRemoteSwiftPackageReference "AmplitudeSessionReplay-iOS" */ = {
@@ -439,6 +462,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		F1A8A3322E8EB80500FC9B28 /* Experiment */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F1A8A3312E8EB80500FC9B28 /* XCRemoteSwiftPackageReference "experiment-ios-client" */;
+			productName = Experiment;
+		};
 		F1CF84ED2DF21E2A00D4776B /* AmplitudeSwift */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F1CF84EC2DF21E2A00D4776B /* XCRemoteSwiftPackageReference "Amplitude-Swift" */;
@@ -449,10 +477,10 @@
 			package = F1D7E9002E3BBF9D005322D1 /* XCRemoteSwiftPackageReference "Amplitude-Engagement-Swift" */;
 			productName = AmplitudeEngagementSwift;
 		};
-		F1D7E9042E429894005322D1 /* AmplitudeSwiftSessionReplayPlugin */ = {
+		F1D7E9042E429894005322D1 /* AmplitudeSessionReplay */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F1D7E9032E429894005322D1 /* XCRemoteSwiftPackageReference "AmplitudeSessionReplay-iOS" */;
-			productName = AmplitudeSwiftSessionReplayPlugin;
+			productName = AmplitudeSessionReplay;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
