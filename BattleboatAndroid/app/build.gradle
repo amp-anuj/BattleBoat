@@ -75,7 +75,7 @@ dependencies {
     implementation 'com.amplitude:analytics-android:1.22.4'
 
     // Amplitude Guides and Surveys - latest version
-    implementation 'com.amplitude:amplitude-engagement-android:1.7.0'
+    implementation 'com.amplitude:amplitude-engagement-android:2.0.1'
     
     // Amplitude Session Replay Plugin - with Jetpack Compose support (Alpha)
     implementation 'com.amplitude:plugin-session-replay-android:0.21.0'

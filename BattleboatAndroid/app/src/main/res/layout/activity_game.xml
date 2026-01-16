@@ -305,6 +305,21 @@
 
         </LinearLayout>
 
+        <!-- Back to Main Menu Button -->
+        <Button
+            android:id="@+id/back_to_menu_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="16dp"
+            android:text="← Back to Main Menu"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:backgroundTint="#607D8B"
+            android:textColor="#FFFFFF"
+            android:paddingHorizontal="24dp"
+            android:paddingVertical="12dp" />
+
         <!-- Bottom spacer for comfortable scrolling -->
         <View
             android:layout_width="match_parent"

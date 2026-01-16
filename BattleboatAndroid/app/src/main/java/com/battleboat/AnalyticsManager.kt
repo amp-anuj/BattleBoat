@@ -15,7 +15,6 @@ import com.amplitude.android.engagement.AmplitudeEngagement
 import com.amplitude.android.engagement.AmplitudeBootOptions
 import com.amplitude.android.engagement.AmplitudeEndUser
 import com.amplitude.android.plugins.SessionReplayPlugin
-import com.amplitude.core.events.BaseEvent
 import com.amplitude.core.network.NetworkTrackingPlugin
 import com.amplitude.core.network.NetworkTrackingOptions
 import com.amplitude.core.network.NetworkTrackingOptions.CaptureRule
@@ -49,6 +48,7 @@ class AnalyticsManager private constructor(private val context: Context) {
     private var sessionReplayPlugin: SessionReplayPlugin? = null
     private var isInitialized = false
     private var amplitudeEngagement: AmplitudeEngagement? = null
+    private var isEngagementReady = false  // Track when JS engine is loaded
     
     // MARK: - Game Activity Reference for Callbacks
     var gameActivity: GameActivity? = null
@@ -161,31 +161,39 @@ class AnalyticsManager private constructor(private val context: Context) {
             Log.d(TAG, "👤 Session ID set: $sessionId")
             isInitialized = true
             Log.d(TAG, "🏁 Analytics marked as initialized")
-
-            // Boot AmplitudeEngagement with device and user IDs
-            Log.d(TAG, "🔧 Booting AmplitudeEngagement...")
-            val bootOptions = AmplitudeBootOptions(
-                user = AmplitudeEndUser(
-                    userId = amplitude!!.getUserId(),
-                    deviceId = amplitude!!.getDeviceId()
-                ),
-                integrations = arrayOf({ event: BaseEvent ->
-                    // Forward Guides & Surveys events to Amplitude
-                    Log.d(TAG, "📊 Guides & Surveys event: ${event.eventType}")
-                    amplitude?.track(event)
-                })
-            )
-            amplitudeEngagement.boot(bootOptions)
-            Log.d(TAG, "✅ AmplitudeEngagement booted with Device ID: ${amplitude!!.getDeviceId()}")
+            
+            // Note: AmplitudeEngagement now automatically syncs with Amplitude via the plugin
+            // No need for manual boot() call - the plugin handles device/user ID sync
+            Log.d(TAG, "✅ AmplitudeEngagement synced via plugin (no boot required)")
             
             // Delay callback setup to allow JS engine to fully initialize
             setupCallbacksDelayed()
             
             Log.d(TAG, "✅ Analytics initialized successfully!")
-            Log.d(TAG, "👤 Device ID: ${amplitude!!.getDeviceId()}")
             Log.d(TAG, "👤 Session ID: ${amplitude!!.sessionId}")
             Log.d(TAG, "🎯 User ID: ${amplitude!!.getUserId() ?: "Anonymous"}")
-            Log.d(TAG, "📹 Session Replay: Recording 100% of sessions")
+            
+            // Device ID is generated asynchronously - boot engagement after a short delay
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                val deviceId = amplitude?.getDeviceId()
+                val userId = amplitude?.getUserId()
+                Log.d(TAG, "👤 Device ID (async): ${deviceId ?: "not yet available"}")
+                
+                // Boot engagement with device/user IDs once they're available
+                if (deviceId != null) {
+                    Log.d(TAG, "🔧 Booting AmplitudeEngagement with Device ID...")
+                    val bootOptions = AmplitudeBootOptions(
+                        user = AmplitudeEndUser(
+                            userId = userId,
+                            deviceId = deviceId
+                        )
+                    )
+                    amplitudeEngagement?.boot(bootOptions)
+                    Log.d(TAG, "✅ AmplitudeEngagement booted with Device ID: $deviceId")
+                } else {
+                    Log.w(TAG, "⚠️ Device ID still not available, engagement may not work properly")
+                }
+            }, 1000)
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to initialize Amplitude Analytics", e)
             e.printStackTrace()
@@ -248,9 +256,19 @@ class AnalyticsManager private constructor(private val context: Context) {
     
     /**
      * Track screen views for Guides and Surveys targeting
+     * Includes retry logic if engagement SDK is not ready yet
      */
-    fun trackScreen(screenName: String) {
+    fun trackScreen(screenName: String, retryCount: Int = 0) {
         if (!isAnalyticsEnabled() || !isAmplitudeInitialized()) {
+            return
+        }
+        
+        // If engagement is not ready, retry after a delay (max 5 retries)
+        if (!isEngagementReady && retryCount < 5) {
+            Log.d(TAG, "⏳ Engagement not ready yet, retrying screen tracking for '$screenName' (attempt ${retryCount + 1}/5)...")
+            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                trackScreen(screenName, retryCount + 1)
+            }, 1000) // Retry after 1 second
             return
         }
         
@@ -258,7 +276,15 @@ class AnalyticsManager private constructor(private val context: Context) {
             amplitudeEngagement?.screen(screenName)
             Log.d(TAG, "📱 Screen tracked: $screenName")
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Failed to track screen: $screenName", e)
+            Log.e(TAG, "❌ Failed to track screen: $screenName - ${e.message}")
+            // If it fails due to JS not being ready, retry once more
+            if (e.message?.contains("publish") == true && retryCount < 5) {
+                Log.d(TAG, "⏳ JS engine not ready, retrying in 2 seconds...")
+                isEngagementReady = false
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    trackScreen(screenName, retryCount + 1)
+                }, 2000)
+            }
         }
     }
     
@@ -407,10 +433,10 @@ class AnalyticsManager private constructor(private val context: Context) {
         
         if (amplitude != null) {
             try {
-                status.appendLine("👤 Device ID: ${amplitude!!.getDeviceId()}")
+                val deviceId = amplitude!!.getDeviceId()
+                status.appendLine("👤 Device ID: ${deviceId ?: "(generating...)"}")
                 status.appendLine("🎯 User ID: ${amplitude!!.getUserId() ?: "Anonymous"}")
-                // Note: optOut property might not be publicly accessible in this SDK version
-                // status.appendLine("🚫 Opt Out Status: ${amplitude!!.optOut}")
+                status.appendLine("🎯 Engagement Ready: $isEngagementReady")
             } catch (e: Exception) {
                 status.appendLine("❌ Error getting Amplitude details: ${e.message}")
             }
@@ -469,19 +495,22 @@ class AnalyticsManager private constructor(private val context: Context) {
      * This prevents NullPointerException during initialization
      */
     private fun setupCallbacksDelayed() {
-        // Use a handler to delay callback setup by 1 second
+        // Use a handler to delay callback setup by 3 seconds to allow JS engine to fully load
+        // The "Engagement bundle loaded" log indicates when the JS engine is ready
         android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            Log.d(TAG, "⏳ Checking if Engagement JS engine is ready...")
+            isEngagementReady = true
             setupCallbacks()
-        }, 1000)
+        }, 3000)
     }
     
     /**
      * Setup callbacks after AmplitudeEngagement is properly booted
      * This prevents NullPointerException during initialization
      */
-    private fun setupCallbacks() {
+    private fun setupCallbacks(retryCount: Int = 0) {
         try {
-            Log.d(TAG, "🔧 Setting up Amplitude callbacks...")
+            Log.d(TAG, "🔧 Setting up Amplitude callbacks (attempt ${retryCount + 1})...")
             
             // Re-enable callbacks now that JS engine is loaded ('Engagement bundle loaded')
             Log.d(TAG, "🎯 JavaScript engine is ready, attempting to add callbacks...")
@@ -550,7 +579,17 @@ class AnalyticsManager private constructor(private val context: Context) {
             Log.d(TAG, "✅ Callbacks setup completed successfully")
             
         } catch (e: Exception) {
-            Log.e(TAG, "❌ Failed to setup callbacks: ${e.message}", e)
+            Log.e(TAG, "❌ Failed to setup callbacks: ${e.message}")
+            
+            // If it's a "publish" error, the JS engine isn't ready - retry
+            if (e.message?.contains("publish") == true && retryCount < 3) {
+                Log.d(TAG, "⏳ JS engine not ready for callbacks, retrying in 2 seconds...")
+                isEngagementReady = false
+                android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                    isEngagementReady = true
+                    setupCallbacks(retryCount + 1)
+                }, 2000)
+            }
         }
     }
 } 

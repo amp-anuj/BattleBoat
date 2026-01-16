@@ -22,7 +22,7 @@
 
 	<link href="css/styles.css" rel="stylesheet" media="all" />
 
-	<script src="https://cdn.amplitude.com/libs/analytics-browser-2.20.1-min.js.gz"></script>
+	<script src="https://cdn.amplitude.com/libs/analytics-browser-2.33.1-min.js.gz"></script>
 	<script src="https://cdn.amplitude.com/libs/plugin-session-replay-browser-1.22.4-min.js.gz"></script>
 	<script src="https://cdn.amplitude.com/script/909b2239fab57efd4268eb75dbc28d30.engagement.js"></script>
 	<script src="https://cdn.amplitude.com/script/909b2239fab57efd4268eb75dbc28d30.experiment.js"></script>
@@ -31,6 +31,9 @@
 		window.amplitude.init("909b2239fab57efd4268eb75dbc28d30", null, {
 			autocapture: true,
 			autocapture: {
+				elementInteractions: true,
+				attribution: true,
+				pageViews: true,
 				frustrationInteractions: true,
 				networkTracking: true,
 				networkTracking: {

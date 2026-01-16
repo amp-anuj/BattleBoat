@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
         val tutorialButton = findViewById<Button>(R.id.button_tutorial)
         val statisticsButton = findViewById<Button>(R.id.button_statistics)
         val settingsButton = findViewById<Button>(R.id.button_settings)
+        val webViewButton = findViewById<Button>(R.id.button_webview)
         
         playButton.setOnClickListener {
             navigateToGame()
@@ -68,6 +69,10 @@ class MainActivity : AppCompatActivity() {
         
         settingsButton.setOnClickListener {
             navigateToSettings()
+        }
+        
+        webViewButton.setOnClickListener {
+            navigateToWebView()
         }
         
         // Long press on settings to show analytics debug
@@ -96,6 +101,14 @@ class MainActivity : AppCompatActivity() {
     private fun navigateToSettings() {
         analyticsManager.trackEvent("Settings Button Pressed")
         // TODO: Implement settings
+    }
+    
+    private fun navigateToWebView() {
+        analyticsManager.trackEvent("WebView Button Pressed")
+        val intent = Intent(this, WebViewActivity::class.java)
+        // Note: 10.0.2.2 is the Android emulator's alias for host machine's localhost
+        intent.putExtra(WebViewActivity.EXTRA_URL, "http://10.0.2.2:5503/index.html")
+        startActivity(intent)
     }
     
     private fun showStatistics() {

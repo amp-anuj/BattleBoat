@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AlertDialog
 
@@ -47,10 +48,11 @@ class GameActivity : AppCompatActivity() {
     private lateinit var statsWinStreak: TextView
     private lateinit var statsShipsSunk: TextView
     private lateinit var resetStatsButton: Button
+    private lateinit var backToMenuButton: Button
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
+        enableEdgeToEdge()
         try {
             setContentView(R.layout.activity_game)
             
@@ -118,6 +120,7 @@ class GameActivity : AppCompatActivity() {
         statsWinStreak = findViewById(R.id.stats_win_streak)
         statsShipsSunk = findViewById(R.id.stats_ships_sunk)
         resetStatsButton = findViewById(R.id.reset_stats_button)
+        backToMenuButton = findViewById(R.id.back_to_menu_button)
         
         Log.d("GameActivity", "UI components found - statusText: ${statusText != null}, actionButton: ${actionButton != null}")
         Log.d("GameActivity", "Grid views found - player: ${playerGridView != null}, enemy: ${enemyGridView != null}")
@@ -151,6 +154,12 @@ class GameActivity : AppCompatActivity() {
                 }
                 .setNegativeButton("Cancel", null)
                 .show()
+        }
+        
+        // Set up back to menu button
+        backToMenuButton.setOnClickListener {
+            analyticsManager.trackEvent("Back to Menu Button Pressed")
+            finish() // Close GameActivity and return to MainActivity
         }
         
         Log.d("GameActivity", "UI setup complete, calling updateUI")
