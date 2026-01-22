@@ -37,7 +37,7 @@ class AnalyticsManager {
         amplitude = Amplitude(configuration: Configuration(
             apiKey: amplitudeAPIKey,
             logLevel: LogLevelEnum.DEBUG,
-            autocapture: .frustrationInteractions
+            autocapture: [.frustrationInteractions, .appLifecycles, .sessions, .networkTracking]
         ))
         print("🔌 Adding Guides & Surveys plugin to Amplitude...")
         amplitude.add(plugin: amplitudeEngagement.getPlugin())

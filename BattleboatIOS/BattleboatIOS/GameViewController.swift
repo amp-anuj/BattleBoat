@@ -41,6 +41,7 @@ class GameViewController: UIViewController {
     private let startGameButton = UIButton(type: .system)
     private let restartButton = UIButton(type: .system)
     private let showHeatmapButton = UIButton(type: .system)
+    private let webViewButton = UIButton(type: .system)
     
     // Stats labels
     private let gamesWonLabel = UILabel()
@@ -175,7 +176,7 @@ class GameViewController: UIViewController {
         controlsStackView.spacing = 8
         controlsStackView.distribution = .fillEqually
         
-        let buttons = [rotateButton, randomPlaceButton, startGameButton, restartButton, showHeatmapButton]
+        let buttons = [rotateButton, randomPlaceButton, startGameButton, restartButton, showHeatmapButton, webViewButton]
         
         for button in buttons {
             button.backgroundColor = UIColor.systemGray
@@ -195,6 +196,8 @@ class GameViewController: UIViewController {
         startGameButton.setTitle("Start\nGame", for: .normal)
         restartButton.setTitle("New\nGame", for: .normal)
         showHeatmapButton.setTitle("Show\nHeatmap", for: .normal)
+        webViewButton.setTitle("Open\nWebView", for: .normal)
+        webViewButton.backgroundColor = UIColor.systemIndigo
         
         // Add targets
         rotateButton.addTarget(self, action: #selector(rotateButtonTapped), for: .touchUpInside)
@@ -202,6 +205,7 @@ class GameViewController: UIViewController {
         startGameButton.addTarget(self, action: #selector(startGameButtonTapped), for: .touchUpInside)
         restartButton.addTarget(self, action: #selector(restartButtonTapped), for: .touchUpInside)
         showHeatmapButton.addTarget(self, action: #selector(showHeatmapButtonTapped), for: .touchUpInside)
+        webViewButton.addTarget(self, action: #selector(webViewButtonTapped), for: .touchUpInside)
     }
     
     private func setupStatsLabels() {
@@ -480,6 +484,14 @@ class GameViewController: UIViewController {
     @objc private func skipTutorialTapped() {
         gameModel.skipTutorial()
         hideTutorial()
+    }
+    
+    @objc private func webViewButtonTapped() {
+        AnalyticsManager.shared.trackEvent(name: "WebView Button Pressed", properties: [:])
+        
+        let webViewController = WebViewController()
+        webViewController.modalPresentationStyle = .fullScreen
+        present(webViewController, animated: true)
     }
     
     // MARK: - UI Updates
