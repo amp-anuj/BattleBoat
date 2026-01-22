@@ -105,9 +105,26 @@ class MainActivity : AppCompatActivity() {
     
     private fun navigateToWebView() {
         analyticsManager.trackEvent("WebView Button Pressed")
+        
+        // Get native identity parameters for WebView user linking
+        val deviceId = analyticsManager.getDeviceId()
+        val userId = analyticsManager.getUserId()
+        val sessionId = analyticsManager.getSessionId()
+        
+        android.util.Log.d("MainActivity", "🔗 Opening WebView with native identity:")
+        android.util.Log.d("MainActivity", "   Device ID: $deviceId")
+        android.util.Log.d("MainActivity", "   User ID: $userId")
+        android.util.Log.d("MainActivity", "   Session ID: $sessionId")
+        
         val intent = Intent(this, WebViewActivity::class.java)
         // Note: 10.0.2.2 is the Android emulator's alias for host machine's localhost
         intent.putExtra(WebViewActivity.EXTRA_URL, "http://10.0.2.2:5503/index.html")
+        
+        // Pass native identity for user linking
+        deviceId?.let { intent.putExtra(WebViewActivity.EXTRA_DEVICE_ID, it) }
+        userId?.let { intent.putExtra(WebViewActivity.EXTRA_USER_ID, it) }
+        sessionId?.let { intent.putExtra(WebViewActivity.EXTRA_SESSION_ID, it) }
+        
         startActivity(intent)
     }
     

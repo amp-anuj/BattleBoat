@@ -27,29 +27,87 @@
 	<script src="https://cdn.amplitude.com/script/909b2239fab57efd4268eb75dbc28d30.engagement.js"></script>
 	<script src="https://cdn.amplitude.com/script/909b2239fab57efd4268eb75dbc28d30.experiment.js"></script>
 	<script>
-
-		window.amplitude.init("909b2239fab57efd4268eb75dbc28d30", null, {
-			autocapture: true,
+		// =============================================================
+		// NATIVE APP IDENTITY LINKING
+		// When opened from iOS/Android WebView, the native app passes
+		// device_id, user_id, and session_id via URL parameters.
+		// This ensures WebView activity is tracked under the same user.
+		// =============================================================
+		
+		// Helper function to get URL parameters
+		function getUrlParam(param) {
+			const urlParams = new URLSearchParams(window.location.search);
+			return urlParams.get(param);
+		}
+		
+		// Get native identity from URL parameters (passed by iOS/Android WebView)
+		const nativeDeviceId = getUrlParam('amp_device_id');
+		const nativeUserId = getUrlParam('amp_user_id');
+		const nativeSessionId = getUrlParam('amp_session_id');
+		
+		// Log identity linking status
+		if (nativeDeviceId) {
+			console.log('🔗 Native Identity Linking Active:');
+			console.log('   Device ID:', nativeDeviceId);
+			console.log('   User ID:', nativeUserId || '(not set)');
+			console.log('   Session ID:', nativeSessionId || '(not set)');
+		} else {
+			console.log('📱 Running in standalone web mode (no native identity passed)');
+		}
+		
+		// Build Amplitude configuration with native identity if available
+		const amplitudeConfig = {
 			autocapture: {
 				elementInteractions: true,
 				attribution: true,
 				pageViews: true,
 				frustrationInteractions: true,
-				networkTracking: true,
 				networkTracking: {
 					captureRules: [
 						{ statusCodeRange: '0,200-299,400-499,500-599' }
 					]
 				}
 			}
-		});
-		//window.amplitude.add(sessionReplayTracking);
+		};
+		
+		// Use native device ID if passed from native app
+		if (nativeDeviceId) {
+			amplitudeConfig.deviceId = nativeDeviceId;
+			console.log('✅ Using native device ID for user linking:', nativeDeviceId);
+		}
+		
+		// Use native session ID if passed from native app
+		if (nativeSessionId) {
+			amplitudeConfig.sessionId = parseInt(nativeSessionId, 10);
+			console.log('✅ Using native session ID:', nativeSessionId);
+		}
+		
+		// Initialize Amplitude with native user ID if available
+		const userId = nativeUserId || null;
+		window.amplitude.init("909b2239fab57efd4268eb75dbc28d30", userId, amplitudeConfig);
+		
+		if (nativeUserId) {
+			console.log('✅ Initialized with native user ID:', nativeUserId);
+		}
+		
+		// Add Session Replay plugin
 		const sessionReplayTracking = window.sessionReplay.plugin({
 			sampleRate: 1
 		});
 		window.amplitude.add(sessionReplayTracking);
-		//window.amplitude.remove(sessionReplayTracking.name);
+		
+		// Add Engagement plugin
 		window.amplitude.add(window.engagement.plugin());
+		
+		// Track that we're in a WebView with native identity linking
+		if (nativeDeviceId) {
+			window.amplitude.track('WebView Session Started', {
+				'native_device_id': nativeDeviceId,
+				'native_user_id': nativeUserId || 'anonymous',
+				'native_session_id': nativeSessionId || 'unknown',
+				'identity_linked': true
+			});
+		}
 	</script>
 	<script src="https://unpkg.com/@amplitude/experiment-js-client@1.9.0/dist/experiment.umd.js"></script>
 	<script>

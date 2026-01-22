@@ -580,6 +580,24 @@ class AnalyticsManager {
         #endif
     }
     
+    // MARK: - Device ID Access (for WebView identity linking)
+    
+    /// Get the current device ID for passing to WebViews
+    /// This ensures native and web activity is tracked under the same user
+    func getDeviceId() -> String? {
+        return amplitude.getDeviceId()
+    }
+    
+    /// Get the current user ID for passing to WebViews
+    func getUserId() -> String? {
+        return amplitude.getUserId()
+    }
+    
+    /// Get the current session ID for passing to WebViews
+    func getSessionId() -> Int64 {
+        return amplitude.getSessionId()
+    }
+    
     // MARK: - Privacy Compliance
     
     func optOut() {

@@ -418,6 +418,28 @@ class AnalyticsManager private constructor(private val context: Context) {
     }
     
     /**
+     * Get the current device ID for passing to WebViews
+     * This ensures native and web activity is tracked under the same user
+     */
+    fun getDeviceId(): String? {
+        return amplitude?.getDeviceId()
+    }
+    
+    /**
+     * Get the current user ID for passing to WebViews
+     */
+    fun getUserId(): String? {
+        return amplitude?.getUserId()
+    }
+    
+    /**
+     * Get the current session ID for passing to WebViews
+     */
+    fun getSessionId(): Long? {
+        return amplitude?.sessionId
+    }
+    
+    /**
      * Get detailed analytics status for debugging
      */
     fun getAnalyticsStatus(): String {

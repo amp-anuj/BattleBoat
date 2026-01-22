@@ -10,6 +10,7 @@ import UIKit
 import WebKit
 
 /// View controller for testing Guides & Surveys in WebView
+/// Passes native device ID to WebView for unified user tracking
 class WebViewController: UIViewController {
     
     // MARK: - Properties
@@ -19,6 +20,15 @@ class WebViewController: UIViewController {
     
     var urlString: String
     
+    /// Native device ID to pass to WebView for user identity linking
+    var nativeDeviceId: String?
+    
+    /// Native user ID to pass to WebView
+    var nativeUserId: String?
+    
+    /// Native session ID to pass to WebView
+    var nativeSessionId: Int64?
+    
     private var webView: WKWebView!
     private let progressView = UIProgressView(progressViewStyle: .default)
     private let toolbar = UIToolbar()
@@ -27,8 +37,17 @@ class WebViewController: UIViewController {
     
     // MARK: - Initialization
     
-    init(url: String = WebViewController.defaultURL) {
+    /// Initialize with URL and optional native identity parameters
+    /// - Parameters:
+    ///   - url: The URL to load in the WebView
+    ///   - deviceId: Native Amplitude device ID for user linking
+    ///   - userId: Native Amplitude user ID
+    ///   - sessionId: Native Amplitude session ID
+    init(url: String = WebViewController.defaultURL, deviceId: String? = nil, userId: String? = nil, sessionId: Int64? = nil) {
         self.urlString = url
+        self.nativeDeviceId = deviceId
+        self.nativeUserId = userId
+        self.nativeSessionId = sessionId
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -185,15 +204,46 @@ class WebViewController: UIViewController {
     }
     
     private func loadURL() {
-        guard let url = URL(string: urlString) else {
-            showError("Invalid URL: \(urlString)")
+        // Build URL with native identity parameters for user linking
+        var finalURLString = urlString
+        var queryParams: [String] = []
+        
+        // Add device ID parameter for Amplitude user linking
+        if let deviceId = nativeDeviceId, !deviceId.isEmpty {
+            queryParams.append("amp_device_id=\(deviceId)")
+            print("🔗 Passing native device ID to WebView: \(deviceId)")
+        }
+        
+        // Add user ID if available
+        if let userId = nativeUserId, !userId.isEmpty {
+            queryParams.append("amp_user_id=\(userId.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? userId)")
+            print("🔗 Passing native user ID to WebView: \(userId)")
+        }
+        
+        // Add session ID if available
+        if let sessionId = nativeSessionId, sessionId > 0 {
+            queryParams.append("amp_session_id=\(sessionId)")
+            print("🔗 Passing native session ID to WebView: \(sessionId)")
+        }
+        
+        // Append query parameters to URL
+        if !queryParams.isEmpty {
+            let separator = finalURLString.contains("?") ? "&" : "?"
+            finalURLString += separator + queryParams.joined(separator: "&")
+        }
+        
+        guard let url = URL(string: finalURLString) else {
+            showError("Invalid URL: \(finalURLString)")
             return
         }
         
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 30)
         webView.load(request)
         
-        print("📱 WebView loading URL: \(urlString)")
+        print("📱 WebView loading URL: \(finalURLString)")
+        if nativeDeviceId != nil {
+            print("✅ Native identity will be passed to web SDK for unified tracking")
+        }
     }
     
     // MARK: - Actions

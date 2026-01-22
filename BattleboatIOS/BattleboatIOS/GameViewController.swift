@@ -489,7 +489,22 @@ class GameViewController: UIViewController {
     @objc private func webViewButtonTapped() {
         AnalyticsManager.shared.trackEvent(name: "WebView Button Pressed", properties: [:])
         
-        let webViewController = WebViewController()
+        // Get native identity parameters for WebView user linking
+        let deviceId = AnalyticsManager.shared.getDeviceId()
+        let userId = AnalyticsManager.shared.getUserId()
+        let sessionId = AnalyticsManager.shared.getSessionId()
+        
+        print("🔗 Opening WebView with native identity:")
+        print("   Device ID: \(deviceId ?? "nil")")
+        print("   User ID: \(userId ?? "nil")")
+        print("   Session ID: \(sessionId)")
+        
+        // Pass native identity to WebView for unified user tracking
+        let webViewController = WebViewController(
+            deviceId: deviceId,
+            userId: userId,
+            sessionId: sessionId
+        )
         webViewController.modalPresentationStyle = .fullScreen
         present(webViewController, animated: true)
     }

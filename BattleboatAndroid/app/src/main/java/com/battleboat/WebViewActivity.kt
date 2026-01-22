@@ -14,12 +14,16 @@ import androidx.appcompat.app.AppCompatActivity
 
 /**
  * Activity for testing surveys in WebView
+ * Passes native device ID to WebView for unified user tracking
  */
 class WebViewActivity : AppCompatActivity() {
     
     companion object {
         private const val TAG = "WebViewActivity"
         const val EXTRA_URL = "extra_url"
+        const val EXTRA_DEVICE_ID = "extra_device_id"
+        const val EXTRA_USER_ID = "extra_user_id"
+        const val EXTRA_SESSION_ID = "extra_session_id"
         const val DEFAULT_URL = "http://10.0.2.2:5503/index.html"
     }
     
@@ -28,6 +32,11 @@ class WebViewActivity : AppCompatActivity() {
     private lateinit var urlText: TextView
     private lateinit var analyticsManager: AnalyticsManager
     private var currentUrl: String = DEFAULT_URL
+    
+    // Native identity parameters for user linking
+    private var nativeDeviceId: String? = null
+    private var nativeUserId: String? = null
+    private var nativeSessionId: Long? = null
     
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -108,8 +117,21 @@ class WebViewActivity : AppCompatActivity() {
         // Note: 10.0.2.2 is the Android emulator's alias for localhost
         currentUrl = intent.getStringExtra(EXTRA_URL) ?: DEFAULT_URL
         
-        Log.d(TAG, "Loading URL: $currentUrl")
-        loadUrl(currentUrl)
+        // Get native identity parameters for user linking
+        nativeDeviceId = intent.getStringExtra(EXTRA_DEVICE_ID)
+        nativeUserId = intent.getStringExtra(EXTRA_USER_ID)
+        nativeSessionId = intent.getLongExtra(EXTRA_SESSION_ID, 0L).takeIf { it > 0 }
+        
+        Log.d(TAG, "🔗 Native identity for WebView:")
+        Log.d(TAG, "   Device ID: $nativeDeviceId")
+        Log.d(TAG, "   User ID: $nativeUserId")
+        Log.d(TAG, "   Session ID: $nativeSessionId")
+        
+        // Build URL with native identity parameters
+        val finalUrl = buildUrlWithIdentity(currentUrl)
+        
+        Log.d(TAG, "Loading URL: $finalUrl")
+        loadUrl(finalUrl)
         
         analyticsManager.trackEvent("WebView Opened", mapOf(
             "url" to currentUrl
@@ -136,6 +158,49 @@ class WebViewActivity : AppCompatActivity() {
     private fun loadUrl(url: String) {
         urlText.text = url
         webView.loadUrl(url)
+    }
+    
+    /**
+     * Build URL with native identity parameters for Amplitude user linking
+     */
+    private fun buildUrlWithIdentity(baseUrl: String): String {
+        val queryParams = mutableListOf<String>()
+        
+        // Add device ID parameter for Amplitude user linking
+        nativeDeviceId?.let { deviceId ->
+            if (deviceId.isNotEmpty()) {
+                queryParams.add("amp_device_id=$deviceId")
+                Log.d(TAG, "🔗 Passing native device ID to WebView: $deviceId")
+            }
+        }
+        
+        // Add user ID if available
+        nativeUserId?.let { userId ->
+            if (userId.isNotEmpty()) {
+                queryParams.add("amp_user_id=${java.net.URLEncoder.encode(userId, "UTF-8")}")
+                Log.d(TAG, "🔗 Passing native user ID to WebView: $userId")
+            }
+        }
+        
+        // Add session ID if available
+        nativeSessionId?.let { sessionId ->
+            if (sessionId > 0) {
+                queryParams.add("amp_session_id=$sessionId")
+                Log.d(TAG, "🔗 Passing native session ID to WebView: $sessionId")
+            }
+        }
+        
+        // Return original URL if no parameters to add
+        if (queryParams.isEmpty()) {
+            return baseUrl
+        }
+        
+        // Append query parameters to URL
+        val separator = if (baseUrl.contains("?")) "&" else "?"
+        val finalUrl = baseUrl + separator + queryParams.joinToString("&")
+        
+        Log.d(TAG, "✅ Native identity will be passed to web SDK for unified tracking")
+        return finalUrl
     }
     
     override fun onBackPressed() {
