@@ -152,7 +152,7 @@ class AnalyticsManager private constructor(private val context: Context) {
             Log.d(TAG, "✅ Network plugin added")
             
             // Set user ID if exists
-            val userId = getUserId()
+            val userId = getStoredUserId()
             if (userId.isNotEmpty()) {
                 amplitude?.setUserId(userId)
                 Log.d(TAG, "👤 User ID set: $userId")
@@ -363,9 +363,9 @@ class AnalyticsManager private constructor(private val context: Context) {
     }
     
     /**
-     * Get current user ID
+     * Get stored user ID from preferences
      */
-    private fun getUserId(): String {
+    private fun getStoredUserId(): String {
         return prefs.getString(KEY_USER_ID, "") ?: ""
     }
     

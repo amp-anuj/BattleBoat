@@ -30,8 +30,9 @@ class AnalyticsManager {
     
     private init() {
         // Initialize AmplitudeEngagement first and store it
+        // Note: As of SDK 3.0.0, use AmplitudeEngagementFactory.make instead of constructor
         print("🚀 Initializing Amplitude Guides & Surveys SDK...")
-        amplitudeEngagement = AmplitudeEngagement(amplitudeAPIKey)
+        amplitudeEngagement = AmplitudeEngagementFactory.make(amplitudeAPIKey)
         print("✅ Amplitude Guides & Surveys SDK initialized")
         
         amplitude = Amplitude(configuration: Configuration(

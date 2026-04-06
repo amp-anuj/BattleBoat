@@ -6,8 +6,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/amplitude/Amplitude-Engagement-Swift",
       "state" : {
-        "revision" : "ed360dfe8d8ff7f31e184fa1ced8ea102f3fc2d6",
-        "version" : "1.7.0"
+        "revision" : "e9e42af04a258dfe7b0e3d5bc1542420c2a63c05",
+        "version" : "3.2.0"
       }
     },
     {
