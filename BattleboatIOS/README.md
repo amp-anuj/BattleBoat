@@ -1,214 +1,150 @@
 # Battleboat iOS
 
-A complete iOS recreation of the popular Battleboat.js web game - an intelligent AI-powered Battleship game that beats humans.
+A full iOS implementation of the Battleship game, used as a test bed for Amplitude analytics instrumentation on iOS.
 
-## Overview
+## Amplitude Instrumentation
 
-This iOS app faithfully recreates all the features from the original JavaScript web game:
+This app demonstrates the most complete set of Amplitude features across all platforms in this repo.
 
-- **Intelligent AI Opponent**: Advanced probability-based AI that learns and adapts
-- **Interactive Ship Placement**: Drag, drop, and rotate ships on your grid  
-- **Tutorial System**: Guided tutorial for new players
-- **Statistics Tracking**: Comprehensive win/loss and accuracy statistics
-- **Probability Heatmap**: Visualize the AI's targeting strategy
-- **Analytics Integration**: Amplitude tracking for user engagement insights
-- **Modern iOS Interface**: Native UIKit interface optimized for iPhone and iPad
+### SDKs Integrated
 
-## Features
+| SDK | Version | Purpose |
+|-----|---------|---------|
+| `Amplitude-Swift` | 1.15.0+ | Core analytics and event tracking |
+| `AmplitudeEngagementSwift` | 3.0.0+ | Guides & Surveys |
+| `AmplitudeSessionReplay` | latest | Session Replay |
+| `Experiment` | latest | Feature flags and A/B testing |
 
-### Core Game Features
-- ✅ 10x10 game grids for player and computer
-- ✅ 5 ship types: Carrier (5), Battleship (4), Destroyer (3), Submarine (3), Patrol Boat (2)
-- ✅ Ship placement with rotation and validation
-- ✅ Turn-based gameplay with immediate feedback
-- ✅ Visual hit/miss/sunk indicators
+### Features
 
-### AI Features  
-- ✅ Probability-based ship targeting
-- ✅ Hunt mode when ships are hit
-- ✅ Directional targeting for ship destruction
-- ✅ Advanced heuristics for optimal play
-- ✅ Debug mode with probability visualization
+**Analytics**
+- Custom game events (see [Events](#events) below)
+- User property tracking (win rate, accuracy, games played)
+- Autocapture: sessions, app lifecycle, frustration interactions
+- Network tracking
 
-### UI/UX Features
-- ✅ Responsive grid-based interface
-- ✅ Animated interactions and feedback
-- ✅ Tutorial overlay system
-- ✅ Statistics display and persistence
-- ✅ Settings and preferences
-- ✅ Support for both iPhone and iPad
-- ✅ Dark mode compatibility
-- ✅ Comprehensive analytics tracking with Amplitude
+**Session Replay**
+- 100% sample rate (`sampleRate: 1.0`)
+- Conservative mask level
+- WebView capture enabled (`captureWebViews: true`)
+- Remote config enabled
 
-## Technical Architecture
+**Guides & Surveys**
+- Initialized via `AmplitudeEngagementFactory.make`
+- Booted with device ID + user ID for targeting
+- Event forwarding: Guides & Surveys events forwarded to Amplitude Analytics
+- Screen tracking for guide/survey targeting
+- **Custom callback**: `place_ship` — triggered by a Guide to programmatically place the carrier ship in the game
 
-### Core Classes
+**Experiment**
+- Initialized via `Experiment.initializeWithAmplitudeAnalytics`
+- Manual exposure tracking (`automaticExposureTracking: false`)
+- Flag `battleboat-test` — variant is attached to `Ship Selected` events
 
-#### `GameModel`
-- Central game state management
-- Coordinates all game components
-- Handles game flow and rules
-- Manages tutorial progression
+**WebView Identity Linking**
+- Native device ID, user ID, and session ID are passed to the in-app WebView as URL params (`amp_device_id`, `amp_user_id`, `amp_session_id`)
+- The web app reads these params and initializes Amplitude with the same identity, stitching native and web sessions together
 
-#### `Grid`
-- Represents 10x10 game board
-- Handles cell state management
-- Provides validation and utilities
-- Supports shooting and ship placement
+### Key File
 
-#### `Ship`
-- Individual ship representation
-- Placement validation and logic
-- Damage tracking and sunk detection
-- Coordinate management
+`BattleboatIOS/AnalyticsManager.swift` — singleton managing all Amplitude initialization, event tracking, and SDK coordination.
 
-#### `Fleet`
-- Collection of ships for each player
-- Fleet-wide operations and validation
-- Random ship placement algorithms
-- Win/loss condition checking
+---
 
-#### `AI`
-- Intelligent computer opponent
-- Probability-based targeting system
-- Hunt mode for ship destruction
-- Adaptive learning algorithms
+## Events
 
-#### `GameStats`
-- Persistent statistics tracking
-- UserDefaults integration
-- Performance level calculation
-- Win/loss ratio analysis
+| Event | Trigger |
+|-------|---------|
+| `Game Started` | Player taps Start Game after placing ships |
+| `Game Ended` | Game over; includes `Win` (bool), `Shots Taken` (int) |
+| `Shot Fired` | Any shot; includes `X`, `Y`, `Hit`, `Player`, `Consecutive Hits` |
+| `Ship Selected` | Player selects a ship to place; includes Experiment variant |
+| `Ship Placed` | Ship placed on grid; includes `Ship`, `X`, `Y`, `Success` |
+| `Ship Rotated` | Player rotates selected ship |
+| `Tutorial Step` | Each tutorial step reached |
+| `Tutorial Skipped` / `Tutorial Completed` | Tutorial outcome |
+| `Ships Placed Randomly` | Player uses random placement button |
+| `Probability Heatmap Shown/Hidden` | AI targeting heatmap toggled |
+| `Human Grid Analysis` | Ship placement positions recorded at game end |
 
-### UI Components
+---
 
-#### `GridView`
-- Visual representation of game grids
-- Touch handling for ship placement/shooting
-- Cell animations and visual feedback
-- Probability heatmap display
-
-#### `GameViewController`
-- Main game interface controller
-- UI state management
-- User interaction handling
-- Tutorial presentation
-
-## Installation & Setup
+## Setup
 
 ### Requirements
 - Xcode 15.0+
 - iOS 17.0+
 - Swift 5.9+
 
-### Building the App
+### Build and Run
 
-1. **Clone or download the project files**
-   ```bash
-   cd BattleboatIOS
-   ```
-
-2. **Open in Xcode**
-   ```bash
-   open BattleboatIOS.xcodeproj
-   ```
-
-3. **Select target device/simulator**
-   - Choose iPhone or iPad simulator
-   - Or connect physical device
-
-4. **Configure Analytics (Optional)**
-   - See `ANALYTICS_SETUP.md` for Amplitude integration
-   - Add your API key to `AnalyticsManager.swift`
-
-5. **Build and run**
-   - Press Cmd+R or click the Run button
-   - App will build and launch automatically
-
-### Project Structure
-```
-BattleboatIOS/
-├── BattleboatIOS/
-│   ├── AppDelegate.swift          # App lifecycle management
-│   ├── SceneDelegate.swift        # Scene management (iOS 13+)
-│   ├── GameViewController.swift   # Main game interface
-│   ├── GameModel.swift           # Core game logic
-│   ├── GameConstants.swift       # Game constants and enums
-│   ├── Grid.swift               # Game board representation
-│   ├── Ship.swift              # Individual ship logic
-│   ├── Fleet.swift             # Ship collection management
-│   ├── AI.swift               # Computer opponent AI
-│   ├── GameStats.swift        # Statistics tracking
-│   ├── GridView.swift         # Visual grid component
-│   ├── AnalyticsManager.swift # Amplitude analytics integration
-│   └── Info.plist            # App configuration
-└── README.md                 # This file
+```bash
+cd BattleboatIOS
+open BattleboatIOS.xcodeproj
 ```
 
-## How to Play
+Select a simulator or device and press Cmd+R.
 
-### Ship Placement Phase
-1. **Select a ship** from the list on the left
-2. **Tap on your grid** to place the ship
-3. **Use the Rotate button** to change ship orientation
-4. **Repeat** until all 5 ships are placed
-5. **Tap Start Game** to begin battle
+### API Key
 
-### Battle Phase
-1. **Tap on the enemy grid** to fire shots
-2. **Hit**: Red X indicates a hit on enemy ship
-3. **Miss**: White circle indicates a miss
-4. **Sunk**: Red border indicates a completely destroyed ship
-5. **Continue** until all enemy ships are destroyed or yours are sunk
+The Amplitude API key is set in `BattleboatIOS/AnalyticsManager.swift`:
 
-### Advanced Features
-- **Show AI Heatmap**: Visualize the computer's targeting probabilities
-- **Statistics**: Track your performance over multiple games
-- **Tutorial**: Follow guided instructions for new players
+```swift
+private let amplitudeAPIKey = "your_api_key_here"
+```
 
-## Original Game Credits
-
-This iOS app is based on the Battleboat.js web game:
-- **Original Creator**: Bill Mei
-- **Original Repository**: https://github.com/billmei/battleboat
-- **Web Version**: https://billmei.github.io/battleboat
-
-## AI Algorithm
-
-The AI uses sophisticated algorithms similar to the original:
-
-1. **Probability Calculation**: Calculate likelihood of ship placement for each cell
-2. **Search Mode**: Use probability grid to find ships
-3. **Hunt Mode**: When a ship is hit, target adjacent cells systematically
-4. **Destroy Mode**: Follow ship direction to sink completely
-5. **Learning**: Adapt strategy based on game progress
-
-The AI typically achieves 80%+ win rates against human players.
-
-## Development Notes
-
-### Key Implementation Details
-- **Model-View-Controller Architecture**: Clean separation of game logic and UI
-- **Delegate Pattern**: Loose coupling between game model and view controller
-- **Auto Layout**: Responsive design for all screen sizes
-- **UserDefaults**: Persistent storage for statistics and preferences
-- **Animations**: Smooth UI transitions and feedback
-- **Accessibility**: VoiceOver support for visually impaired users
-
-### Performance Optimizations
-- **Efficient Grid Updates**: Only redraw changed cells
-- **AI Calculation Caching**: Optimize probability calculations
-- **Memory Management**: Proper object lifecycle management
-- **Background Processing**: Non-blocking AI computations
-
-## License
-
-This project is open source and available under the MIT License, following the original Battleboat.js project.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit pull requests or open issues for bugs and feature requests.
+All platforms in this repo share the same Amplitude project. To point to your own project, replace the key and update the Guides & Surveys URL scheme in `Info.plist` (`CFBundleURLSchemes`).
 
 ---
 
-**Enjoy playing Battleboat iOS!** 🚢⚔️ 
+## Project Structure
+
+```
+BattleboatIOS/
+├── BattleboatIOS/
+│   ├── AnalyticsManager.swift    # All Amplitude SDK setup and event tracking
+│   ├── GameViewController.swift  # Main game UI; drives AnalyticsManager calls
+│   ├── WebViewController.swift   # Loads web app with identity linking
+│   ├── GameModel.swift           # Core game logic and state machine
+│   ├── AI.swift                  # Probability-based computer opponent
+│   ├── Grid.swift                # 10x10 game board
+│   ├── Fleet.swift               # Ship collection management
+│   ├── Ship.swift                # Individual ship logic
+│   ├── GridView.swift            # Game board UI component
+│   ├── GameStats.swift           # Persistent stats (UserDefaults)
+│   └── GameConstants.swift       # Enums and constants
+└── README.md
+```
+
+---
+
+## Guides & Surveys Callback Example
+
+The `place_ship` callback is registered in `AnalyticsManager.swift` and triggered from an Amplitude Guide to take a real action inside the app:
+
+```swift
+amplitudeEngagement.addCallback("place_ship") {
+    // Selects carrier, sets horizontal orientation, places at (1,1)
+    gameModel.selectShip(type: .carrier)
+    if gameModel.selectedShipDirection != .horizontal {
+        gameModel.rotateSelectedShip()
+    }
+    let success = gameModel.placeShip(at: 1, y: 1)
+}
+```
+
+This pattern lets you build interactive onboarding guides that drive real in-app behavior.
+
+---
+
+## Game Overview
+
+The game faithfully recreates the Battleboat.js web experience on iOS:
+- 10x10 grids for player and computer
+- 5 ship types: Carrier (5), Battleship (4), Destroyer (3), Submarine (3), Patrol Boat (2)
+- Probability-based AI with hunt mode and directional targeting
+- Tutorial system for new players
+- AI probability heatmap visualization
+- Persistent game statistics
+
+Original game by [Bill Mei](https://github.com/billmei/battleboat).
