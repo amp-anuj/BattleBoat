@@ -2,15 +2,22 @@
 
 A minimal iOS sample app demonstrating the installation and setup of **Amplitude Analytics** and **Guides & Surveys** SDK.
 
-## Overview
+This is the simplest entry point in the [Battleboat test bed](../README.md) — no game logic, no extra features. Use it as a clean reference when you just need to see how to wire up the SDKs from scratch.
 
-This sample app provides a clean, shareable example of how to integrate Amplitude into an iOS application. It includes:
+## Role in the Test Bed
 
-- ✅ **Amplitude Analytics SDK** - Event tracking and user identification
-- ✅ **Amplitude Guides & Surveys SDK** - In-app guides and surveys
-- ✅ **Screen Tracking** - For guide/survey targeting
-- ✅ **Event Forwarding** - Guides & Surveys events sent to Amplitude
-- ✅ **URL Handling** - For preview mode testing
+| App | Complexity | Use when... |
+|-----|-----------|-------------|
+| **This app** | Minimal | You need a clean SDK setup reference |
+| `BattleboatIOS` | Full game | You need full instrumentation with Session Replay, Experiment, callbacks, and WebView linking |
+
+## What's Included
+
+- **Amplitude Analytics SDK** — event tracking and user identification
+- **Amplitude Guides & Surveys SDK** — in-app guides and surveys
+- Screen tracking for guide/survey targeting
+- Event forwarding (Guides & Surveys → Analytics)
+- URL scheme handling for Guides & Surveys preview mode
 
 ## Requirements
 
@@ -28,26 +35,23 @@ This sample app provides a clean, shareable example of how to integrate Amplitud
 
 | SDK | Version |
 |-----|---------|
-| Amplitude-Swift | 1.15.0+ |
-| Amplitude-Engagement-Swift | 1.7.0+ |
+| `Amplitude-Swift` | 1.15.0+ |
+| `AmplitudeEngagementSwift` | 1.7.0+ |
 
 ## Project Structure
 
 ```
 AmplitudeSampleIOS/
-├── AmplitudeSampleIOS.xcodeproj    # Xcode project
+├── AmplitudeSampleIOS.xcodeproj
 ├── AmplitudeSampleIOS/
-│   ├── AppDelegate.swift           # App entry point, initializes Amplitude
-│   ├── SceneDelegate.swift         # Scene management, URL handling
-│   ├── ViewController.swift        # Main view, demonstrates screen tracking
-│   ├── AmplitudeManager.swift      # ⭐ Core Amplitude implementation
-│   └── Info.plist                  # App configuration with URL scheme
-└── README.md                       # This file
+│   ├── AppDelegate.swift           # Calls AmplitudeManager.shared.initialize() on launch
+│   ├── SceneDelegate.swift         # Handles URL scheme for Guides & Surveys preview
+│   ├── ViewController.swift        # Tracks screen name via AmplitudeManager
+│   └── AmplitudeManager.swift      # Core SDK setup — the key file to reference
+└── README.md
 ```
 
-## Key File: AmplitudeManager.swift
-
-The `AmplitudeManager.swift` file contains the complete Amplitude setup:
+## Core Setup (AmplitudeManager.swift)
 
 ```swift
 import AmplitudeSwift
@@ -55,99 +59,63 @@ import AmplitudeEngagementSwift
 
 class AmplitudeManager {
     static let shared = AmplitudeManager()
-    
     private let apiKey = "YOUR_API_KEY"
-    private var amplitude: Amplitude!
-    private var amplitudeEngagement: AmplitudeEngagement!
-    
+
     func initialize() {
-        // Step 1: Initialize Guides & Surveys
-        amplitudeEngagement = AmplitudeEngagement(apiKey)
-        
-        // Step 2: Initialize Analytics
-        amplitude = Amplitude(configuration: Configuration(
-            apiKey: apiKey,
-            logLevel: LogLevelEnum.DEBUG
-        ))
-        
-        // Step 3: Add Guides & Surveys plugin
+        // 1. Initialize Guides & Surveys
+        let amplitudeEngagement = AmplitudeEngagement(apiKey)
+
+        // 2. Initialize Analytics
+        let amplitude = Amplitude(configuration: Configuration(apiKey: apiKey))
+
+        // 3. Connect Guides & Surveys to Analytics
         amplitude.add(plugin: amplitudeEngagement.getPlugin())
-        
-        // Step 4: Boot with device ID and event forwarding
+
+        // 4. Boot with device ID and event forwarding
         let bootOptions = AmplitudeBootOptions(
             user_id: "",
             device_id: amplitude.getDeviceId() ?? "",
-            integrations: [
-                { event, eventProperties in
-                    let baseEvent = BaseEvent(
-                        eventType: event,
-                        eventProperties: eventProperties
-                    )
-                    self.amplitude.track(event: baseEvent)
-                }
-            ]
+            integrations: [{ event, props in
+                amplitude.track(event: BaseEvent(eventType: event, eventProperties: props))
+            }]
         )
         amplitudeEngagement.boot(options: bootOptions)
-    }
-    
-    func trackScreen(name: String) {
-        amplitudeEngagement.screen(name)
-    }
-    
-    func handleUrl(_ url: URL) -> Bool {
-        return amplitudeEngagement.handleUrl(url)
     }
 }
 ```
 
 ## Usage
 
-### Initialize on App Launch
-
+**Initialize on launch** (AppDelegate.swift):
 ```swift
-// In AppDelegate.swift
-func application(_ application: UIApplication, 
-                 didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-    AmplitudeManager.shared.initialize()
-    return true
-}
+AmplitudeManager.shared.initialize()
 ```
 
-### Track Screen Views
-
+**Track screen views** (any ViewController):
 ```swift
-// In any ViewController
 override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
     AmplitudeManager.shared.trackScreen(name: "HomeScreen")
 }
 ```
 
-### Handle Preview URLs
-
+**Handle Guides & Surveys preview URLs** (SceneDelegate.swift):
 ```swift
-// In SceneDelegate.swift
 func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
     guard let url = URLContexts.first?.url else { return }
     _ = AmplitudeManager.shared.handleUrl(url)
 }
 ```
 
-## URL Scheme for Preview
+## URL Scheme for Preview Mode
 
-The app is configured with URL scheme `amp-5ca0d2531a1b801e` for Amplitude Guides & Surveys preview testing.
+The app is configured with URL scheme `amp-5ca0d2531a1b801e` for Guides & Surveys preview testing. To use your own:
 
-To add your own URL scheme:
 1. Open `Info.plist`
 2. Find `CFBundleURLSchemes`
-3. Replace with your Amplitude project's URL scheme (found in Project Settings → Guides and Surveys)
+3. Replace with your project's URL scheme (found in Amplitude → Project Settings → Guides and Surveys)
 
 ## Documentation
 
 - [Amplitude iOS Swift SDK](https://amplitude.com/docs/sdks/analytics/ios/ios-swift-sdk)
 - [Guides & Surveys iOS SDK](https://amplitude.com/docs/guides-and-surveys/guides-and-surveys-ios-sdk)
-
-## License
-
-MIT
-
