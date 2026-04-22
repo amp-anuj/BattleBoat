@@ -3,6 +3,8 @@
 
     <!-- Amplitude-branded dark theme -->
     <style name="Theme.Battleboat" parent="Theme.Material3.Dark">
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
         <item name="colorPrimary">@color/amp_blue</item>
         <item name="colorPrimaryVariant">@color/amp_navy</item>
         <item name="colorOnPrimary">@color/on_primary</item>
@@ -57,6 +59,7 @@
     <style name="TitleText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/inter_bold</item>
         <item name="android:textSize">@dimen/text_size_title</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textColor">@color/amp_text_primary</item>
@@ -66,6 +69,7 @@
     <style name="SubtitleText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/inter_semibold</item>
         <item name="android:textSize">@dimen/text_size_subtitle</item>
         <item name="android:textColor">@color/amp_text_secondary</item>
     </style>
@@ -73,6 +77,7 @@
     <style name="BodyText">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:fontFamily">@font/inter_regular</item>
         <item name="android:textSize">@dimen/text_size_body</item>
         <item name="android:textColor">@color/amp_text_secondary</item>
     </style>
