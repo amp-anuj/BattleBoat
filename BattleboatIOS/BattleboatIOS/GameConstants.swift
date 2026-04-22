@@ -64,15 +64,34 @@ struct GameConstants {
         case horizontal = 1
     }
     
-    // Colors
+    // MARK: - Amplitude Brand Colors
+    // Navy #0D1330 | Surface #1D2433 | Blue #1352CC | Blue Light #3986F7
+    // Coral #E8410E | Teal #00C2A8 | Lavender #9164FA
     struct Colors {
-        static let waterColor = UIColor(red: 0.4, green: 0.7, blue: 0.9, alpha: 1.0)
-        static let shipColor = UIColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)
-        static let hitColor = UIColor(red: 0.9, green: 0.3, blue: 0.3, alpha: 1.0)
-        static let missColor = UIColor(red: 0.8, green: 0.8, blue: 0.8, alpha: 1.0)
-        static let sunkColor = UIColor(red: 0.6, green: 0.2, blue: 0.2, alpha: 1.0)
-        static let selectedColor = UIColor(red: 0.2, green: 0.8, blue: 0.2, alpha: 0.5)
-        static let gridLineColor = UIColor(red: 0.3, green: 0.3, blue: 0.3, alpha: 1.0)
+        // Grid cell colors
+        static let waterColor     = UIColor(red: 0.224, green: 0.302, blue: 0.459, alpha: 1.0)  // #394B75 — deep ocean
+        static let waterHover     = UIColor(red: 0.220, green: 0.525, blue: 0.969, alpha: 0.35) // blue tint hover
+        static let shipColor      = UIColor(red: 0.000, green: 0.761, blue: 0.659, alpha: 1.0)  // #00C2A8 — Amp Teal
+        static let shipDarkColor  = UIColor(red: 0.000, green: 0.616, blue: 0.533, alpha: 1.0)  // #009D88 — placed ship
+        static let hitColor       = UIColor(red: 0.910, green: 0.255, blue: 0.055, alpha: 1.0)  // #E8410E — Amp Coral
+        static let missColor      = UIColor(red: 0.145, green: 0.180, blue: 0.271, alpha: 1.0)  // #252E45 — muted surface
+        static let sunkColor      = UIColor(red: 0.102, green: 0.039, blue: 0.020, alpha: 1.0)  // #1A0A05 — near black-red
+        static let selectedColor  = UIColor(red: 0.000, green: 0.761, blue: 0.659, alpha: 0.45) // teal preview
+        static let gridLineColor  = UIColor(red: 0.114, green: 0.141, blue: 0.196, alpha: 1.0)  // #1D2433 — surface
+
+        // UI chrome colors
+        static let navyBackground = UIColor(red: 0.051, green: 0.075, blue: 0.188, alpha: 1.0)  // #0D1330
+        static let surfaceDark    = UIColor(red: 0.114, green: 0.141, blue: 0.196, alpha: 1.0)  // #1D2433
+        static let surfaceMedium  = UIColor(red: 0.145, green: 0.180, blue: 0.271, alpha: 1.0)  // #252E45
+        static let surfaceLight   = UIColor(red: 0.184, green: 0.227, blue: 0.333, alpha: 1.0)  // #2F3A55
+        static let ampBlue        = UIColor(red: 0.075, green: 0.322, blue: 0.800, alpha: 1.0)  // #1352CC
+        static let ampBlueLt      = UIColor(red: 0.224, green: 0.525, blue: 0.969, alpha: 1.0)  // #3986F7
+        static let ampCoral       = UIColor(red: 0.910, green: 0.255, blue: 0.055, alpha: 1.0)  // #E8410E
+        static let ampTeal        = UIColor(red: 0.000, green: 0.761, blue: 0.659, alpha: 1.0)  // #00C2A8
+        static let ampLavender    = UIColor(red: 0.569, green: 0.392, blue: 0.980, alpha: 1.0)  // #9164FA
+        static let textPrimary    = UIColor(red: 0.910, green: 0.929, blue: 0.961, alpha: 1.0)  // #E8EDF5
+        static let textSecondary  = UIColor(red: 0.545, green: 0.616, blue: 0.714, alpha: 1.0)  // #8B9DB5
+        static let borderColor    = UIColor(red: 0.545, green: 0.616, blue: 0.714, alpha: 0.18)
     }
     
     // Game States

@@ -4,92 +4,142 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/background"
+    android:background="@color/amp_navy"
     android:gravity="center"
     android:padding="@dimen/padding_large">
+
+    <!-- App Logo / Icon area -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="⚓"
+        android:textSize="56sp"
+        android:gravity="center"
+        android:layout_marginBottom="8dp" />
 
     <!-- Title -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="⚓ BATTLEBOAT ⚓"
-        android:textSize="@dimen/text_size_header"
+        android:text="BATTLEBOAT"
+        android:textSize="32sp"
         android:textStyle="bold"
-        android:textColor="@color/primary"
-        android:layout_marginBottom="@dimen/margin_xl"
+        android:textColor="@color/amp_text_primary"
+        android:letterSpacing="0.08"
+        android:layout_marginBottom="6dp"
         android:gravity="center" />
 
-    <!-- Subtitle -->
+    <!-- Subtitle / tagline -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Naval Combat Strategy"
-        android:textSize="@dimen/text_size_subtitle"
-        android:textColor="@color/on_background"
-        android:layout_marginBottom="@dimen/margin_xl"
-        android:gravity="center" />
+        android:text="Naval Combat · Powered by Amplitude"
+        android:textSize="13sp"
+        android:textColor="@color/amp_text_muted"
+        android:layout_marginBottom="40dp"
+        android:gravity="center"
+        android:letterSpacing="0.04" />
 
-    <!-- Menu Buttons Container -->
+    <!-- Menu Card -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_marginTop="@dimen/margin_large">
+        android:background="#1D2433"
+        android:padding="20dp"
+        android:layout_marginBottom="16dp">
 
-        <!-- Play Game Button -->
+        <!-- Play Game Button — primary CTA -->
         <Button
             android:id="@+id/button_play"
             android:tag="amplitude_play_button"
             android:contentDescription="play_game_button"
-            style="@style/PrimaryButton"
-            android:text="@string/play_game"
-            android:drawableStart="@android:drawable/ic_media_play"
-            android:drawablePadding="@dimen/padding_small" />
+            android:layout_width="match_parent"
+            android:layout_height="52dp"
+            android:layout_marginBottom="10dp"
+            android:text="▶  Play Game"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:textAllCaps="false"
+            android:textColor="@color/on_primary"
+            android:backgroundTint="@color/amp_blue"
+            app:cornerRadius="10dp" />
 
         <!-- Tutorial Button -->
         <Button
             android:id="@+id/button_tutorial"
-            style="@style/SecondaryButton"
-            android:text="@string/tutorial"
-            android:drawableStart="@android:drawable/ic_dialog_info"
-            android:drawablePadding="@dimen/padding_small" />
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:text="How to Play"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:textColor="@color/amp_text_secondary"
+            android:backgroundTint="@color/amp_surface_2"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/amp_border"
+            app:strokeWidth="1dp"
+            style="@style/Widget.Material3.Button.OutlinedButton" />
 
         <!-- Statistics Button -->
         <Button
             android:id="@+id/button_statistics"
-            style="@style/SecondaryButton"
-            android:text="@string/statistics"
-            android:drawableStart="@android:drawable/ic_menu_view"
-            android:drawablePadding="@dimen/padding_small" />
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:text="Statistics"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:textColor="@color/amp_text_secondary"
+            android:backgroundTint="@color/amp_surface_2"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/amp_border"
+            app:strokeWidth="1dp"
+            style="@style/Widget.Material3.Button.OutlinedButton" />
 
         <!-- Settings Button -->
         <Button
             android:id="@+id/button_settings"
-            style="@style/SecondaryButton"
-            android:text="@string/settings"
-            android:drawableStart="@android:drawable/ic_menu_preferences"
-            android:drawablePadding="@dimen/padding_small" />
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginBottom="8dp"
+            android:text="Settings"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:textColor="@color/amp_text_secondary"
+            android:backgroundTint="@color/amp_surface_2"
+            app:cornerRadius="10dp"
+            app:strokeColor="@color/amp_border"
+            app:strokeWidth="1dp"
+            style="@style/Widget.Material3.Button.OutlinedButton" />
 
-        <!-- WebView Test Button -->
+        <!-- WebView Button — lavender accent -->
         <Button
             android:id="@+id/button_webview"
-            style="@style/SecondaryButton"
-            android:text="Open WebView"
-            android:drawableStart="@android:drawable/ic_menu_compass"
-            android:drawablePadding="@dimen/padding_small"
-            android:layout_marginTop="@dimen/margin_large" />
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:text="Open Web Demo"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:textColor="#9164FA"
+            android:backgroundTint="@color/amp_surface_3"
+            app:cornerRadius="10dp"
+            app:strokeColor="#9164FA"
+            app:strokeWidth="1dp"
+            style="@style/Widget.Material3.Button.OutlinedButton" />
 
     </LinearLayout>
 
-    <!-- Footer -->
+    <!-- Footer badge -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="🚢 Ready for Battle? 🚢"
-        android:textSize="@dimen/text_size_body"
-        android:textColor="@color/on_background"
-        android:layout_marginTop="@dimen/margin_xl"
+        android:text="Amplitude Analytics Test Bed"
+        android:textSize="11sp"
+        android:textColor="@color/amp_text_muted"
+        android:layout_marginTop="8dp"
         android:gravity="center"
-        android:alpha="0.7" />
+        android:letterSpacing="0.04" />
 
-</LinearLayout> 
+</LinearLayout>
