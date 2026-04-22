@@ -151,20 +151,14 @@
 			identifyEventArray.set('Sportsbook Personalization', SportsbookPersonalizationArray);
 			identifyEventArray.set()
 			amplitude.identify(identifyEventArray);
-			experiment.fetch();
-			const variant = experiment.variant('battleboat-test');
-			const payload = variant.payload;
-			setTimeout(function () {
-				if (variant.value === 'treatment') {
-				console.log(variant.value)
-				console.log(variant.payload)
-				engagement.gs.show(variant.payload.nudge);
-			} else {
-				console.log(variant.value)
-				console.log(variant.payload)
-				engagement.gs.show(variant.payload.nudge)
-			}
-			}, 2000);
+			experiment.fetch().then(function () {
+				const variant = experiment.variant('battleboat-test');
+				const payload = variant.payload;
+				console.log('Experiment variant:', variant.value, '| Payload:', payload);
+				if (payload && payload.nudge) {
+					engagement.gs.show(payload.nudge);
+				}
+			});
 			
 
 		</script>
