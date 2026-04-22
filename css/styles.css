@@ -96,7 +96,10 @@ h1 {
 .tagline {
   display: flex;
   width: fit-content;
-  margin: 0 auto 16px;
+  margin-top: 0;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 16px;
   align-items: center;
   gap: 6px;
   font-size: 0.7rem;
@@ -125,12 +128,15 @@ h1 {
 
 /* ── Instructions Card ────────────────────────────────────── */
 .instructions-card {
-  display: inline-block;
+  display: block;
+  width: fit-content;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 36px;
   background: var(--amp-surface);
   border: 1px solid var(--amp-border-2);
   border-radius: var(--radius-lg);
   padding: 14px 20px 18px;
-  margin-bottom: 36px;
   text-align: left;
   box-shadow: var(--shadow-md);
 }
@@ -481,6 +487,9 @@ button:active { transform: translateY(0); box-shadow: none; }
   color: var(--amp-text-3);
   font-size: 0.8rem;
   margin: 8px 0;
+}
+.container > p.tagline {
+  margin: 0 auto 16px;
 }
 
 /* ── Keyframes ────────────────────────────────────────────── */
