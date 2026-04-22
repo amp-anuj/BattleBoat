@@ -27,6 +27,10 @@
 		F1CF84EE2DF21E2A00D4776B /* AmplitudeSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F1CF84ED2DF21E2A00D4776B /* AmplitudeSwift */; };
 		F1D7E9022E3BBF9D005322D1 /* AmplitudeEngagementSwift in Frameworks */ = {isa = PBXBuildFile; productRef = F1D7E9012E3BBF9D005322D1 /* AmplitudeEngagementSwift */; };
 		F1D7E9052E429894005322D1 /* AmplitudeSessionReplay in Frameworks */ = {isa = PBXBuildFile; productRef = F1D7E9042E429894005322D1 /* AmplitudeSessionReplay */; };
+		FA1B2C3D4E5F6A7B8C9D0E5F /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E1F /* Inter-Regular.ttf */; };
+		FA1B2C3D4E5F6A7B8C9D0E6F /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E2F /* Inter-Medium.ttf */; };
+		FA1B2C3D4E5F6A7B8C9D0E7F /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E3F /* Inter-SemiBold.ttf */; };
+		FA1B2C3D4E5F6A7B8C9D0E8F /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FA1B2C3D4E5F6A7B8C9D0E4F /* Inter-Bold.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -48,6 +52,10 @@
 		1D1A5B4D2B8E4FEC00F4B8C7 /* GameConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameConstants.swift; sourceTree = "<group>"; };
 		1D1A5B4F2B8E500000F4B8C7 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 		1D1A5B522B8E501000F4B8C7 /* WebViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebViewController.swift; sourceTree = "<group>"; };
+		FA1B2C3D4E5F6A7B8C9D0E1F /* Inter-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.font; path = "Inter-Regular.ttf"; sourceTree = "<group>"; };
+		FA1B2C3D4E5F6A7B8C9D0E2F /* Inter-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.font; path = "Inter-Medium.ttf"; sourceTree = "<group>"; };
+		FA1B2C3D4E5F6A7B8C9D0E3F /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.font; path = "Inter-SemiBold.ttf"; sourceTree = "<group>"; };
+		FA1B2C3D4E5F6A7B8C9D0E4F /* Inter-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file.font; path = "Inter-Bold.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,12 +105,25 @@
 				1D1A5B4D2B8E4FEC00F4B8C7 /* GameConstants.swift */,
 				1D1A5B4F2B8E500000F4B8C7 /* AnalyticsManager.swift */,
 				1D1A5B522B8E501000F4B8C7 /* WebViewController.swift */,
+				FA1B2C3D4E5F6A7B8C9D0E9F /* Fonts */,
 				1D1A5B2F2B8E4F3C00F4B8C7 /* Main.storyboard */,
 				1D1A5B322B8E4F3D00F4B8C7 /* Assets.xcassets */,
 				1D1A5B342B8E4F3D00F4B8C7 /* LaunchScreen.storyboard */,
 				1D1A5B372B8E4F3D00F4B8C7 /* Info.plist */,
 			);
 			path = BattleboatIOS;
+			sourceTree = "<group>";
+		};
+		FA1B2C3D4E5F6A7B8C9D0E9F /* Fonts */ = {
+			isa = PBXGroup;
+			children = (
+				FA1B2C3D4E5F6A7B8C9D0E1F /* Inter-Regular.ttf */,
+				FA1B2C3D4E5F6A7B8C9D0E2F /* Inter-Medium.ttf */,
+				FA1B2C3D4E5F6A7B8C9D0E3F /* Inter-SemiBold.ttf */,
+				FA1B2C3D4E5F6A7B8C9D0E4F /* Inter-Bold.ttf */,
+			);
+			name = Fonts;
+			path = Fonts;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -172,6 +193,10 @@
 				1D1A5B362B8E4F3D00F4B8C7 /* LaunchScreen.storyboard in Resources */,
 				1D1A5B332B8E4F3D00F4B8C7 /* Assets.xcassets in Resources */,
 				1D1A5B312B8E4F3C00F4B8C7 /* Main.storyboard in Resources */,
+				FA1B2C3D4E5F6A7B8C9D0E5F /* Inter-Regular.ttf in Resources */,
+				FA1B2C3D4E5F6A7B8C9D0E6F /* Inter-Medium.ttf in Resources */,
+				FA1B2C3D4E5F6A7B8C9D0E7F /* Inter-SemiBold.ttf in Resources */,
+				FA1B2C3D4E5F6A7B8C9D0E8F /* Inter-Bold.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
