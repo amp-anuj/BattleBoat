@@ -94,7 +94,9 @@ h1 {
 }
 
 .tagline {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
+  margin: 0 auto 16px;
   align-items: center;
   gap: 6px;
   font-size: 0.7rem;
@@ -105,7 +107,6 @@ h1 {
   border: 1px solid var(--amp-border-2);
   border-radius: 20px;
   padding: 4px 12px;
-  margin: 0 0 24px;
   letter-spacing: 0.04em;
 }
 .tagline::before {
@@ -119,6 +120,7 @@ h1 {
   padding: 2px 6px;
   border-radius: 10px;
   font-family: 'Inter', sans-serif;
+  flex-shrink: 0;
 }
 
 /* ── Instructions Card ────────────────────────────────────── */
@@ -127,24 +129,24 @@ h1 {
   background: var(--amp-surface);
   border: 1px solid var(--amp-border-2);
   border-radius: var(--radius-lg);
-  padding: 20px 32px 22px;
+  padding: 14px 20px 18px;
   margin-bottom: 36px;
   text-align: left;
   box-shadow: var(--shadow-md);
 }
 
 .instructions-heading {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--amp-text-3);
-  margin: 0 0 12px;
+  margin: 16px 20px 10px;
 }
 
 .instructions {
   margin: 0;
-  padding-left: 20px;
+  padding: 0 20px 0 38px;
   list-style: decimal;
 }
 .instructions li {
@@ -165,7 +167,7 @@ h1 {
   display: flex;
   justify-content: center;
   gap: 10px;
-  /* absolute-positioned sidebars are unaffected by flex */
+  padding-bottom: 48px; /* keep footer clear of absolute sidebars */
 }
 
 /* ── Sidebars ─────────────────────────────────────────────── */
@@ -351,7 +353,7 @@ button:active { transform: translateY(0); box-shadow: none; }
 
 /* ── Grid Containers ──────────────────────────────────────── */
 .grid-container {
-  width: 430px;
+  width: 442px;
   flex-shrink: 0;
 }
 
@@ -359,13 +361,14 @@ button:active { transform: translateY(0); box-shadow: none; }
 .grid {
   position: relative;
   vertical-align: top;
-  padding: 8px;
-  height: 420px;
-  width: 420px;
+  padding: 5px;
+  height: 432px;
+  width: 432px;
   background: linear-gradient(145deg, #1a2640 0%, var(--amp-surface) 100%);
   border: 1px solid var(--amp-border-2);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255,255,255,0.04);
+  overflow: hidden;
 }
 /* Subtle top-edge highlight on the player grid */
 .human-player  { border-top-color: rgba(0,194,168,0.3); }
