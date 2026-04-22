@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FAFAFA"
+    android:background="@color/amp_navy"
     android:fillViewport="true">
 
     <LinearLayout
@@ -12,16 +13,17 @@
         android:padding="16dp"
         android:gravity="center_horizontal">
 
-        <!-- Game Title -->
+        <!-- Header -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="⚓ BATTLEBOAT ⚓"
-            android:textSize="24sp"
+            android:text="BATTLEBOAT"
+            android:textSize="22sp"
             android:textStyle="bold"
-            android:textColor="#1976D2"
+            android:textColor="@color/amp_text_primary"
+            android:letterSpacing="0.08"
             android:gravity="center"
-            android:layout_marginBottom="24dp" />
+            android:layout_marginBottom="20dp" />
 
         <!-- Enemy Grid Section -->
         <LinearLayout
@@ -29,61 +31,66 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginBottom="32dp">
+            android:layout_marginBottom="24dp">
 
+            <!-- Section label -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Enemy Waters 🎯"
-                android:textSize="16sp"
-                android:textColor="#F44336"
+                android:text="ENEMY WATERS"
+                android:textSize="11sp"
+                android:textColor="@color/amp_coral"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="10dp" />
 
-            <com.battleboat.GridView
-                android:id="@+id/enemy_grid"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:background="#FFFFFF"
-                android:elevation="4dp" />
+            <!-- Grid card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/amp_surface"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="8dp">
+
+                <com.battleboat.GridView
+                    android:id="@+id/enemy_grid"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:padding="8dp" />
+
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
 
-        <!-- Ship Placement Controls -->
-        <LinearLayout
+        <!-- Status / Game Message -->
+        <TextView
+            android:id="@+id/status_text"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
+            android:text="Place Your Ships"
+            android:textSize="14sp"
+            android:textColor="@color/amp_text_secondary"
             android:gravity="center"
-            android:layout_marginBottom="16dp">
+            android:layout_marginBottom="10dp"
+            android:paddingVertical="12dp"
+            android:paddingHorizontal="16dp"
+            android:background="#1D2433"
+            android:letterSpacing="0.01" />
 
-            <!-- Game Status -->
-            <TextView
-                android:id="@+id/status_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Place Your Ships"
-                android:textSize="16sp"
-                android:textColor="#000000"
-                android:gravity="center"
-                android:layout_marginBottom="12dp"
-                android:padding="12dp"
-                android:background="#E0E0E0" />
-
-            <!-- Action Button -->
-            <Button
-                android:id="@+id/action_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Auto Place Ships"
-                android:textSize="16sp"
-                android:textAllCaps="false"
-                android:backgroundTint="#1976D2"
-                android:layout_marginBottom="16dp"
-                android:paddingHorizontal="24dp"
-                android:paddingVertical="12dp" />
-
-        </LinearLayout>
+        <!-- Action Button -->
+        <Button
+            android:id="@+id/action_button"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:text="Auto Place Ships"
+            android:textSize="14sp"
+            android:textAllCaps="false"
+            android:textStyle="bold"
+            android:textColor="@color/on_primary"
+            android:backgroundTint="@color/amp_blue"
+            android:layout_marginBottom="20dp"
+            android:paddingHorizontal="28dp"
+            app:cornerRadius="10dp" />
 
         <!-- Player Grid Section -->
         <LinearLayout
@@ -96,235 +103,256 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Your Fleet 🚢"
-                android:textSize="16sp"
-                android:textColor="#1976D2"
+                android:text="YOUR FLEET"
+                android:textSize="11sp"
+                android:textColor="@color/amp_teal"
                 android:textStyle="bold"
-                android:layout_marginBottom="8dp" />
+                android:letterSpacing="0.1"
+                android:layout_marginBottom="10dp" />
 
-            <com.battleboat.GridView
-                android:id="@+id/player_grid"
-                android:layout_width="300dp"
-                android:layout_height="300dp"
-                android:background="#FFFFFF"
-                android:elevation="4dp" />
+            <androidx.cardview.widget.CardView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/amp_surface"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="8dp">
+
+                <com.battleboat.GridView
+                    android:id="@+id/player_grid"
+                    android:layout_width="300dp"
+                    android:layout_height="300dp"
+                    android:padding="8dp" />
+
+            </androidx.cardview.widget.CardView>
 
         </LinearLayout>
 
-        <!-- Game Instructions -->
+        <!-- Instructions chip -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="• Tap your grid to place ships\n• Tap enemy grid to shoot\n• Sink all enemy ships to win!"
-            android:textSize="14sp"
-            android:textColor="#666666"
+            android:text="Tap your grid to place ships  ·  Tap enemy grid to fire  ·  Sink all ships to win"
+            android:textSize="12sp"
+            android:textColor="@color/amp_text_muted"
             android:gravity="center"
             android:layout_marginBottom="20dp"
-            android:padding="12dp"
-            android:background="#F5F5F5"
-            android:lineSpacingExtra="4dp" />
+            android:paddingVertical="10dp"
+            android:paddingHorizontal="14dp"
+            android:background="#1D2433" />
 
-        <!-- Statistics Section -->
-        <LinearLayout
+        <!-- Statistics Card -->
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_marginBottom="20dp"
-            android:background="#FFFFFF"
-            android:elevation="2dp"
-            android:padding="16dp">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="📊 Statistics"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:textColor="#1976D2"
-                android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="16dp"
+            app:cardBackgroundColor="@color/amp_surface"
+            app:cardCornerRadius="14dp"
+            app:cardElevation="4dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2">
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <!-- Win Stats -->
-                <LinearLayout
-                    android:layout_width="0dp"
+                <TextView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
+                    android:text="STATISTICS"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/amp_text_muted"
+                    android:letterSpacing="0.1"
+                    android:layout_marginBottom="14dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Wins"
-                        android:textSize="12sp"
-                        android:textColor="#666666"
-                        android:textAllCaps="true" />
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
 
-                    <TextView
-                        android:id="@+id/stats_wins"
-                        android:layout_width="wrap_content"
+                    <!-- Win Stats -->
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="0 of 0"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#1976D2" />
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="8dp">
 
-                    <TextView
-                        android:id="@+id/stats_win_percentage"
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="WINS"
+                            android:textSize="10sp"
+                            android:textColor="@color/amp_text_muted"
+                            android:letterSpacing="0.08" />
+
+                        <TextView
+                            android:id="@+id/stats_wins"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 of 0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/amp_blue_light" />
+
+                        <TextView
+                            android:id="@+id/stats_win_percentage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0%"
+                            android:textSize="12sp"
+                            android:textColor="@color/amp_text_muted" />
+
+                    </LinearLayout>
+
+                    <!-- Accuracy Stats -->
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="0%"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="ACCURACY"
+                            android:textSize="10sp"
+                            android:textColor="@color/amp_text_muted"
+                            android:letterSpacing="0.08" />
+
+                        <TextView
+                            android:id="@+id/stats_accuracy"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0%"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/amp_teal" />
+
+                        <TextView
+                            android:id="@+id/stats_shots"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0 hits / 0 shots"
+                            android:textSize="12sp"
+                            android:textColor="@color/amp_text_muted" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
 
-                <!-- Accuracy Stats -->
+                <!-- Win Streak + Ships Sunk row -->
                 <LinearLayout
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
+                    android:orientation="horizontal"
+                    android:weightSum="2"
+                    android:layout_marginTop="6dp">
 
-                    <TextView
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="Accuracy"
-                        android:textSize="12sp"
-                        android:textColor="#666666"
-                        android:textAllCaps="true" />
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="8dp">
 
-                    <TextView
-                        android:id="@+id/stats_accuracy"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0%"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#4CAF50" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="WIN STREAK"
+                            android:textSize="10sp"
+                            android:textColor="@color/amp_text_muted"
+                            android:letterSpacing="0.08" />
 
-                    <TextView
-                        android:id="@+id/stats_shots"
-                        android:layout_width="wrap_content"
+                        <TextView
+                            android:id="@+id/stats_win_streak"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/amp_lavender" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:text="0 hits / 0 shots"
-                        android:textSize="12sp"
-                        android:textColor="#666666" />
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center"
+                        android:padding="8dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="SHIPS SUNK"
+                            android:textSize="10sp"
+                            android:textColor="@color/amp_text_muted"
+                            android:letterSpacing="0.08" />
+
+                        <TextView
+                            android:id="@+id/stats_ships_sunk"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/amp_coral" />
+
+                    </LinearLayout>
 
                 </LinearLayout>
+
+                <!-- Reset Stats Button -->
+                <Button
+                    android:id="@+id/reset_stats_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="36dp"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="14dp"
+                    android:text="Reset Stats"
+                    android:textSize="12sp"
+                    android:textAllCaps="false"
+                    android:textColor="@color/amp_coral"
+                    android:backgroundTint="@color/amp_surface_2"
+                    android:paddingHorizontal="20dp"
+                    app:cornerRadius="8dp"
+                    app:strokeColor="@color/amp_coral"
+                    app:strokeWidth="1dp"
+                    style="@style/Widget.Material3.Button.OutlinedButton" />
 
             </LinearLayout>
 
-            <!-- Additional Stats Row -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_marginTop="8dp">
+        </androidx.cardview.widget.CardView>
 
-                <!-- Win Streak -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Win Streak"
-                        android:textSize="12sp"
-                        android:textColor="#666666"
-                        android:textAllCaps="true" />
-
-                    <TextView
-                        android:id="@+id/stats_win_streak"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#FF9800" />
-
-                </LinearLayout>
-
-                <!-- Ships Sunk -->
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="8dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Ships Sunk"
-                        android:textSize="12sp"
-                        android:textColor="#666666"
-                        android:textAllCaps="true" />
-
-                    <TextView
-                        android:id="@+id/stats_ships_sunk"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="0"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:textColor="#F44336" />
-
-                </LinearLayout>
-
-            </LinearLayout>
-
-            <!-- Reset Stats Button -->
-            <Button
-                android:id="@+id/reset_stats_button"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="12dp"
-                android:text="Reset Stats"
-                android:textSize="12sp"
-                android:textAllCaps="false"
-                android:backgroundTint="#757575"
-                android:textColor="#FFFFFF"
-                android:padding="8dp" />
-
-        </LinearLayout>
-
-        <!-- Back to Main Menu Button -->
+        <!-- Back to Menu -->
         <Button
             android:id="@+id/back_to_menu_button"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="42dp"
             android:layout_gravity="center"
-            android:layout_marginTop="16dp"
-            android:text="← Back to Main Menu"
-            android:textSize="14sp"
+            android:layout_marginTop="8dp"
+            android:text="← Main Menu"
+            android:textSize="13sp"
             android:textAllCaps="false"
-            android:backgroundTint="#607D8B"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/amp_text_muted"
+            android:backgroundTint="@color/amp_surface_2"
             android:paddingHorizontal="24dp"
-            android:paddingVertical="12dp" />
+            app:cornerRadius="8dp"
+            app:strokeColor="@color/amp_border"
+            app:strokeWidth="1dp"
+            style="@style/Widget.Material3.Button.OutlinedButton" />
 
-        <!-- Bottom spacer for comfortable scrolling -->
         <View
             android:layout_width="match_parent"
             android:layout_height="40dp" />
 
     </LinearLayout>
 
-</ScrollView> 
+</ScrollView>

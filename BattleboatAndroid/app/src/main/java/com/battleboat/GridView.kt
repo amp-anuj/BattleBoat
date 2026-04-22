@@ -42,13 +42,13 @@ class GridView @JvmOverloads constructor(
     }
     
     private fun setupPaints() {
-        // Grid lines
-        gridPaint.color = Color.parseColor("#757575")
-        gridPaint.strokeWidth = 2f
+        // Grid lines — Amplitude border color
+        gridPaint.color = Color.parseColor("#26314A")
+        gridPaint.strokeWidth = 1.5f
         gridPaint.style = Paint.Style.STROKE
-        
-        // Text for coordinates
-        textPaint.color = Color.parseColor("#424242")
+
+        // Coordinate text — muted secondary
+        textPaint.color = Color.parseColor("#5A6A85")
         textPaint.textSize = 24f
         textPaint.textAlign = Paint.Align.CENTER
     }
@@ -120,58 +120,77 @@ class GridView @JvmOverloads constructor(
         paint.style = Paint.Style.FILL
         when (cellType) {
             CellType.EMPTY -> {
-                paint.color = Color.parseColor("#4FC3F7") // Water blue
+                // Amplitude deep ocean water (#394B75)
+                paint.color = Color.parseColor("#394B75")
             }
             CellType.SHIP -> {
                 if (showShips) {
-                    paint.color = Color.parseColor("#424242") // Dark gray for ships
+                    // Amplitude Teal for placed ships
+                    paint.color = Color.parseColor("#009D88")
                 } else {
-                    paint.color = Color.parseColor("#4FC3F7") // Hide ships on enemy grid
+                    // Hide ships on enemy grid — same as water
+                    paint.color = Color.parseColor("#394B75")
                 }
             }
             CellType.HIT -> {
-                paint.color = Color.parseColor("#F44336") // Red for hits
+                // Amplitude Coral for hits
+                paint.color = Color.parseColor("#E8410E")
             }
             CellType.MISS -> {
-                paint.color = Color.parseColor("#FFFFFF") // White for misses
+                // Dark surface for misses (muted)
+                paint.color = Color.parseColor("#252E45")
             }
             CellType.SUNK -> {
-                paint.color = Color.parseColor("#B71C1C") // Dark red for sunk ships
+                // Near-black with red tinge for sunk
+                paint.color = Color.parseColor("#1A0A05")
             }
         }
-        
-        canvas.drawRect(rect, paint)
-        
+
+        // Rounded rect cells
+        val radius = cellSize * 0.12f
+        val rectF = android.graphics.RectF(left, top, right, bottom)
+        canvas.drawRoundRect(rectF, radius, radius, paint)
+
         // Draw hit/miss markers
         when (cellType) {
             CellType.HIT -> {
-                paint.color = Color.WHITE
+                // White glow dot
+                paint.color = Color.parseColor("#FFFFFF")
+                paint.style = Paint.Style.FILL
                 canvas.drawCircle(
                     left + cellSize / 2,
                     top + cellSize / 2,
-                    cellSize / 4,
+                    cellSize / 5,
                     paint
                 )
             }
             CellType.MISS -> {
-                paint.color = Color.parseColor("#1976D2")
+                // Muted blue ring
+                paint.color = Color.parseColor("#3986F7")
                 paint.style = Paint.Style.STROKE
-                paint.strokeWidth = 4f
+                paint.strokeWidth = maxOf(2f, cellSize * 0.06f)
                 canvas.drawCircle(
                     left + cellSize / 2,
                     top + cellSize / 2,
-                    cellSize / 4,
+                    cellSize / 5,
                     paint
                 )
+            }
+            CellType.SUNK -> {
+                // Coral border on sunk cells
+                paint.color = Color.parseColor("#E8410E")
+                paint.style = Paint.Style.STROKE
+                paint.strokeWidth = maxOf(2f, cellSize * 0.08f)
+                canvas.drawRoundRect(rectF, radius, radius, paint)
             }
             else -> {}
         }
     }
     
     private fun drawGridLines(canvas: Canvas) {
-        gridPaint.color = Color.parseColor("#757575")
-        gridPaint.strokeWidth = 2f
-        
+        gridPaint.color = Color.parseColor("#26314A")
+        gridPaint.strokeWidth = 1f
+
         // Vertical lines
         for (i in 0..GameConstants.GRID_SIZE) {
             val x = gridStartX + i * cellSize

@@ -74,48 +74,81 @@ class GameViewController: UIViewController {
     // MARK: - Setup
     
     private func setupUI() {
-        view.backgroundColor = UIColor.white
-        
+        // Amplitude navy background with subtle radial gradient
+        view.backgroundColor = GameConstants.Colors.navyBackground
+        let gradientLayer = CAGradientLayer()
+        gradientLayer.frame = view.bounds
+        gradientLayer.colors = [
+            UIColor(red: 0.051, green: 0.075, blue: 0.188, alpha: 1.0).cgColor, // #0D1330
+            UIColor(red: 0.071, green: 0.094, blue: 0.220, alpha: 1.0).cgColor  // slightly lighter
+        ]
+        gradientLayer.startPoint = CGPoint(x: 0, y: 0)
+        gradientLayer.endPoint = CGPoint(x: 1, y: 1)
+        view.layer.insertSublayer(gradientLayer, at: 0)
+
         // Setup scroll view for guaranteed scrolling
-        scrollView.showsVerticalScrollIndicator = true
+        scrollView.showsVerticalScrollIndicator = false
         scrollView.alwaysBounceVertical = true
         scrollView.isScrollEnabled = true
         scrollView.contentInsetAdjustmentBehavior = .never
         scrollView.bounces = true
         scrollView.scrollIndicatorInsets = .zero
         scrollView.contentInset = .zero
-        
-        // Setup title
-        titleLabel.text = "Battleboat iOS"
-        titleLabel.font = UIFont.boldSystemFont(ofSize: 24)
-        titleLabel.textColor = .systemBlue
+        scrollView.backgroundColor = .clear
+
+        // Setup title — gradient text effect via attributed string
+        titleLabel.text = "BATTLEBOAT"
+        titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .heavy)
+        titleLabel.textColor = GameConstants.Colors.textPrimary
         titleLabel.textAlignment = .center
-        
+        titleLabel.layer.shadowColor = GameConstants.Colors.ampBlue.cgColor
+        titleLabel.layer.shadowOffset = CGSize(width: 0, height: 0)
+        titleLabel.layer.shadowRadius = 12
+        titleLabel.layer.shadowOpacity = 0.6
+
         // Setup message label
         messageLabel.text = "Welcome to Battleboat! Place your ships to begin."
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .center
-        messageLabel.font = UIFont.systemFont(ofSize: 16)
-        
-        // Setup grid labels
-        playerGridLabel.text = "Your Fleet"
+        messageLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        messageLabel.textColor = GameConstants.Colors.textSecondary
+        messageLabel.backgroundColor = GameConstants.Colors.surfaceDark
+        messageLabel.layer.cornerRadius = 10
+        messageLabel.layer.masksToBounds = true
+        messageLabel.layer.borderWidth = 1
+        messageLabel.layer.borderColor = GameConstants.Colors.borderColor.cgColor
+
+        // Setup grid section labels
+        playerGridLabel.text = "YOUR FLEET"
         playerGridLabel.textAlignment = .center
-        playerGridLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        
-        enemyGridLabel.text = "Enemy Fleet"
+        playerGridLabel.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+        playerGridLabel.textColor = GameConstants.Colors.ampTeal
+        playerGridLabel.letterSpacing(1.2)
+
+        enemyGridLabel.text = "ENEMY WATERS"
         enemyGridLabel.textAlignment = .center
-        enemyGridLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        
-        // Setup containers
-        playerGridContainer.backgroundColor = UIColor.clear
-        playerGridContainer.layer.cornerRadius = 6
+        enemyGridLabel.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+        enemyGridLabel.textColor = GameConstants.Colors.ampCoral
+        enemyGridLabel.letterSpacing(1.2)
+
+        // Setup containers — dark surface cards
+        playerGridContainer.backgroundColor = GameConstants.Colors.surfaceDark
+        playerGridContainer.layer.cornerRadius = 14
         playerGridContainer.layer.borderWidth = 1
-        playerGridContainer.layer.borderColor = UIColor.systemGray4.cgColor
-        
-        enemyGridContainer.backgroundColor = UIColor.clear
-        enemyGridContainer.layer.cornerRadius = 6
+        playerGridContainer.layer.borderColor = GameConstants.Colors.borderColor.cgColor
+        playerGridContainer.layer.shadowColor = UIColor.black.cgColor
+        playerGridContainer.layer.shadowOffset = CGSize(width: 0, height: 4)
+        playerGridContainer.layer.shadowRadius = 16
+        playerGridContainer.layer.shadowOpacity = 0.4
+
+        enemyGridContainer.backgroundColor = GameConstants.Colors.surfaceDark
+        enemyGridContainer.layer.cornerRadius = 14
         enemyGridContainer.layer.borderWidth = 1
-        enemyGridContainer.layer.borderColor = UIColor.systemGray4.cgColor
+        enemyGridContainer.layer.borderColor = GameConstants.Colors.borderColor.cgColor
+        enemyGridContainer.layer.shadowColor = UIColor.black.cgColor
+        enemyGridContainer.layer.shadowOffset = CGSize(width: 0, height: 4)
+        enemyGridContainer.layer.shadowRadius = 16
+        enemyGridContainer.layer.shadowOpacity = 0.4
         
         // Map ship buttons
         shipButtons = [
@@ -139,67 +172,79 @@ class GameViewController: UIViewController {
     
     private func setupShipButtons() {
         shipSelectionStackView.axis = .horizontal
-        shipSelectionStackView.spacing = 8
+        shipSelectionStackView.spacing = 6
         shipSelectionStackView.distribution = .fillEqually
-        
+
         for (shipType, button) in shipButtons {
-            // Use compact names for horizontal layout
             let buttonTitle: String
             switch shipType {
-            case .carrier: buttonTitle = "Carrier\n(5)"
+            case .carrier:    buttonTitle = "Carrier\n(5)"
             case .battleship: buttonTitle = "Battle\n(4)"
-            case .destroyer: buttonTitle = "Destroy\n(3)"
-            case .submarine: buttonTitle = "Sub\n(3)"
+            case .destroyer:  buttonTitle = "Destroy\n(3)"
+            case .submarine:  buttonTitle = "Sub\n(3)"
             case .patrolboat: buttonTitle = "Patrol\n(2)"
             }
-            
+
             button.setTitle(buttonTitle, for: .normal)
-            button.backgroundColor = UIColor.systemBlue
-            button.setTitleColor(.white, for: .normal)
-            button.layer.cornerRadius = 6
+            button.backgroundColor = GameConstants.Colors.surfaceMedium
+            button.setTitleColor(GameConstants.Colors.textPrimary, for: .normal)
+            button.layer.cornerRadius = 8
+            button.layer.borderWidth = 1
+            button.layer.borderColor = GameConstants.Colors.borderColor.cgColor
             button.titleLabel?.numberOfLines = 2
             button.titleLabel?.textAlignment = .center
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .medium)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
             button.titleLabel?.adjustsFontSizeToFitWidth = true
             button.titleLabel?.minimumScaleFactor = 0.7
             button.addTarget(self, action: #selector(shipButtonTapped(_:)), for: .touchUpInside)
-            
-            // Add accessibility identifier for UI testing
             button.accessibilityIdentifier = "\(shipType.rawValue)_ship_button"
-            
+
             shipSelectionStackView.addArrangedSubview(button)
         }
     }
     
     private func setupControlButtons() {
         controlsStackView.axis = .horizontal
-        controlsStackView.spacing = 8
+        controlsStackView.spacing = 6
         controlsStackView.distribution = .fillEqually
-        
+
         let buttons = [rotateButton, randomPlaceButton, startGameButton, restartButton, showHeatmapButton, webViewButton]
-        
+
         for button in buttons {
-            button.backgroundColor = UIColor.systemGray
-            button.setTitleColor(.white, for: .normal)
+            button.backgroundColor = GameConstants.Colors.surfaceMedium
+            button.setTitleColor(GameConstants.Colors.textSecondary, for: .normal)
             button.layer.cornerRadius = 8
+            button.layer.borderWidth = 1
+            button.layer.borderColor = GameConstants.Colors.borderColor.cgColor
             button.titleLabel?.numberOfLines = 2
             button.titleLabel?.textAlignment = .center
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 10, weight: .medium)
+            button.titleLabel?.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
             button.titleLabel?.adjustsFontSizeToFitWidth = true
             button.titleLabel?.minimumScaleFactor = 0.7
             controlsStackView.addArrangedSubview(button)
         }
-        
-        // Set button titles
+
         rotateButton.setTitle("Rotate\nShip", for: .normal)
         randomPlaceButton.setTitle("Random\nPlace", for: .normal)
-        startGameButton.setTitle("Start\nGame", for: .normal)
         restartButton.setTitle("New\nGame", for: .normal)
         showHeatmapButton.setTitle("Show\nHeatmap", for: .normal)
         webViewButton.setTitle("Open\nWebView", for: .normal)
-        webViewButton.backgroundColor = UIColor.systemIndigo
-        
-        // Add targets
+
+        // Primary CTA — Amplitude blue gradient
+        startGameButton.setTitle("Start\nGame", for: .normal)
+        startGameButton.backgroundColor = GameConstants.Colors.ampBlue
+        startGameButton.setTitleColor(.white, for: .normal)
+        startGameButton.layer.borderColor = GameConstants.Colors.ampBlueLt.cgColor
+        startGameButton.layer.shadowColor = GameConstants.Colors.ampBlue.cgColor
+        startGameButton.layer.shadowOffset = .zero
+        startGameButton.layer.shadowRadius = 8
+        startGameButton.layer.shadowOpacity = 0.6
+
+        // WebView — lavender accent
+        webViewButton.backgroundColor = GameConstants.Colors.surfaceLight
+        webViewButton.setTitleColor(GameConstants.Colors.ampLavender, for: .normal)
+        webViewButton.layer.borderColor = GameConstants.Colors.ampLavender.withAlphaComponent(0.3).cgColor
+
         rotateButton.addTarget(self, action: #selector(rotateButtonTapped), for: .touchUpInside)
         randomPlaceButton.addTarget(self, action: #selector(randomPlaceButtonTapped), for: .touchUpInside)
         startGameButton.addTarget(self, action: #selector(startGameButtonTapped), for: .touchUpInside)
@@ -210,48 +255,62 @@ class GameViewController: UIViewController {
     
     private func setupStatsLabels() {
         statsStackView.axis = .horizontal
-        statsStackView.spacing = 8
+        statsStackView.spacing = 6
         statsStackView.distribution = .fillEqually
-        
+
         let labels = [gamesWonLabel, accuracyLabel, currentShotsLabel]
-        
+
         for label in labels {
-            label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+            label.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+            label.textColor = GameConstants.Colors.ampBlueLt
             label.textAlignment = .center
             label.adjustsFontSizeToFitWidth = true
             label.minimumScaleFactor = 0.8
             label.numberOfLines = 1
+            label.backgroundColor = GameConstants.Colors.surfaceDark
+            label.layer.cornerRadius = 6
+            label.layer.masksToBounds = true
+            label.layer.borderWidth = 1
+            label.layer.borderColor = GameConstants.Colors.borderColor.cgColor
             statsStackView.addArrangedSubview(label)
         }
-        
+
         resetStatsButton.setTitle("Reset", for: .normal)
-        resetStatsButton.backgroundColor = UIColor.systemRed
-        resetStatsButton.setTitleColor(.white, for: .normal)
-        resetStatsButton.layer.cornerRadius = 8
-        resetStatsButton.titleLabel?.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        resetStatsButton.backgroundColor = GameConstants.Colors.surfaceMedium
+        resetStatsButton.setTitleColor(GameConstants.Colors.ampCoral, for: .normal)
+        resetStatsButton.layer.cornerRadius = 6
+        resetStatsButton.layer.borderWidth = 1
+        resetStatsButton.layer.borderColor = GameConstants.Colors.ampCoral.withAlphaComponent(0.3).cgColor
+        resetStatsButton.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
         resetStatsButton.addTarget(self, action: #selector(resetStatsButtonTapped), for: .touchUpInside)
         statsStackView.addArrangedSubview(resetStatsButton)
-        
-        // Initial stats with shorter text
+
         gamesWonLabel.text = "Won: 0/0"
         accuracyLabel.text = "Acc: 0%"
         currentShotsLabel.text = "Shots: 0"
     }
     
     private func setupTutorial() {
-        tutorialView.backgroundColor = UIColor.black.withAlphaComponent(0.8)
-        tutorialView.layer.cornerRadius = 12
+        tutorialView.backgroundColor = GameConstants.Colors.surfaceDark.withAlphaComponent(0.96)
+        tutorialView.layer.cornerRadius = 14
+        tutorialView.layer.borderWidth = 1
+        tutorialView.layer.borderColor = GameConstants.Colors.ampBlue.withAlphaComponent(0.4).cgColor
+        tutorialView.layer.shadowColor = GameConstants.Colors.ampBlue.cgColor
+        tutorialView.layer.shadowOffset = .zero
+        tutorialView.layer.shadowRadius = 20
+        tutorialView.layer.shadowOpacity = 0.4
         tutorialView.isHidden = true
-        
-        tutorialLabel.textColor = .white
+
+        tutorialLabel.textColor = GameConstants.Colors.textPrimary
         tutorialLabel.numberOfLines = 0
         tutorialLabel.textAlignment = .center
-        tutorialLabel.font = UIFont.systemFont(ofSize: 16)
-        
-        skipTutorialButton.setTitle("Skip Tutorial", for: .normal)
-        skipTutorialButton.backgroundColor = UIColor.systemRed
+        tutorialLabel.font = UIFont.systemFont(ofSize: 15, weight: .medium)
+
+        skipTutorialButton.setTitle("Dismiss", for: .normal)
+        skipTutorialButton.backgroundColor = GameConstants.Colors.ampBlue
         skipTutorialButton.setTitleColor(.white, for: .normal)
         skipTutorialButton.layer.cornerRadius = 8
+        skipTutorialButton.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
         skipTutorialButton.addTarget(self, action: #selector(skipTutorialTapped), for: .touchUpInside)
     }
     
@@ -550,12 +609,23 @@ class GameViewController: UIViewController {
     private func updateShipButtonSelection(selected: GameConstants.ShipType) {
         for (shipType, button) in shipButtons {
             if shipType == selected {
-                button.backgroundColor = UIColor.systemGreen
+                button.backgroundColor = GameConstants.Colors.ampTeal
+                button.setTitleColor(.white, for: .normal)
+                button.layer.borderColor = GameConstants.Colors.ampTeal.withAlphaComponent(0.6).cgColor
+                button.layer.shadowColor = GameConstants.Colors.ampTeal.cgColor
+                button.layer.shadowOpacity = 0.5
+                button.layer.shadowRadius = 6
             } else if gameModel.isShipPlaced(shipType) {
-                button.backgroundColor = UIColor.systemGray
+                button.backgroundColor = GameConstants.Colors.surfaceDark
+                button.setTitleColor(GameConstants.Colors.textSecondary, for: .normal)
+                button.layer.borderColor = GameConstants.Colors.borderColor.cgColor
+                button.layer.shadowOpacity = 0
                 button.isEnabled = false
             } else {
-                button.backgroundColor = UIColor.systemBlue
+                button.backgroundColor = GameConstants.Colors.surfaceMedium
+                button.setTitleColor(GameConstants.Colors.textPrimary, for: .normal)
+                button.layer.borderColor = GameConstants.Colors.borderColor.cgColor
+                button.layer.shadowOpacity = 0
                 button.isEnabled = true
             }
         }
@@ -563,14 +633,18 @@ class GameViewController: UIViewController {
     
     private func updateShipPlacementStatus(_ shipType: GameConstants.ShipType, isPlaced: Bool) {
         guard let button = shipButtons[shipType] else { return }
-        
+
         DispatchQueue.main.async {
             if isPlaced {
-                button.backgroundColor = UIColor.systemGray
+                button.backgroundColor = GameConstants.Colors.surfaceDark
+                button.setTitleColor(GameConstants.Colors.ampTeal, for: .normal)
+                button.layer.borderColor = GameConstants.Colors.ampTeal.withAlphaComponent(0.3).cgColor
                 button.isEnabled = false
                 button.setTitle("✓", for: .normal)
             } else {
-                button.backgroundColor = UIColor.systemBlue
+                button.backgroundColor = GameConstants.Colors.surfaceMedium
+                button.setTitleColor(GameConstants.Colors.textPrimary, for: .normal)
+                button.layer.borderColor = GameConstants.Colors.borderColor.cgColor
                 button.isEnabled = true
                 // Restore original button text
                 let buttonTitle: String
@@ -597,7 +671,15 @@ class GameViewController: UIViewController {
     private func updateHeatmapButton() {
         DispatchQueue.main.async {
             self.showHeatmapButton.setTitle(self.isShowingHeatmap ? "Hide\nHeatmap" : "Show\nHeatmap", for: .normal)
-            self.showHeatmapButton.backgroundColor = self.isShowingHeatmap ? UIColor.systemRed : UIColor.systemGray
+            if self.isShowingHeatmap {
+                self.showHeatmapButton.backgroundColor = GameConstants.Colors.ampCoral
+                self.showHeatmapButton.setTitleColor(.white, for: .normal)
+                self.showHeatmapButton.layer.borderColor = GameConstants.Colors.ampCoral.withAlphaComponent(0.4).cgColor
+            } else {
+                self.showHeatmapButton.backgroundColor = GameConstants.Colors.surfaceMedium
+                self.showHeatmapButton.setTitleColor(GameConstants.Colors.textSecondary, for: .normal)
+                self.showHeatmapButton.layer.borderColor = GameConstants.Colors.borderColor.cgColor
+            }
         }
     }
     
@@ -729,6 +811,17 @@ extension GameViewController: GridViewDelegate {
                 }
             }
         }
+    }
+}
+
+// MARK: - UILabel Letter Spacing Helper
+
+private extension UILabel {
+    func letterSpacing(_ spacing: CGFloat) {
+        guard let text = self.text else { return }
+        let attributedString = NSMutableAttributedString(string: text)
+        attributedString.addAttribute(.kern, value: spacing, range: NSRange(location: 0, length: text.count))
+        self.attributedText = attributedString
     }
 }
 
