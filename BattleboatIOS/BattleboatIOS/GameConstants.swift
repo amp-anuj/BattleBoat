@@ -94,6 +94,16 @@ struct GameConstants {
         static let borderColor    = UIColor(red: 0.545, green: 0.616, blue: 0.714, alpha: 0.18)
     }
     
+    // MARK: - Inter Font Helpers
+    // Fonts are registered via Info.plist UIAppFonts.
+    // In Xcode, add the Fonts/ folder to the target under Build Phases > Copy Bundle Resources.
+    struct Fonts {
+        static func regular(_ size: CGFloat)  -> UIFont { UIFont(name: "Inter-Regular",  size: size) ?? .systemFont(ofSize: size, weight: .regular) }
+        static func medium(_ size: CGFloat)   -> UIFont { UIFont(name: "Inter-Medium",   size: size) ?? .systemFont(ofSize: size, weight: .medium) }
+        static func semiBold(_ size: CGFloat) -> UIFont { UIFont(name: "Inter-SemiBold", size: size) ?? .systemFont(ofSize: size, weight: .semibold) }
+        static func bold(_ size: CGFloat)     -> UIFont { UIFont(name: "Inter-Bold",     size: size) ?? .systemFont(ofSize: size, weight: .bold) }
+    }
+
     // Game States
     enum GameState {
         case placingShips

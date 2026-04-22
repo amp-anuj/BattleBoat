@@ -98,7 +98,7 @@ class GameViewController: UIViewController {
 
         // Setup title — gradient text effect via attributed string
         titleLabel.text = "BATTLEBOAT"
-        titleLabel.font = UIFont.systemFont(ofSize: 28, weight: .heavy)
+        titleLabel.font = GameConstants.Fonts.bold(28)
         titleLabel.textColor = GameConstants.Colors.textPrimary
         titleLabel.textAlignment = .center
         titleLabel.layer.shadowColor = GameConstants.Colors.ampBlue.cgColor
@@ -110,7 +110,7 @@ class GameViewController: UIViewController {
         messageLabel.text = "Welcome to Battleboat! Place your ships to begin."
         messageLabel.numberOfLines = 0
         messageLabel.textAlignment = .center
-        messageLabel.font = UIFont.systemFont(ofSize: 14, weight: .regular)
+        messageLabel.font = GameConstants.Fonts.regular(14)
         messageLabel.textColor = GameConstants.Colors.textSecondary
         messageLabel.backgroundColor = GameConstants.Colors.surfaceDark
         messageLabel.layer.cornerRadius = 10
@@ -121,13 +121,13 @@ class GameViewController: UIViewController {
         // Setup grid section labels
         playerGridLabel.text = "YOUR FLEET"
         playerGridLabel.textAlignment = .center
-        playerGridLabel.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+        playerGridLabel.font = GameConstants.Fonts.semiBold(11)
         playerGridLabel.textColor = GameConstants.Colors.ampTeal
         playerGridLabel.letterSpacing(1.2)
 
         enemyGridLabel.text = "ENEMY WATERS"
         enemyGridLabel.textAlignment = .center
-        enemyGridLabel.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+        enemyGridLabel.font = GameConstants.Fonts.semiBold(11)
         enemyGridLabel.textColor = GameConstants.Colors.ampCoral
         enemyGridLabel.letterSpacing(1.2)
 
@@ -193,7 +193,7 @@ class GameViewController: UIViewController {
             button.layer.borderColor = GameConstants.Colors.borderColor.cgColor
             button.titleLabel?.numberOfLines = 2
             button.titleLabel?.textAlignment = .center
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 11, weight: .semibold)
+            button.titleLabel?.font = GameConstants.Fonts.semiBold(11)
             button.titleLabel?.adjustsFontSizeToFitWidth = true
             button.titleLabel?.minimumScaleFactor = 0.7
             button.addTarget(self, action: #selector(shipButtonTapped(_:)), for: .touchUpInside)
@@ -218,7 +218,7 @@ class GameViewController: UIViewController {
             button.layer.borderColor = GameConstants.Colors.borderColor.cgColor
             button.titleLabel?.numberOfLines = 2
             button.titleLabel?.textAlignment = .center
-            button.titleLabel?.font = UIFont.systemFont(ofSize: 10, weight: .semibold)
+            button.titleLabel?.font = GameConstants.Fonts.semiBold(10)
             button.titleLabel?.adjustsFontSizeToFitWidth = true
             button.titleLabel?.minimumScaleFactor = 0.7
             controlsStackView.addArrangedSubview(button)
@@ -261,7 +261,7 @@ class GameViewController: UIViewController {
         let labels = [gamesWonLabel, accuracyLabel, currentShotsLabel]
 
         for label in labels {
-            label.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+            label.font = GameConstants.Fonts.semiBold(13)
             label.textColor = GameConstants.Colors.ampBlueLt
             label.textAlignment = .center
             label.adjustsFontSizeToFitWidth = true
@@ -281,7 +281,7 @@ class GameViewController: UIViewController {
         resetStatsButton.layer.cornerRadius = 6
         resetStatsButton.layer.borderWidth = 1
         resetStatsButton.layer.borderColor = GameConstants.Colors.ampCoral.withAlphaComponent(0.3).cgColor
-        resetStatsButton.titleLabel?.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        resetStatsButton.titleLabel?.font = GameConstants.Fonts.semiBold(12)
         resetStatsButton.addTarget(self, action: #selector(resetStatsButtonTapped), for: .touchUpInside)
         statsStackView.addArrangedSubview(resetStatsButton)
 
@@ -304,13 +304,13 @@ class GameViewController: UIViewController {
         tutorialLabel.textColor = GameConstants.Colors.textPrimary
         tutorialLabel.numberOfLines = 0
         tutorialLabel.textAlignment = .center
-        tutorialLabel.font = UIFont.systemFont(ofSize: 15, weight: .medium)
+        tutorialLabel.font = GameConstants.Fonts.medium(15)
 
         skipTutorialButton.setTitle("Dismiss", for: .normal)
         skipTutorialButton.backgroundColor = GameConstants.Colors.ampBlue
         skipTutorialButton.setTitleColor(.white, for: .normal)
         skipTutorialButton.layer.cornerRadius = 8
-        skipTutorialButton.titleLabel?.font = UIFont.systemFont(ofSize: 13, weight: .semibold)
+        skipTutorialButton.titleLabel?.font = GameConstants.Fonts.semiBold(13)
         skipTutorialButton.addTarget(self, action: #selector(skipTutorialTapped), for: .touchUpInside)
     }
     
