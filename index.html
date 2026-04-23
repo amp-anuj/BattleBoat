@@ -158,6 +158,12 @@
 				if (payload && payload.nudge) {
 					engagement.gs.show(payload.nudge);
 				}
+
+				const qsVariant = experiment.variant('quick-start-placement');
+				console.log('Quick start variant:', qsVariant.value);
+				if (qsVariant.value === 'treatment') {
+					document.getElementById('place-randomly').removeAttribute('class');
+				}
 			});
 			
 
