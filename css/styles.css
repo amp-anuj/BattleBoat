@@ -180,7 +180,7 @@ h1 {
 #roster-sidebar,
 #stats-sidebar,
 #restart-sidebar,
-#user-id-sidebar {
+#amp-panel {
   width: 156px;
   padding: 18px 16px;
   background: var(--amp-surface);
@@ -192,12 +192,12 @@ h1 {
 }
 #roster-sidebar, #restart-sidebar { left: -188px; }
 #stats-sidebar                     { right: -188px; }
-#user-id-sidebar                   { right: -188px; top: calc(3em + 180px); }
+#amp-panel                         { right: -188px; top: calc(3em + 259px); }
 
 #roster-sidebar h2,
 #stats-sidebar h2,
 #restart-sidebar h2,
-#user-id-sidebar h2 {
+#amp-panel h2 {
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -341,54 +341,122 @@ button:active { transform: translateY(0); box-shadow: none; }
   transform: none;
 }
 
-#user-id-input {
+/* ── Amplitude panel ──────────────────────────────────────── */
+.amp-section { margin: 0; }
+
+.amp-divider {
+  height: 1px;
+  background: var(--amp-border);
+  margin: 12px 0;
+}
+
+.amp-field-label {
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--amp-text-3);
+  display: block;
+  margin-bottom: 4px;
+}
+
+.amp-current-value {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--amp-teal);
+  margin-bottom: 6px;
+  word-break: break-all;
+  line-height: 1.2;
+}
+.amp-current-value.is-anonymous { color: var(--amp-coral-light); }
+
+.amp-input {
   display: block;
   width: 100%;
   box-sizing: border-box;
-  font-size: 0.75rem;
+  font-size: 0.73rem;
   font-family: inherit;
   color: var(--amp-text);
   background: var(--amp-surface-2);
   border: 1px solid var(--amp-border-2);
   border-radius: var(--radius-sm);
-  padding: 7px 10px;
-  margin-top: 10px;
+  padding: 6px 8px;
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
 }
-#user-id-input::placeholder { color: var(--amp-text-3); }
-#user-id-input:focus {
+.amp-input::placeholder { color: var(--amp-text-3); }
+.amp-input:focus {
   border-color: rgba(57,134,247,0.6);
   box-shadow: 0 0 0 2px rgba(57,134,247,0.15);
 }
 
-#set-user-id {
+.amp-btn-row {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+.amp-btn-row button { margin: 0; flex: 1; }
+
+.amp-set-btn {
   color: #fff;
   background: linear-gradient(135deg, var(--amp-blue) 0%, var(--amp-blue-light) 100%);
   border-color: var(--amp-blue);
-  box-shadow: 0 2px 8px rgba(19,82,204,0.35);
-  font-size: 0.75rem;
-  margin-top: 8px;
+  box-shadow: 0 2px 8px rgba(19,82,204,0.3);
+  font-size: 0.72rem;
+  padding: 6px 8px;
 }
-#set-user-id:hover {
+.amp-set-btn:hover {
   background: linear-gradient(135deg, var(--amp-blue-light) 0%, #5EAAFF 100%);
   border-color: var(--amp-blue-light);
-  box-shadow: 0 0 0 1px rgba(57,134,247,0.5), 0 4px 16px rgba(57,134,247,0.45);
+  box-shadow: 0 0 0 1px rgba(57,134,247,0.5), 0 4px 12px rgba(57,134,247,0.4);
   color: #fff;
 }
 
-#reset-user-id {
+.amp-logout-btn {
   background: transparent;
   border-color: var(--amp-border);
   color: var(--amp-text-3);
   font-size: 0.72rem;
-  padding: 7px 10px;
-  margin-top: 6px;
+  padding: 6px 8px;
 }
-#reset-user-id:hover {
+.amp-logout-btn:hover {
   border-color: var(--amp-coral);
   color: var(--amp-coral-light);
   background: rgba(232,65,14,0.08);
+  box-shadow: none;
+  transform: none;
+}
+
+.amp-prop { margin-top: 10px; }
+.amp-prop:first-child { margin-top: 0; }
+
+.amp-prop-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.amp-prop-set-btn {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: 3px 8px;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--amp-blue-light);
+  background: rgba(57,134,247,0.1);
+  border: 1px solid rgba(57,134,247,0.25);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.amp-prop-set-btn:hover {
+  background: rgba(57,134,247,0.2);
+  border-color: rgba(57,134,247,0.5);
+  color: #fff;
   box-shadow: none;
   transform: none;
 }

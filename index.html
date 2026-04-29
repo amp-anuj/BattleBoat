@@ -195,15 +195,44 @@
 				<button id="start-game" class="hidden">Start Game</button>
 				<button id="place-randomly" class="hidden">Place Randomly and Start</button>
 			</div>
-			<div id="user-id-sidebar">
-				<h2>Identity</h2>
-				<div class="stat-block">
-					<span class="stat-label">User ID</span>
-					<span id="current-user-id" class="stat-value stat-value--teal">anonymous</span>
+			<div id="amp-panel">
+				<h2>Amplitude</h2>
+
+				<div class="amp-section">
+					<div class="amp-field-label">User ID</div>
+					<span id="current-user-id" class="amp-current-value">anonymous</span>
+					<input type="text" id="user-id-input" class="amp-input" placeholder="Enter ID…" />
+					<div class="amp-btn-row">
+						<button id="set-user-id" class="amp-set-btn">Set</button>
+						<button id="reset-user-id" class="amp-logout-btn">Logout</button>
+					</div>
 				</div>
-				<input type="text" id="user-id-input" placeholder="Enter user ID…" />
-				<button id="set-user-id">Set User ID</button>
-				<button id="reset-user-id">Logout / Reset</button>
+
+				<div class="amp-divider"></div>
+
+				<div class="amp-section">
+					<div class="amp-prop">
+						<div class="amp-prop-header">
+							<span class="amp-field-label">Property A</span>
+							<button class="amp-prop-set-btn" id="set-prop-a">Set</button>
+						</div>
+						<input type="text" id="prop-a-input" class="amp-input" placeholder="Value…" />
+					</div>
+					<div class="amp-prop">
+						<div class="amp-prop-header">
+							<span class="amp-field-label">Property B</span>
+							<button class="amp-prop-set-btn" id="set-prop-b">Set</button>
+						</div>
+						<input type="text" id="prop-b-input" class="amp-input" placeholder="Value…" />
+					</div>
+					<div class="amp-prop">
+						<div class="amp-prop-header">
+							<span class="amp-field-label">Property C</span>
+							<button class="amp-prop-set-btn" id="set-prop-c">Set</button>
+						</div>
+						<input type="text" id="prop-c-input" class="amp-input" placeholder="Value…" />
+					</div>
+				</div>
 			</div>
 			<div id="stats-sidebar">
 				<h2>Stats</h2>
@@ -255,37 +284,52 @@
 	<script src="js/battleboat.js"></script>
 	<script>
 		(function () {
-			const input = document.getElementById('user-id-input');
-			const label = document.getElementById('current-user-id');
+			const uidInput = document.getElementById('user-id-input');
+			const uidLabel = document.getElementById('current-user-id');
 
-			function refreshLabel() {
+			function refreshUserId() {
 				const uid = amplitude.getUserId();
-				label.textContent = uid || 'anonymous';
-				label.className = uid
-					? 'stat-value stat-value--teal'
-					: 'stat-value stat-value--coral';
+				uidLabel.textContent = uid || 'anonymous';
+				uidLabel.className = uid ? 'amp-current-value' : 'amp-current-value is-anonymous';
 			}
-
-			refreshLabel();
+			refreshUserId();
 
 			document.getElementById('set-user-id').addEventListener('click', function () {
-				const uid = input.value.trim();
+				const uid = uidInput.value.trim();
 				if (!uid) return;
 				amplitude.setUserId(uid);
 				console.log('✅ Amplitude user ID set:', uid);
-				input.value = '';
-				refreshLabel();
+				uidInput.value = '';
+				refreshUserId();
 			});
-
-			input.addEventListener('keydown', function (e) {
+			uidInput.addEventListener('keydown', function (e) {
 				if (e.key === 'Enter') document.getElementById('set-user-id').click();
 			});
 
 			document.getElementById('reset-user-id').addEventListener('click', function () {
 				amplitude.reset();
-				console.log('🔄 Amplitude user ID reset (new anonymous session)');
-				input.value = '';
-				refreshLabel();
+				console.log('🔄 Amplitude user ID reset');
+				uidInput.value = '';
+				refreshUserId();
+			});
+
+			['a', 'b', 'c'].forEach(function (prop) {
+				const input = document.getElementById('prop-' + prop + '-input');
+				const btn = document.getElementById('set-prop-' + prop);
+				const propName = 'Property ' + prop.toUpperCase();
+
+				btn.addEventListener('click', function () {
+					const val = input.value.trim();
+					if (!val) return;
+					const identifyEvent = new amplitude.Identify();
+					identifyEvent.set(propName, val);
+					amplitude.identify(identifyEvent);
+					console.log('✅ Amplitude property set:', propName, '=', val);
+					input.value = '';
+				});
+				input.addEventListener('keydown', function (e) {
+					if (e.key === 'Enter') btn.click();
+				});
 			});
 		})();
 	</script>
