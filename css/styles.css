@@ -179,7 +179,8 @@ h1 {
 /* ── Sidebars ─────────────────────────────────────────────── */
 #roster-sidebar,
 #stats-sidebar,
-#restart-sidebar {
+#restart-sidebar,
+#user-id-sidebar {
   width: 156px;
   padding: 18px 16px;
   background: var(--amp-surface);
@@ -191,10 +192,12 @@ h1 {
 }
 #roster-sidebar, #restart-sidebar { left: -188px; }
 #stats-sidebar                     { right: -188px; }
+#user-id-sidebar                   { right: -188px; top: calc(3em + 180px); }
 
 #roster-sidebar h2,
 #stats-sidebar h2,
-#restart-sidebar h2 {
+#restart-sidebar h2,
+#user-id-sidebar h2 {
   font-size: 0.65rem;
   font-weight: 700;
   letter-spacing: 0.14em;
@@ -331,6 +334,58 @@ button:active { transform: translateY(0); box-shadow: none; }
   margin-top: 12px;
 }
 #reset-stats:hover {
+  border-color: var(--amp-coral);
+  color: var(--amp-coral-light);
+  background: rgba(232,65,14,0.08);
+  box-shadow: none;
+  transform: none;
+}
+
+#user-id-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  font-size: 0.75rem;
+  font-family: inherit;
+  color: var(--amp-text);
+  background: var(--amp-surface-2);
+  border: 1px solid var(--amp-border-2);
+  border-radius: var(--radius-sm);
+  padding: 7px 10px;
+  margin-top: 10px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+#user-id-input::placeholder { color: var(--amp-text-3); }
+#user-id-input:focus {
+  border-color: rgba(57,134,247,0.6);
+  box-shadow: 0 0 0 2px rgba(57,134,247,0.15);
+}
+
+#set-user-id {
+  color: #fff;
+  background: linear-gradient(135deg, var(--amp-blue) 0%, var(--amp-blue-light) 100%);
+  border-color: var(--amp-blue);
+  box-shadow: 0 2px 8px rgba(19,82,204,0.35);
+  font-size: 0.75rem;
+  margin-top: 8px;
+}
+#set-user-id:hover {
+  background: linear-gradient(135deg, var(--amp-blue-light) 0%, #5EAAFF 100%);
+  border-color: var(--amp-blue-light);
+  box-shadow: 0 0 0 1px rgba(57,134,247,0.5), 0 4px 16px rgba(57,134,247,0.45);
+  color: #fff;
+}
+
+#reset-user-id {
+  background: transparent;
+  border-color: var(--amp-border);
+  color: var(--amp-text-3);
+  font-size: 0.72rem;
+  padding: 7px 10px;
+  margin-top: 6px;
+}
+#reset-user-id:hover {
   border-color: var(--amp-coral);
   color: var(--amp-coral-light);
   background: rgba(232,65,14,0.08);

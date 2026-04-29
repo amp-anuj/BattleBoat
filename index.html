@@ -195,6 +195,16 @@
 				<button id="start-game" class="hidden">Start Game</button>
 				<button id="place-randomly" class="hidden">Place Randomly and Start</button>
 			</div>
+			<div id="user-id-sidebar">
+				<h2>Identity</h2>
+				<div class="stat-block">
+					<span class="stat-label">User ID</span>
+					<span id="current-user-id" class="stat-value stat-value--teal">anonymous</span>
+				</div>
+				<input type="text" id="user-id-input" placeholder="Enter user ID…" />
+				<button id="set-user-id">Set User ID</button>
+				<button id="reset-user-id">Logout / Reset</button>
+			</div>
 			<div id="stats-sidebar">
 				<h2>Stats</h2>
 				<div class="stat-block">
@@ -243,6 +253,42 @@
 	</script>
 
 	<script src="js/battleboat.js"></script>
+	<script>
+		(function () {
+			const input = document.getElementById('user-id-input');
+			const label = document.getElementById('current-user-id');
+
+			function refreshLabel() {
+				const uid = amplitude.getUserId();
+				label.textContent = uid || 'anonymous';
+				label.className = uid
+					? 'stat-value stat-value--teal'
+					: 'stat-value stat-value--coral';
+			}
+
+			refreshLabel();
+
+			document.getElementById('set-user-id').addEventListener('click', function () {
+				const uid = input.value.trim();
+				if (!uid) return;
+				amplitude.setUserId(uid);
+				console.log('✅ Amplitude user ID set:', uid);
+				input.value = '';
+				refreshLabel();
+			});
+
+			input.addEventListener('keydown', function (e) {
+				if (e.key === 'Enter') document.getElementById('set-user-id').click();
+			});
+
+			document.getElementById('reset-user-id').addEventListener('click', function () {
+				amplitude.reset();
+				console.log('🔄 Amplitude user ID reset (new anonymous session)');
+				input.value = '';
+				refreshLabel();
+			});
+		})();
+	</script>
 	<span class="prefetch" id="prefetch1"></span>
 	<span class="prefetch" id="prefetch2"></span>
 	<span class="prefetch" id="prefetch3"></span>
