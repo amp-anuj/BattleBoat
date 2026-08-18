@@ -220,16 +220,32 @@ struct SessionReplayLabView: View {
             BlockedRegion(text: "Blocked enemy fleet layout — should be a placeholder")
                 .frame(maxWidth: .infinity, minHeight: 44)
 
-            Toggle("Test animated visibility", isOn: $showHiddenRow)
-                .tint(.ampBlue)
-                .foregroundColor(.ampTextPrimary)
+            Text("Appear / disappear capture test")
+                .font(.caption2).foregroundColor(.ampTextSecondary)
+                .padding(.top, 4)
+            Button {
+                withAnimation(.easeInOut) { showHiddenRow.toggle() }
+            } label: {
+                HStack {
+                    Image(systemName: showHiddenRow ? "eye.slash" : "eye")
+                    Text(showHiddenRow ? "Hide detail card" : "Show detail card")
+                }
+                .frame(maxWidth: .infinity)
+            }
+            .buttonStyle(.borderedProminent).tint(.ampBlue)
             if showHiddenRow {
-                Text("Toggle-visible content: flagship anchored at D4")
-                    .foregroundColor(.ampTextPrimary)
-                    .transition(.opacity.combined(with: .move(edge: .top)))
+                HStack {
+                    Image(systemName: "flag.fill").foregroundColor(.ampTeal)
+                    Text("Flagship anchored at D4")
+                        .foregroundColor(.ampTextPrimary)
+                }
+                .padding(12)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.ampSurface2)
+                .cornerRadius(8)
+                .transition(.opacity.combined(with: .move(edge: .top)))
             }
         }
-        .animation(.easeInOut, value: showHiddenRow)
     }
 
     private var sheetDialogSection: some View {
