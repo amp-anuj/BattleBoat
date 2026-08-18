@@ -334,11 +334,45 @@
 	// Creates click event listeners on the human player's grid to handle
 	// ship placement after the user has selected a ship name
 	Game.prototype.placementListener = function (e) {
-		var self = e.target.self;
-		if (self.placingOnGrid) {
-			// Extract coordinates from event listener
-			var x = parseInt(e.target.getAttribute('data-x'), 10);
-			var y = parseInt(e.target.getAttribute('data-y'), 10);
+		// `this` is the grid container (delegated listener). Fall back to the
+		// stored reference in case the listener is ever re-bound to a cell.
+		var self = (this && this.self) || (e.target && e.target.self);
+		if (!self || !self.placingOnGrid) {
+			return;
+		}
+
+		// Resolve the intended cell. A direct hit on a `.grid-cell` is the
+		// common case; clicks landing in the inter-cell gutters or rounded
+		// corners hit the container instead, so we snap to the nearest cell by
+		// geometry. This is the fix for the silent dead-click bug where such
+		// clicks previously produced no placement and no telemetry.
+		var cell = closestGridCell(e.target);
+		var usedFallback = false;
+		if (!cell) {
+			cell = self.nearestGridCell(e.clientX, e.clientY);
+			usedFallback = !!cell;
+		}
+
+		// Instrumentation: fire on every placement click while a ship is
+		// selected so attempt-vs-success (and the gutter-click rate via
+		// "Used Fallback") is measurable, independent of Rage/Dead Click
+		// autocapture.
+		amplitude.track('Ship Placement Attempted', {
+			Ship: Game.placeShipType,
+			"Cell Resolved": !!cell,
+			"Used Fallback": usedFallback,
+			X: cell ? parseInt(cell.getAttribute('data-x'), 10) : null,
+			Y: cell ? parseInt(cell.getAttribute('data-y'), 10) : null,
+		});
+
+		if (!cell) {
+			return;
+		}
+
+		{
+			// Extract coordinates from the resolved cell
+			var x = parseInt(cell.getAttribute('data-x'), 10);
+			var y = parseInt(cell.getAttribute('data-y'), 10);
 
 			// Don't screw up the direction if the user tries to place again.
 			var successful = self.humanFleet.placeShip(x, y, Game.placeShipDirection, Game.placeShipType);
@@ -371,6 +405,9 @@
 					el.setAttribute('class', 'invisible');
 				}
 			} else {
+				// Illegal placement: give the click visible feedback so it
+				// never looks like a silent no-op.
+				flashRejectCell(cell);
 				amplitude.track('Ship Placed', {
 					Ship: Game.placeShipType,
 					Success: false,
@@ -380,6 +417,35 @@
 			}
 
 		}
+	};
+	// Finds the human grid cell whose center is closest to the given viewport
+	// coordinates. Used to recover the intended cell when a click lands in the
+	// gutter/corner dead-zones between cells. Returns null if the closest cell
+	// is still more than one cell-spacing away (i.e. the click was outside the
+	// grid area).
+	Game.prototype.nearestGridCell = function (clientX, clientY) {
+		var cells = document.querySelectorAll('.human-player .grid-cell');
+		var best = null;
+		var bestDist = Infinity;
+		var maxDist = 0;
+		for (var i = 0; i < cells.length; i++) {
+			var rect = cells[i].getBoundingClientRect();
+			var dx = clientX - (rect.left + rect.width / 2);
+			var dy = clientY - (rect.top + rect.height / 2);
+			var dist = dx * dx + dy * dy;
+			// Threshold = one full cell-spacing (cell size + margins) from the
+			// center, squared. Comfortably covers the gutters while rejecting
+			// clicks well outside the grid.
+			if (!maxDist) {
+				var spacing = rect.width + 4;
+				maxDist = spacing * spacing;
+			}
+			if (dist < bestDist) {
+				bestDist = dist;
+				best = cells[i];
+			}
+		}
+		return (best && bestDist <= maxDist) ? best : null;
 	};
 	// Creates mouseover event listeners that handles mouseover on the
 	// human player's grid to draw a phantom ship implying that the user
@@ -606,14 +672,22 @@
 			playerRoster[i].addEventListener('click', this.rosterListener, false);
 		}
 
-		// Add a click listener to the human player's grid while placing
-		var humanCells = document.querySelector('.human-player').childNodes;
+		// Add mouseover/mouseout listeners to each human grid cell for the
+		// phantom-ship preview, plus a single *delegated* click listener on the
+		// grid container itself. The click handler used to be attached to each
+		// cell individually, which meant clicks landing in the ~2px inter-cell
+		// gutters or rounded-corner dead-zones hit the container (no listener,
+		// no `self`) and were silently dropped with no telemetry. Delegating to
+		// the container lets us resolve every click to its intended cell.
+		var humanGrid = document.querySelector('.human-player');
+		var humanCells = humanGrid.childNodes;
 		for (var k = 0; k < humanCells.length; k++) {
 			humanCells[k].self = this;
-			humanCells[k].addEventListener('click', this.placementListener, false);
 			humanCells[k].addEventListener('mouseover', this.placementMouseover, false);
 			humanCells[k].addEventListener('mouseout', this.placementMouseout, false);
 		}
+		humanGrid.self = this;
+		humanGrid.addEventListener('click', this.placementListener, false);
 
 		var rotateButton = document.getElementById('rotate-button');
 		rotateButton.addEventListener('click', this.toggleRotation, false);
@@ -1416,6 +1490,46 @@ function transitionEndEventName() {
 			return transitions[i];
 		}
 	}
+}
+
+// Walks up from an event target to the enclosing `.grid-cell`, if any.
+// Returns null when the click landed on the grid container (a gutter/corner)
+// rather than on a cell. Uses `closest` where available with a manual fallback
+// for older browsers.
+function closestGridCell(node) {
+	if (!node) {
+		return null;
+	}
+	if (typeof node.closest === 'function') {
+		return node.closest('.grid-cell');
+	}
+	while (node && node.nodeType === 1) {
+		var cls = node.getAttribute && node.getAttribute('class');
+		if (cls && cls.indexOf('grid-cell') > -1) {
+			return node;
+		}
+		node = node.parentNode;
+	}
+	return null;
+}
+
+// Briefly flashes a cell to signal a rejected (illegal) placement so a click
+// on the grid never looks like a silent no-op. The class is removed after the
+// animation so repeated attempts keep flashing.
+function flashRejectCell(cell) {
+	if (!cell) {
+		return;
+	}
+	var reject = ' grid-cell--reject';
+	var classes = cell.getAttribute('class') || '';
+	if (classes.indexOf(reject) > -1) {
+		return;
+	}
+	cell.setAttribute('class', classes + reject);
+	setTimeout(function () {
+		var current = cell.getAttribute('class') || '';
+		cell.setAttribute('class', current.replace(reject, ''));
+	}, 300);
 }
 
 // Returns a random number between min (inclusive) and max (exclusive)
