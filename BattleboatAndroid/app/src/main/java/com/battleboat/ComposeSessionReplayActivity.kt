@@ -168,7 +168,7 @@ private fun ComposeSessionReplayLab(
     var notes by remember { mutableStateOf("Enemy carrier last seen near G7.") }
     var showSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
-    var showSensitive by remember { mutableStateOf(true) }
+    var showHiddenRow by remember { mutableStateOf(true) }
     var shotCount by remember { mutableIntStateOf(0) }
     var selectedOpponent by remember { mutableStateOf("Nelson") }
     var progress by remember { mutableFloatStateOf(0.2f) }
@@ -343,11 +343,11 @@ private fun ComposeSessionReplayLab(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
-                        Text("Show sensitive row")
+                        Text("Show hidden row")
                         Spacer(Modifier.weight(1f))
-                        Switch(checked = showSensitive, onCheckedChange = { showSensitive = it })
+                        Switch(checked = showHiddenRow, onCheckedChange = { showHiddenRow = it })
                     }
-                    AnimatedVisibility(visible = showSensitive) {
+                    AnimatedVisibility(visible = showHiddenRow) {
                         Text(
                             "Toggle-visible content: flagship anchored at D4",
                             modifier = Modifier.padding(top = 8.dp)
