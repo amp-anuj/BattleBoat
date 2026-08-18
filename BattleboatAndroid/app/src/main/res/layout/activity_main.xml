@@ -129,6 +129,22 @@
             app:strokeWidth="1dp"
             style="@style/Widget.Material3.Button.OutlinedButton" />
 
+        <!-- Compose Session Replay lab — NBA alpha.2 repro -->
+        <Button
+            android:id="@+id/button_compose_sr"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginTop="8dp"
+            android:text="Compose Session Replay Lab"
+            android:textSize="15sp"
+            android:textAllCaps="false"
+            android:textColor="#FDB927"
+            android:backgroundTint="@color/amp_surface_3"
+            app:cornerRadius="10dp"
+            app:strokeColor="#FDB927"
+            app:strokeWidth="1dp"
+            style="@style/Widget.Material3.Button.OutlinedButton" />
+
     </LinearLayout>
 
     <!-- Footer badge -->

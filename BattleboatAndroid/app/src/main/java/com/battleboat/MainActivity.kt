@@ -54,6 +54,7 @@ class MainActivity : AppCompatActivity() {
         val statisticsButton = findViewById<Button>(R.id.button_statistics)
         val settingsButton = findViewById<Button>(R.id.button_settings)
         val webViewButton = findViewById<Button>(R.id.button_webview)
+        val composeSrButton = findViewById<Button>(R.id.button_compose_sr)
         
         playButton.setOnClickListener {
             navigateToGame()
@@ -73,6 +74,10 @@ class MainActivity : AppCompatActivity() {
         
         webViewButton.setOnClickListener {
             navigateToWebView()
+        }
+
+        composeSrButton.setOnClickListener {
+            navigateToComposeSessionReplayLab()
         }
         
         // Long press on settings to show analytics debug
@@ -126,6 +131,10 @@ class MainActivity : AppCompatActivity() {
         sessionId?.let { intent.putExtra(WebViewActivity.EXTRA_SESSION_ID, it) }
         
         startActivity(intent)
+    }
+
+    private fun navigateToComposeSessionReplayLab() {
+        startActivity(Intent(this, ComposeSessionReplayActivity::class.java))
     }
     
     private fun showStatistics() {

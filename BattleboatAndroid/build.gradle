@@ -9,6 +9,9 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:8.12.0'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        // Required for Session Replay 1.0.0-alpha.x Compose capture: instruments
+        // Compose bytecode at build time. Without it Compose UI is never recorded.
+        classpath 'com.amplitude:session-replay-gradle-plugin:1.0.0-alpha.2'
     }
 }
 

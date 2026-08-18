@@ -14,7 +14,11 @@ import com.amplitude.android.TrackingOptions
 import com.amplitude.android.engagement.AmplitudeEngagement
 import com.amplitude.android.engagement.AmplitudeBootOptions
 import com.amplitude.android.engagement.AmplitudeEndUser
+import com.amplitude.android.engagement.AmplitudeInitOptions
+import com.amplitude.android.engagement.AmplitudeLogLevel
 import com.amplitude.android.plugins.SessionReplayPlugin
+import com.amplitude.android.sessionreplay.config.MaskLevel
+import com.amplitude.android.sessionreplay.config.PrivacyConfig
 import com.amplitude.core.network.NetworkTrackingPlugin
 import com.amplitude.core.network.NetworkTrackingOptions
 import com.amplitude.core.network.NetworkTrackingOptions.CaptureRule
@@ -100,7 +104,10 @@ class AnalyticsManager private constructor(private val context: Context) {
             
             val amplitudeEngagement = AmplitudeEngagement(
                 context = context,
-                apiKey = key
+                apiKey = key,
+                // DEBUG so IntegrationsBridge forwarding logs are visible while verifying the
+                // App Store Review event lands. Revert to default (WARN) when done.
+                options = AmplitudeInitOptions(logLevel = AmplitudeLogLevel.DEBUG)
             )
             
             // Element targeting is automatically supported for non-Jetpack Compose views
@@ -114,18 +121,17 @@ class AnalyticsManager private constructor(private val context: Context) {
             // Note: Callbacks will be added after boot to avoid NullPointerException
 
             
-            // Initialize Session Replay plugin
-            // DISABLED: Compose Alpha support still has reflection access issues
-            // Error: "Field 'androidx.compose.runtime.collection.MutableVector.content' is inaccessible"
-            // Waiting for stable Compose support from Amplitude
-            Log.d(TAG, "⚠️ Session Replay disabled - Jetpack Compose Alpha has known issues")
-            /*
-            Log.d(TAG, "🔧 Creating Session Replay plugin...")
+            // Session Replay 1.0.0-alpha.2 — rewritten Compose capture (NBA beta spike)
+            // Match NBA test settings: sampleRate 1.0, MaskLevel.LIGHT, remote config off
+            // so local settings are not overridden by project remote config.
+            Log.d(TAG, "🔧 Creating Session Replay plugin (1.0.0-alpha.2, Light mask)...")
             sessionReplayPlugin = SessionReplayPlugin(
-                sampleRate = 1.0  // Record 100% of sessions for full coverage
+                sampleRate = 1.0,
+                enableRemoteConfig = false,
+                privacyConfig = PrivacyConfig(maskLevel = MaskLevel.LIGHT),
+                autoStart = true
             )
             Log.d(TAG, "✅ Session Replay plugin created successfully")
-            */
             
             Log.d(TAG, "🔧 Creating main Amplitude instance...")
             amplitude = Amplitude(
@@ -145,9 +151,8 @@ class AnalyticsManager private constructor(private val context: Context) {
             Log.d(TAG, "🔧 Adding plugins to Amplitude...")
             amplitude!!.add(amplitudeEngagement.getPlugin())
             Log.d(TAG, "✅ AmplitudeEngagement plugin added")
-            // Session Replay disabled - Compose Alpha issues
-            // amplitude!!.add(sessionReplayPlugin!!)
-            // Log.d(TAG, "✅ Session Replay plugin added")
+            amplitude!!.add(sessionReplayPlugin!!)
+            Log.d(TAG, "✅ Session Replay plugin added (Compose alpha.2)")
             amplitude!!.add(networkPlugin)
             Log.d(TAG, "✅ Network plugin added")
             
@@ -173,27 +178,26 @@ class AnalyticsManager private constructor(private val context: Context) {
             Log.d(TAG, "👤 Session ID: ${amplitude!!.sessionId}")
             Log.d(TAG, "🎯 User ID: ${amplitude!!.getUserId() ?: "Anonymous"}")
             
-            // Device ID is generated asynchronously - boot engagement after a short delay
-            android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
-                val deviceId = amplitude?.getDeviceId()
-                val userId = amplitude?.getUserId()
-                Log.d(TAG, "👤 Device ID (async): ${deviceId ?: "not yet available"}")
-                
-                // Boot engagement with device/user IDs once they're available
-                if (deviceId != null) {
-                    Log.d(TAG, "🔧 Booting AmplitudeEngagement with Device ID...")
-                    val bootOptions = AmplitudeBootOptions(
-                        user = AmplitudeEndUser(
-                            userId = userId,
-                            deviceId = deviceId
-                        )
-                    )
-                    amplitudeEngagement?.boot(bootOptions)
-                    Log.d(TAG, "✅ AmplitudeEngagement booted with Device ID: $deviceId")
-                } else {
-                    Log.w(TAG, "⚠️ Device ID still not available, engagement may not work properly")
-                }
-            }, 1000)
+            // NOTE: Removed the redundant standalone engagement.boot() that used to run here
+            // after a 1000ms delay. The plugin (added above via amplitudeEngagement.getPlugin())
+            // already boots the engagement SDK WITH a forwarding integration (amplitude.track)
+            // on the first analytics event. This standalone boot passed NO integrations, so the
+            // SDK's native boot() would clearIntegrations() and — because the JS core early-returns
+            // on "User already booted" — never re-register the forwarding integration. That left
+            // IntegrationsBridge with an empty integrations list, so ALL G&S events (Survey Viewed,
+            // Survey Engaged, and the new App Store Review event) were built but never forwarded to
+            // Amplitude Analytics. The plugin's own comment above ("no boot required") is correct.
+            //
+            // android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+            //     val deviceId = amplitude?.getDeviceId()
+            //     val userId = amplitude?.getUserId()
+            //     if (deviceId != null) {
+            //         val bootOptions = AmplitudeBootOptions(
+            //             user = AmplitudeEndUser(userId = userId, deviceId = deviceId)
+            //         )
+            //         amplitudeEngagement?.boot(bootOptions)
+            //     }
+            // }, 1000)
         } catch (e: Exception) {
             Log.e(TAG, "❌ Failed to initialize Amplitude Analytics", e)
             e.printStackTrace()
@@ -403,10 +407,33 @@ class AnalyticsManager private constructor(private val context: Context) {
      * Session Replay status - runs automatically when initialized
      */
     fun getSessionReplayStatus(): String {
-        return if (sessionReplayPlugin != null) {
-            "✅ Session Replay: Active (100% capture rate)"
+        val plugin = sessionReplayPlugin
+        return if (plugin != null) {
+            val recording = try {
+                plugin.isRecording()
+            } catch (e: Exception) {
+                false
+            }
+            "✅ Session Replay: Active (alpha.2, Light mask, sample=1.0, recording=$recording)"
         } else {
             "❌ Session Replay: Not initialized"
+        }
+    }
+
+    fun isSessionReplayRecording(): Boolean {
+        return try {
+            sessionReplayPlugin?.isRecording() == true
+        } catch (e: Exception) {
+            false
+        }
+    }
+
+    fun flushSessionReplay() {
+        try {
+            sessionReplayPlugin?.flush()
+            Log.d(TAG, "📹 Flushed Session Replay")
+        } catch (e: Exception) {
+            Log.e(TAG, "❌ Failed to flush Session Replay", e)
         }
     }
 
@@ -450,7 +477,7 @@ class AnalyticsManager private constructor(private val context: Context) {
         status.appendLine("✅ Analytics Enabled: ${isAnalyticsEnabled()}")
         status.appendLine("✅ Analytics Initialized: $isInitialized")
         status.appendLine("✅ Amplitude Instance: ${amplitude != null}")
-        status.appendLine("📹 Session Replay: ${if (sessionReplayPlugin != null) "Active (100% capture)" else "Not initialized"}")
+        status.appendLine("📹 Session Replay: ${getSessionReplayStatus()}")
         status.appendLine("🌐 Network Available: ${isNetworkAvailable()}")
         
         if (amplitude != null) {

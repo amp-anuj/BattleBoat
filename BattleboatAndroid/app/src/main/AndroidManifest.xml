@@ -45,6 +45,12 @@
             android:exported="false"
             android:screenOrientation="portrait"
             android:theme="@style/Theme.Battleboat" />
+
+        <activity
+            android:name=".ComposeSessionReplayActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Battleboat" />
             
     </application>
 

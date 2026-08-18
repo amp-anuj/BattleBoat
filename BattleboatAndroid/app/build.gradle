@@ -3,6 +3,13 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'org.jetbrains.kotlin.plugin.compose'
     id 'kotlin-parcelize'
+    id 'com.amplitude.session-replay'
+}
+
+// Session Replay runtime deps are declared explicitly below, so keep the
+// plugin's auto-add off to avoid duplicate/conflicting versions.
+sessionReplay {
+    autoAddDependencies = false
 }
 
 android {
@@ -62,6 +69,13 @@ android {
     }
 }
 
+// Engagement 3.12.x pulls the relocated org.commonmark:0.21.0 (via markwon), which
+// collides with the legacy com.atlassian.commonmark:0.13.0 on the classpath (identical
+// org.commonmark.* packages). Mirror the SDK's own fix.
+configurations.all {
+    exclude group: 'com.atlassian.commonmark'
+}
+
 dependencies {
     implementation 'androidx.core:core-ktx:1.15.0'
     implementation 'androidx.appcompat:appcompat:1.7.0'
@@ -71,14 +85,15 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.8.7'
     implementation 'androidx.fragment:fragment-ktx:1.8.5'
     
-    // Amplitude Analytics - latest version
-    implementation 'com.amplitude:analytics-android:1.22.4'
+    // Amplitude Analytics — 1.29+ required by Session Replay 1.0.0-alpha.x
+    implementation 'com.amplitude:analytics-android:1.30.1'
 
-    // Amplitude Guides and Surveys - latest version
-    implementation 'com.amplitude:amplitude-engagement-android:3.1.0'
+    // Amplitude Guides and Surveys - latest published version
+    implementation 'com.amplitude:amplitude-engagement-android:3.12.1'
     
-    // Amplitude Session Replay Plugin - with Jetpack Compose support (Alpha)
-    implementation 'com.amplitude:plugin-session-replay-android:0.21.0'
+    // Amplitude Session Replay Plugin — Compose rewrite (NBA beta / alpha.2)
+    // Matches https://amplitude.slack.com/archives/C0BBBRNQY2E/p1785853518180349
+    implementation 'com.amplitude:plugin-session-replay-android:1.0.0-alpha.2'
     
     // Coil for image loading (required by Amplitude Guides and Surveys)
     implementation 'io.coil-kt:coil:2.7.0'
@@ -122,11 +137,13 @@ dependencies {
         exclude group: 'org.jetbrains', module: 'annotations-java5'
     }
     
-    // Compose BOM for version alignment - latest stable
-    implementation platform('androidx.compose:compose-bom:2024.12.01')
+    // Compose BOM -> compose.ui 1.10.6. Session Replay 1.0.0-alpha.2 Compose
+    // instrumentation only supports Compose 1.10.x-1.11.x (see verifyComposeAbiTargets).
+    implementation platform('androidx.compose:compose-bom:2026.03.01')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-tooling-preview'
     implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material-icons-extended'
     implementation 'androidx.activity:activity-compose:1.9.3'
     implementation 'androidx.compose.runtime:runtime'
     implementation 'androidx.compose.foundation:foundation'
