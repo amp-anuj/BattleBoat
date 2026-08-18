@@ -29,6 +29,9 @@ BattleboatIOS/DerivedData/
 .AppleDouble
 .LSOverride
 
+# Claude Code local tooling / worktrees
+.claude/
+
 # IDE
 .vscode/
 .idea/
