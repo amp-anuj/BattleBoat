@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 import AmplitudeSessionReplay
 
 // ---------------------------------------------------------------------------
@@ -201,14 +202,24 @@ struct SessionReplayLabView: View {
     private var privacySection: some View {
         LabCard {
             SectionTitle("3. Privacy — blocking")
-            SectionBody("SwiftUI SR exposes .amp_setBlocked(); the blocked row below should render as a placeholder in the replay. (Text masking is driven globally by the mask level, not per-view.)")
-            Text("Blocked enemy fleet layout — should be a placeholder")
+            SectionBody("iOS SR captures the UIKit layer tree. A SwiftUI view is not a discrete UIView, so the SwiftUI .amp_setBlocked() modifier is NOT honored in this SR version — the first box still shows in the replay. The reliable path is a UIKit-backed view with amp_isBlocked = true (second box).")
+
+            Text("① SwiftUI .amp_setBlocked() — NOT captured (known gap)")
+                .font(.caption2).foregroundColor(.ampCoral)
+            Text("Blocked enemy fleet layout — still visible in the replay")
                 .frame(maxWidth: .infinity, minHeight: 44)
                 .padding(12)
                 .background(Color.ampCoral.opacity(0.16))
                 .cornerRadius(8)
                 .foregroundColor(.ampTextPrimary)
                 .amp_setBlocked(true)
+
+            Text("② UIKit amp_isBlocked via UIViewRepresentable — reliable")
+                .font(.caption2).foregroundColor(.ampTeal)
+                .padding(.top, 4)
+            BlockedRegion(text: "Blocked enemy fleet layout — should be a placeholder")
+                .frame(maxWidth: .infinity, minHeight: 44)
+
             Toggle("Test animated visibility", isOn: $showHiddenRow)
                 .tint(.ampBlue)
                 .foregroundColor(.ampTextPrimary)
@@ -384,6 +395,38 @@ private struct OpponentRow: View {
         .background(selected ? Color.ampBlue.opacity(0.28) : Color.ampNavy)
         .clipShape(RoundedRectangle(cornerRadius: 8))
     }
+}
+
+/// A UIKit-backed region marked with `amp_isBlocked = true`. Because this bridges
+/// a real UIView into the SwiftUI hierarchy, iOS Session Replay's UIKit capture
+/// can see it and replace it with a placeholder — unlike the SwiftUI-only
+/// `.amp_setBlocked()` modifier, which has no discrete UIView to mark.
+private struct BlockedRegion: UIViewRepresentable {
+    let text: String
+
+    func makeUIView(context: Context) -> UIView {
+        let container = UIView()
+        container.backgroundColor = UIColor(red: 0.91, green: 0.25, blue: 0.05, alpha: 0.16)
+        container.layer.cornerRadius = 8
+        container.amp_isBlocked = true
+
+        let label = UILabel()
+        label.text = text
+        label.numberOfLines = 0
+        label.textColor = UIColor(red: 0.91, green: 0.93, blue: 0.96, alpha: 1.0)
+        label.font = .systemFont(ofSize: 15)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: 12),
+            label.trailingAnchor.constraint(equalTo: container.trailingAnchor, constant: -12),
+            label.topAnchor.constraint(equalTo: container.topAnchor, constant: 12),
+            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -12)
+        ])
+        return container
+    }
+
+    func updateUIView(_ uiView: UIView, context: Context) {}
 }
 
 private struct ProgressRing: View {
