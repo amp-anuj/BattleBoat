@@ -83,13 +83,55 @@ import com.amplitude.android.sessionreplay.compose.ampMask
 import com.amplitude.android.sessionreplay.compose.ampUnmask
 import kotlinx.coroutines.delay
 
+// ---------------------------------------------------------------------------
+// Amplitude brand palette — mirrors res/values/colors.xml so this Compose
+// screen matches the rest of the (View-based) app. Defined here as a Compose
+// color scheme so every MaterialTheme.colorScheme.* lookup — and, crucially,
+// the automatic contentColorFor() text color — resolves to a legible on-dark
+// value instead of the default scheme's unmatched (dark) fallbacks.
+// ---------------------------------------------------------------------------
+private val AmpNavy = Color(0xFF0D1330)
+private val AmpSurface = Color(0xFF1D2433)
+private val AmpSurface2 = Color(0xFF252E45)
+private val AmpSurface3 = Color(0xFF2F3A55)
+private val AmpBlue = Color(0xFF1352CC)
+private val AmpBlueLight = Color(0xFF3986F7)
+private val AmpCoral = Color(0xFFE8410E)
+private val AmpTeal = Color(0xFF00C2A8)
+private val AmpLavender = Color(0xFF9164FA)
+private val AmpTextPrimary = Color(0xFFE8EDF5)
+private val AmpTextSecondary = Color(0xFF8B9DB5)
+private val AmpBorder = Color(0xFF26314A)
+private val AmpWater = Color(0xFF394B75)
+
+private val AmpDarkColorScheme = darkColorScheme(
+    primary = AmpBlue,
+    onPrimary = Color.White,
+    primaryContainer = AmpBlue,
+    onPrimaryContainer = Color.White,
+    secondary = AmpTeal,
+    onSecondary = AmpNavy,
+    tertiary = AmpLavender,
+    onTertiary = Color.White,
+    background = AmpNavy,
+    onBackground = AmpTextPrimary,
+    surface = AmpSurface,
+    onSurface = AmpTextPrimary,
+    surfaceVariant = AmpSurface2,
+    onSurfaceVariant = AmpTextSecondary,
+    outline = AmpBorder,
+    outlineVariant = AmpBorder,
+    error = AmpCoral,
+    onError = Color.White,
+)
+
 /**
  * Compose-only Session Replay test bed.
  *
- * Mirrors NBA's alpha.2 spike (sampleRate 1.0, MaskLevel.LIGHT) and exercises
- * Compose surfaces that historically break or under-capture in Session Replay:
- * scrolling lists, modal sheets, dialogs, TextFields, privacy modifiers,
- * custom Canvas, animations, and nested navigation-like panels.
+ * Exercises the Compose surfaces that historically break or under-capture in
+ * Session Replay — scrolling lists, modal sheets, dialogs, TextFields, privacy
+ * modifiers, custom Canvas, animations — themed around the Battleboat game so
+ * it doubles as a representative in-app screen (sampleRate 1.0, MaskLevel.LIGHT).
  */
 class ComposeSessionReplayActivity : ComponentActivity() {
 
@@ -103,7 +145,7 @@ class ComposeSessionReplayActivity : ComponentActivity() {
         }
 
         setContent {
-            MaterialTheme(colorScheme = darkColorScheme()) {
+            MaterialTheme(colorScheme = AmpDarkColorScheme) {
                 ComposeSessionReplayLab(
                     analyticsManager = analyticsManager,
                     onClose = { finish() }
@@ -120,23 +162,25 @@ private fun ComposeSessionReplayLab(
     onClose: () -> Unit
 ) {
     val context = LocalContext.current
-    var email by remember { mutableStateOf("fan@nba.com") }
-    var password by remember { mutableStateOf("secret-password") }
+    var email by remember { mutableStateOf("admiral@battleboat.io") }
+    var password by remember { mutableStateOf("secret-passphrase") }
     var passwordVisible by remember { mutableStateOf(false) }
-    var notes by remember { mutableStateOf("Watch this text update in the replay.") }
+    var notes by remember { mutableStateOf("Enemy carrier last seen near G7.") }
     var showSheet by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
     var showSensitive by remember { mutableStateOf(true) }
-    var tapCount by remember { mutableIntStateOf(0) }
-    var selectedTeam by remember { mutableStateOf("Lakers") }
+    var shotCount by remember { mutableIntStateOf(0) }
+    var selectedOpponent by remember { mutableStateOf("Nelson") }
     var progress by remember { mutableFloatStateOf(0.2f) }
     val animatedProgress by animateFloatAsState(progress, animationSpec = tween(600), label = "progress")
 
-    val teams = remember {
+    // Rival admirals — a scrollable roster stands in for a leaderboard / opponent
+    // picker, giving Session Replay a real scroll container to capture.
+    val opponents = remember {
         listOf(
-            "Lakers", "Celtics", "Warriors", "Knicks", "Heat",
-            "Bucks", "Nuggets", "Suns", "Mavs", "76ers",
-            "Clippers", "Bulls", "Nets", "Raptors", "Hawks"
+            "Nelson", "Yamamoto", "Nimitz", "Drake", "Halsey",
+            "Rodney", "Togo", "Farragut", "Spruance", "Cunningham",
+            "Doenitz", "Beatty", "Zheng He", "Barbarossa", "Themistocles"
         )
     }
 
@@ -152,7 +196,7 @@ private fun ComposeSessionReplayLab(
             TopAppBar(
                 title = {
                     Column {
-                        Text("Compose SR Lab", fontWeight = FontWeight.Bold)
+                        Text("Session Replay Lab", fontWeight = FontWeight.Bold)
                         Text(
                             "alpha.2 · Light mask · 100% sample",
                             fontSize = 12.sp,
@@ -166,11 +210,13 @@ private fun ComposeSessionReplayLab(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color(0xFF0B1B33)
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = Color(0xFF0A1220)
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
@@ -186,21 +232,24 @@ private fun ComposeSessionReplayLab(
             item {
                 SectionCard(title = "1. Interactions & animation") {
                     Text(
-                        "Tap counter and animated progress — check whether intermediate frames appear in the replay (NBA reported skipped interactions).",
+                        "Fire shots and watch the enemy-fleet ring animate — check whether intermediate frames appear in the replay (skipped interactions have been reported).",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp
                     )
                     Spacer(Modifier.height(12.dp))
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Button(onClick = {
-                            tapCount++
+                            shotCount++
                         }) {
-                            Text("Tap me ($tapCount)")
+                            Text("Fire shot ($shotCount)")
                         }
                         Spacer(Modifier.width(12.dp))
                         ProgressRing(animatedProgress)
                         Spacer(Modifier.width(8.dp))
-                        Text("${(animatedProgress * 100).toInt()}%", fontFamily = FontFamily.Monospace)
+                        Text(
+                            "${(animatedProgress * 100).toInt()}% sunk",
+                            fontFamily = FontFamily.Monospace
+                        )
                     }
                 }
             }
@@ -216,7 +265,7 @@ private fun ComposeSessionReplayLab(
                     OutlinedTextField(
                         value = email,
                         onValueChange = { email = it },
-                        label = { Text("Email") },
+                        label = { Text("Admiral email") },
                         modifier = Modifier.fillMaxWidth(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         singleLine = true
@@ -225,7 +274,7 @@ private fun ComposeSessionReplayLab(
                     OutlinedTextField(
                         value = password,
                         onValueChange = { password = it },
-                        label = { Text("Password") },
+                        label = { Text("Fleet passphrase") },
                         modifier = Modifier.fillMaxWidth(),
                         visualTransformation = if (passwordVisible) {
                             VisualTransformation.None
@@ -246,7 +295,7 @@ private fun ComposeSessionReplayLab(
                     OutlinedTextField(
                         value = notes,
                         onValueChange = { notes = it },
-                        label = { Text("Notes (should be visible at Light)") },
+                        label = { Text("Battle notes (should be visible at Light)") },
                         modifier = Modifier.fillMaxWidth(),
                         minLines = 2
                     )
@@ -262,20 +311,20 @@ private fun ComposeSessionReplayLab(
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Masked account # ACCT-000049",
+                        "Masked target coords: SECRET-G7",
                         modifier = Modifier
                             .ampMask()
                             .fillMaxWidth()
-                            .background(Color(0xFF1A2738), RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
                             .padding(12.dp)
                     )
                     Spacer(Modifier.height(8.dp))
                     Text(
-                        "Unmasked fan name: Anuj Test",
+                        "Unmasked callsign: Admiral Anuj",
                         modifier = Modifier
                             .ampUnmask()
                             .fillMaxWidth()
-                            .background(Color(0xFF1A2738), RoundedCornerShape(8.dp))
+                            .background(MaterialTheme.colorScheme.surfaceVariant, RoundedCornerShape(8.dp))
                             .padding(12.dp)
                     )
                     Spacer(Modifier.height(8.dp))
@@ -284,11 +333,11 @@ private fun ComposeSessionReplayLab(
                             .ampBlock()
                             .fillMaxWidth()
                             .height(56.dp)
-                            .background(Color(0xFF3D1F2B), RoundedCornerShape(8.dp))
+                            .background(AmpCoral.copy(alpha = 0.16f), RoundedCornerShape(8.dp))
                             .padding(12.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Blocked payment card — should be a placeholder")
+                        Text("Blocked enemy fleet layout — should be a placeholder")
                     }
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -300,7 +349,7 @@ private fun ComposeSessionReplayLab(
                     }
                     AnimatedVisibility(visible = showSensitive) {
                         Text(
-                            "Toggle-visible content: season ticket holder ID 8821",
+                            "Toggle-visible content: flagship anchored at D4",
                             modifier = Modifier.padding(top = 8.dp)
                         )
                     }
@@ -333,12 +382,12 @@ private fun ComposeSessionReplayLab(
             item {
                 SectionCard(title = "5. Custom Canvas / graphics") {
                     Text(
-                        "Custom draw content often needs bitmap capture — verify the court graphic appears.",
+                        "Custom draw content often needs bitmap capture — verify the battle grid appears.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 13.sp
                     )
                     Spacer(Modifier.height(8.dp))
-                    BasketballCourtGraphic(
+                    BattleGridGraphic(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(140.dp)
@@ -348,7 +397,7 @@ private fun ComposeSessionReplayLab(
             }
 
             item {
-                SectionCard(title = "6. Scrollable team list") {
+                SectionCard(title = "6. Scrollable opponent roster") {
                     Text(
                         "Scroll the list, then flush — check whether scroll position / items are captured.",
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -356,13 +405,13 @@ private fun ComposeSessionReplayLab(
                     )
                     Spacer(Modifier.height(8.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        teams.take(4).forEach { team ->
+                        opponents.take(4).forEach { opponent ->
                             FilterChip(
-                                selected = selectedTeam == team,
+                                selected = selectedOpponent == opponent,
                                 onClick = {
-                                    selectedTeam = team
+                                    selectedOpponent = opponent
                                 },
-                                label = { Text(team) }
+                                label = { Text(opponent) }
                             )
                         }
                     }
@@ -371,16 +420,16 @@ private fun ComposeSessionReplayLab(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(220.dp)
-                            .border(1.dp, Color(0xFF2A3A4F), RoundedCornerShape(10.dp))
+                            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(10.dp))
                             .verticalScroll(rememberScrollState())
                             .padding(8.dp),
                         verticalArrangement = Arrangement.spacedBy(6.dp)
                     ) {
-                        teams.forEach { team ->
-                            TeamRow(
-                                team = team,
-                                selected = team == selectedTeam,
-                                onClick = { selectedTeam = team }
+                        opponents.forEach { opponent ->
+                            OpponentRow(
+                                opponent = opponent,
+                                selected = opponent == selectedOpponent,
+                                onClick = { selectedOpponent = opponent }
                             )
                         }
                     }
@@ -420,13 +469,13 @@ private fun ComposeSessionReplayLab(
         ModalBottomSheet(
             onDismissRequest = { showSheet = false },
             sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-            containerColor = Color(0xFF152238)
+            containerColor = MaterialTheme.colorScheme.surface
         ) {
             Column(modifier = Modifier.padding(24.dp)) {
-                Text("Ticket Checkout Sheet", fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Text("Deploy Fleet", fontWeight = FontWeight.Bold, fontSize = 18.sp)
                 Spacer(Modifier.height(8.dp))
-                Text("Selected team: $selectedTeam")
-                Text("Price: \$142.00", modifier = Modifier.ampMask())
+                Text("Selected opponent: $selectedOpponent")
+                Text("Wager: 500 gold", modifier = Modifier.ampMask())
                 Spacer(Modifier.height(16.dp))
                 Button(
                     onClick = {
@@ -434,7 +483,7 @@ private fun ComposeSessionReplayLab(
                     },
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Confirm purchase")
+                    Text("Confirm deployment")
                 }
                 Spacer(Modifier.height(24.dp))
             }
@@ -444,6 +493,7 @@ private fun ComposeSessionReplayLab(
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },
+            containerColor = MaterialTheme.colorScheme.surface,
             title = { Text("Replay check") },
             text = {
                 Text("If this dialog is missing or transparent in the replay, that matches known Compose SR gaps.")
@@ -471,7 +521,7 @@ private fun ReplayIdentityCard(analyticsManager: AnalyticsManager) {
     val recording = analyticsManager.isSessionReplayRecording()
 
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF122033)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -480,10 +530,10 @@ private fun ReplayIdentityCard(analyticsManager: AnalyticsManager) {
                 Icon(
                     Icons.Default.Star,
                     contentDescription = null,
-                    tint = Color(0xFFFDB927)
+                    tint = MaterialTheme.colorScheme.secondary
                 )
                 Spacer(Modifier.width(8.dp))
-                Text("NBA-style Compose capture test", fontWeight = FontWeight.SemiBold)
+                Text("Battleboat Compose capture test", fontWeight = FontWeight.SemiBold)
             }
             Spacer(Modifier.height(10.dp))
             IdentityLine("Recording", if (recording) "YES" else "NO")
@@ -520,7 +570,7 @@ private fun IdentityLine(label: String, value: String) {
 @Composable
 private fun SectionCard(title: String, content: @Composable () -> Unit) {
     Card(
-        colors = CardDefaults.cardColors(containerColor = Color(0xFF152238)),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
         shape = RoundedCornerShape(12.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -533,12 +583,12 @@ private fun SectionCard(title: String, content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun TeamRow(team: String, selected: Boolean, onClick: () -> Unit) {
+private fun OpponentRow(opponent: String, selected: Boolean, onClick: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(8.dp))
-            .background(if (selected) Color(0xFF1E3A5F) else Color(0xFF101A28))
+            .background(if (selected) AmpBlue.copy(alpha = 0.28f) else AmpNavy)
             .clickable(onClick = onClick)
             .padding(horizontal = 12.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -547,13 +597,18 @@ private fun TeamRow(team: String, selected: Boolean, onClick: () -> Unit) {
             modifier = Modifier
                 .size(28.dp)
                 .clip(CircleShape)
-                .background(if (selected) Color(0xFFFDB927) else Color(0xFF2A3A4F)),
+                .background(if (selected) AmpTeal else AmpSurface3),
             contentAlignment = Alignment.Center
         ) {
-            Text(team.take(1), fontWeight = FontWeight.Bold, fontSize = 12.sp, color = Color.Black)
+            Text(
+                opponent.take(1),
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = if (selected) AmpNavy else AmpTextPrimary
+            )
         }
         Spacer(Modifier.width(10.dp))
-        Text(team)
+        Text(opponent)
     }
 }
 
@@ -561,14 +616,14 @@ private fun TeamRow(team: String, selected: Boolean, onClick: () -> Unit) {
 private fun ProgressRing(progress: Float) {
     Canvas(modifier = Modifier.size(40.dp)) {
         drawArc(
-            color = Color(0xFF2A3A4F),
+            color = AmpSurface3,
             startAngle = -90f,
             sweepAngle = 360f,
             useCenter = false,
             style = Stroke(width = 6.dp.toPx(), cap = StrokeCap.Round)
         )
         drawArc(
-            color = Color(0xFF552583),
+            color = AmpCoral,
             startAngle = -90f,
             sweepAngle = 360f * progress,
             useCenter = false,
@@ -577,41 +632,56 @@ private fun ProgressRing(progress: Float) {
     }
 }
 
+/**
+ * A small Battleboat target grid drawn with Canvas — the custom-draw surface
+ * for the Session Replay bitmap-capture test. Renders a 10x10 sea grid with a
+ * couple of hits (coral) and a miss (blue) so there is real custom content to
+ * verify in the replay.
+ */
 @Composable
-private fun BasketballCourtGraphic(modifier: Modifier = Modifier) {
-    Canvas(modifier = modifier.background(Color(0xFF1B4332))) {
-        val w = size.width
-        val h = size.height
-        val paint = Color(0xFFE9ECEF)
-        // Outer boundary
-        drawRect(color = paint, style = Stroke(width = 3.dp.toPx()))
-        // Center circle
-        drawCircle(
-            color = paint,
-            radius = h * 0.22f,
-            center = Offset(w / 2f, h / 2f),
-            style = Stroke(width = 3.dp.toPx())
-        )
-        // Half-court line
-        drawLine(
-            color = paint,
-            start = Offset(w / 2f, 0f),
-            end = Offset(w / 2f, h),
-            strokeWidth = 3.dp.toPx()
-        )
-        // Left key
-        drawRect(
-            color = paint,
-            topLeft = Offset(0f, h * 0.25f),
-            size = Size(w * 0.18f, h * 0.5f),
-            style = Stroke(width = 3.dp.toPx())
-        )
-        // Right key
-        drawRect(
-            color = paint,
-            topLeft = Offset(w * 0.82f, h * 0.25f),
-            size = Size(w * 0.18f, h * 0.5f),
-            style = Stroke(width = 3.dp.toPx())
-        )
+private fun BattleGridGraphic(modifier: Modifier = Modifier) {
+    Canvas(modifier = modifier.background(AmpWater)) {
+        val cells = 10
+        val cell = minOf(size.width, size.height) / cells
+        val originX = (size.width - cell * cells) / 2f
+        val originY = (size.height - cell * cells) / 2f
+        val line = AmpBorder
+
+        // Grid lines
+        for (i in 0..cells) {
+            drawLine(
+                color = line,
+                start = Offset(originX + i * cell, originY),
+                end = Offset(originX + i * cell, originY + cell * cells),
+                strokeWidth = 1.5.dp.toPx()
+            )
+            drawLine(
+                color = line,
+                start = Offset(originX, originY + i * cell),
+                end = Offset(originX + cell * cells, originY + i * cell),
+                strokeWidth = 1.5.dp.toPx()
+            )
+        }
+
+        fun mark(col: Int, row: Int, color: Color, filled: Boolean) {
+            val center = Offset(originX + (col + 0.5f) * cell, originY + (row + 0.5f) * cell)
+            if (filled) {
+                drawCircle(color = color, radius = cell * 0.28f, center = center)
+            } else {
+                drawCircle(
+                    color = color,
+                    radius = cell * 0.24f,
+                    center = center,
+                    style = Stroke(width = 2.dp.toPx())
+                )
+            }
+        }
+
+        // A few hits and a miss to make the grid read as an in-progress game
+        mark(2, 3, AmpCoral, filled = true)
+        mark(3, 3, AmpCoral, filled = true)
+        mark(6, 5, AmpCoral, filled = true)
+        mark(5, 8, AmpBlueLight, filled = false)
+        mark(8, 1, AmpBlueLight, filled = false)
     }
 }
