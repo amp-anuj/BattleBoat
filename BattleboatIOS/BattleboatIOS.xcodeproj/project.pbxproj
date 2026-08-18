@@ -18,6 +18,7 @@
 		1D1A5B442B8E4FB000F4B8C7 /* Grid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B432B8E4FB000F4B8C7 /* Grid.swift */; };
 		1D1A5B462B8E4FBC00F4B8C7 /* Fleet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B452B8E4FBC00F4B8C7 /* Fleet.swift */; };
 		1D1A5B482B8E4FC800F4B8C7 /* AI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B472B8E4FC800F4B8C7 /* AI.swift */; };
+		1DA5B10A2C0000000000AB02 /* SessionReplayLabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA5B10A2C0000000000AB01 /* SessionReplayLabView.swift */; };
 		1D1A5B4A2B8E4FD400F4B8C7 /* GameStats.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B492B8E4FD400F4B8C7 /* GameStats.swift */; };
 		1D1A5B4C2B8E4FE000F4B8C7 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B4B2B8E4FE000F4B8C7 /* GridView.swift */; };
 		1D1A5B4E2B8E4FEC00F4B8C7 /* GameConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D1A5B4D2B8E4FEC00F4B8C7 /* GameConstants.swift */; };
@@ -47,6 +48,7 @@
 		1D1A5B432B8E4FB000F4B8C7 /* Grid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grid.swift; sourceTree = "<group>"; };
 		1D1A5B452B8E4FBC00F4B8C7 /* Fleet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fleet.swift; sourceTree = "<group>"; };
 		1D1A5B472B8E4FC800F4B8C7 /* AI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AI.swift; sourceTree = "<group>"; };
+		1DA5B10A2C0000000000AB01 /* SessionReplayLabView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionReplayLabView.swift; sourceTree = "<group>"; };
 		1D1A5B492B8E4FD400F4B8C7 /* GameStats.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameStats.swift; sourceTree = "<group>"; };
 		1D1A5B4B2B8E4FE000F4B8C7 /* GridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		1D1A5B4D2B8E4FEC00F4B8C7 /* GameConstants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameConstants.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 				1D1A5B432B8E4FB000F4B8C7 /* Grid.swift */,
 				1D1A5B452B8E4FBC00F4B8C7 /* Fleet.swift */,
 				1D1A5B472B8E4FC800F4B8C7 /* AI.swift */,
+				1DA5B10A2C0000000000AB01 /* SessionReplayLabView.swift */,
 				1D1A5B492B8E4FD400F4B8C7 /* GameStats.swift */,
 				1D1A5B4D2B8E4FEC00F4B8C7 /* GameConstants.swift */,
 				1D1A5B4F2B8E500000F4B8C7 /* AnalyticsManager.swift */,
@@ -214,6 +217,7 @@
 				1D1A5B4E2B8E4FEC00F4B8C7 /* GameConstants.swift in Sources */,
 				1D1A5B442B8E4FB000F4B8C7 /* Grid.swift in Sources */,
 				1D1A5B482B8E4FC800F4B8C7 /* AI.swift in Sources */,
+				1DA5B10A2C0000000000AB02 /* SessionReplayLabView.swift in Sources */,
 				1D1A5B502B8E500000F4B8C7 /* AnalyticsManager.swift in Sources */,
 				1D1A5B512B8E501000F4B8C7 /* WebViewController.swift in Sources */,
 				1D1A5B4C2B8E4FE000F4B8C7 /* GridView.swift in Sources */,

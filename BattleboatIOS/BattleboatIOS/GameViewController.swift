@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SwiftUI
 
 class GameViewController: UIViewController {
     
@@ -42,6 +43,7 @@ class GameViewController: UIViewController {
     private let restartButton = UIButton(type: .system)
     private let showHeatmapButton = UIButton(type: .system)
     private let webViewButton = UIButton(type: .system)
+    private let srLabButton = UIButton(type: .system)
     
     // Stats labels
     private let gamesWonLabel = UILabel()
@@ -208,7 +210,7 @@ class GameViewController: UIViewController {
         controlsStackView.spacing = 6
         controlsStackView.distribution = .fillEqually
 
-        let buttons = [rotateButton, randomPlaceButton, startGameButton, restartButton, showHeatmapButton, webViewButton]
+        let buttons = [rotateButton, randomPlaceButton, startGameButton, restartButton, showHeatmapButton, webViewButton, srLabButton]
 
         for button in buttons {
             button.backgroundColor = GameConstants.Colors.surfaceMedium
@@ -229,6 +231,7 @@ class GameViewController: UIViewController {
         restartButton.setTitle("New\nGame", for: .normal)
         showHeatmapButton.setTitle("Show\nHeatmap", for: .normal)
         webViewButton.setTitle("Open\nWebView", for: .normal)
+        srLabButton.setTitle("SR\nLab", for: .normal)
 
         // Primary CTA — Amplitude blue gradient
         startGameButton.setTitle("Start\nGame", for: .normal)
@@ -245,12 +248,18 @@ class GameViewController: UIViewController {
         webViewButton.setTitleColor(GameConstants.Colors.ampLavender, for: .normal)
         webViewButton.layer.borderColor = GameConstants.Colors.ampLavender.withAlphaComponent(0.3).cgColor
 
+        // Session Replay Lab — teal accent
+        srLabButton.backgroundColor = GameConstants.Colors.surfaceLight
+        srLabButton.setTitleColor(GameConstants.Colors.ampTeal, for: .normal)
+        srLabButton.layer.borderColor = GameConstants.Colors.ampTeal.withAlphaComponent(0.3).cgColor
+
         rotateButton.addTarget(self, action: #selector(rotateButtonTapped), for: .touchUpInside)
         randomPlaceButton.addTarget(self, action: #selector(randomPlaceButtonTapped), for: .touchUpInside)
         startGameButton.addTarget(self, action: #selector(startGameButtonTapped), for: .touchUpInside)
         restartButton.addTarget(self, action: #selector(restartButtonTapped), for: .touchUpInside)
         showHeatmapButton.addTarget(self, action: #selector(showHeatmapButtonTapped), for: .touchUpInside)
         webViewButton.addTarget(self, action: #selector(webViewButtonTapped), for: .touchUpInside)
+        srLabButton.addTarget(self, action: #selector(srLabButtonTapped), for: .touchUpInside)
     }
     
     private func setupStatsLabels() {
@@ -566,6 +575,16 @@ class GameViewController: UIViewController {
         )
         webViewController.modalPresentationStyle = .fullScreen
         present(webViewController, animated: true)
+    }
+
+    @objc private func srLabButtonTapped() {
+        AnalyticsManager.shared.trackScreen(name: "SessionReplayLab")
+        var host: UIHostingController<SessionReplayLabView>?
+        host = UIHostingController(rootView: SessionReplayLabView(onClose: { [weak host] in
+            host?.dismiss(animated: true)
+        }))
+        host?.modalPresentationStyle = .fullScreen
+        present(host!, animated: true)
     }
     
     // MARK: - UI Updates

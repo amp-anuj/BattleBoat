@@ -19,6 +19,11 @@ class AnalyticsManager {
     private var amplitude: Amplitude
     private var amplitudeEngagement: AmplitudeEngagement
     private var sessionReplayPlugin: SessionReplayPlugin? = nil
+    // Single source of truth for the SR remote-config flag, shared between the
+    // plugin init and the Session Replay Lab's status readout. When true, the
+    // project's remote SR config overrides the local maskLevel below.
+    private let sessionReplayRemoteConfigEnabled = true
+    private let sessionReplayLocalMaskLevel: MaskLevel = .conservative
     private var experiment: ExperimentClient?
     private var isEngagementReady = false
     
@@ -49,8 +54,8 @@ class AnalyticsManager {
         // Initialize Session Replay with 100% sample rate
         sessionReplayPlugin = SessionReplayPlugin(
             sampleRate: 1.0,
-            maskLevel: .conservative,
-            enableRemoteConfig: true,
+            maskLevel: sessionReplayLocalMaskLevel,
+            enableRemoteConfig: sessionReplayRemoteConfigEnabled,
             webviewMappings: [:],
             autoStart: true,
             captureWebViews: true
@@ -507,11 +512,62 @@ class AnalyticsManager {
     // MARK: - Session Replay Management
     
     func getSessionReplayStatus() -> String {
-        if sessionReplayPlugin != nil {
-            return "✅ Session Replay: Active (100% capture rate)"
-        } else {
+        guard sessionReplayPlugin != nil else {
             return "❌ Session Replay: Not initialized"
         }
+        if sessionReplayRemoteConfigEnabled {
+            return "✅ Session Replay: Active (sample=1.0, remote config ON — effective mask set by the project's remote SR config, not the local \(getSessionReplayLocalMaskLevel()) value)"
+        }
+        return "✅ Session Replay: Active (mask=\(getSessionReplayLocalMaskLevel()), sample=1.0, remote config off)"
+    }
+
+    /// Whether the Session Replay plugin is installed and capturing. iOS SR does
+    /// not expose a per-call recording flag, so this reflects plugin presence.
+    func isSessionReplayActive() -> Bool {
+        return sessionReplayPlugin != nil
+    }
+
+    /// The mask level the SDK reports. NOTE: when remote config is enabled the
+    /// SDK still returns the locally-requested value here — it does NOT surface
+    /// the remote-resolved mask level — so this is not a reliable "effective"
+    /// value. The Lab therefore shows the local value and flags remote config,
+    /// rather than claiming an effective level it cannot obtain.
+    func getSessionReplayMaskLevel() -> String {
+        guard let level = sessionReplayPlugin?.sessionReplay?.maskLevel else {
+            return "unknown"
+        }
+        return maskLevelName(level)
+    }
+
+    /// The mask level requested locally at init (before any remote override).
+    func getSessionReplayLocalMaskLevel() -> String {
+        return maskLevelName(sessionReplayLocalMaskLevel)
+    }
+
+    /// Whether SR remote config is enabled. When true, the project's remote SR
+    /// settings override the local mask level / sample rate.
+    func isSessionReplayRemoteConfigEnabled() -> Bool {
+        return sessionReplayRemoteConfigEnabled
+    }
+
+    private func maskLevelName(_ level: MaskLevel) -> String {
+        switch level {
+        case .light: return "light"
+        case .medium: return "medium"
+        case .conservative: return "conservative"
+        @unknown default: return "unknown"
+        }
+    }
+
+    /// Flush queued analytics events to Amplitude immediately.
+    func flushEvents() {
+        amplitude.flush()
+    }
+
+    /// Flush the current Session Replay buffer so it appears in the dashboard
+    /// without waiting for the next automatic upload.
+    func flushSessionReplay() {
+        sessionReplayPlugin?.sessionReplay?.flush()
     }
     
     // MARK: - Custom Events for Ship Placement Analysis
