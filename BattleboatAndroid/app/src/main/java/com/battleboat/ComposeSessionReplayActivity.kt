@@ -343,7 +343,7 @@ private fun ComposeSessionReplayLab(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(top = 8.dp)
                     ) {
-                        Text("Show hidden row")
+                        Text("Test animated visibility")
                         Spacer(Modifier.weight(1f))
                         Switch(checked = showHiddenRow, onCheckedChange = { showHiddenRow = it })
                     }
