@@ -325,6 +325,42 @@ button:active { transform: translateY(0); box-shadow: none; }
 #place-randomly:active,
 #restart-game:active { transform: translateY(0); }
 
+/* ── Placement rescue nudge ───────────────────────────────── */
+.placement-rescue {
+  margin-top: 12px;
+  padding: 12px;
+  text-align: left;
+  background: rgba(232, 65, 14, 0.12);
+  border: 1px solid rgba(232, 65, 14, 0.45);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-coral);
+  animation: placement-rescue-in 0.28s ease-out;
+}
+.placement-rescue.hidden { display: none; }
+.placement-rescue-text {
+  margin: 0 0 8px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--amp-text);
+}
+#placement-rescue-action {
+  margin-top: 0;
+  color: #fff;
+  background: linear-gradient(135deg, var(--amp-coral) 0%, var(--amp-coral-light) 100%);
+  border-color: var(--amp-coral);
+  box-shadow: 0 2px 12px rgba(232, 65, 14, 0.4);
+}
+#placement-rescue-action:hover {
+  background: linear-gradient(135deg, var(--amp-coral-light) 0%, #FF8A66 100%);
+  border-color: var(--amp-coral-light);
+  color: #fff;
+}
+@keyframes placement-rescue-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 #reset-stats {
   background: transparent;
   border-color: var(--amp-border);

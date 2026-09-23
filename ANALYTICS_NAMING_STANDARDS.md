@@ -32,7 +32,7 @@ This document defines the standardized naming conventions for analytics events a
 | **Ship Placed** | Ship, Success, X, Y | All | Ship placement attempt |
 | **Ship Rotated** | Ship | All | Ship orientation changed |
 | **Shot Fired** | X, Y, Hit, Consecutive Hits, Player | All | Attack fired |
-| **Ships Placed Randomly** | - | iOS, Android | Random ship placement |
+| **Ships Placed Randomly** | trigger_source, pre_placed_count | Web, iOS, Android | Random ship placement |
 | **Tutorial Skipped** | - | iOS, Android | Player skips tutorial |
 | **Tutorial Completed** | - | iOS, Android | Player completes tutorial |
 | **Probability Heatmap Shown** | - | iOS | Heatmap displayed |
