@@ -53,10 +53,11 @@
 	//       the individual ship object.
 	// These numbers correspond to CONST.AVAILABLE_SHIPS
 	// 0) 'carrier' 1) 'battleship' 2) 'destroyer' 3) 'submarine' 4) 'patrolboat'
-	// This variable is only used when DEBUG_MODE === true.
-	Game.usedShips = [CONST.UNUSED, CONST.UNUSED, CONST.UNUSED, CONST.UNUSED, CONST.UNUSED];
+	// Declared before Game.usedShips so the array is initialized with real values
+	// (not undefined from referencing CONST.UNUSED before assignment).
 	CONST.USED = 1;
 	CONST.UNUSED = 0;
+	Game.usedShips = [CONST.UNUSED, CONST.UNUSED, CONST.UNUSED, CONST.UNUSED, CONST.UNUSED];
 
 	// Dead-click rescue: when players stall on grid placement (no ship selected,
 	// unresolved cell, or illegal drop), surface an inline nudge toward random
@@ -67,7 +68,7 @@
 
 	function hasUnplacedShips() {
 		for (var i = 0; i < Game.usedShips.length; i++) {
-			if (Game.usedShips[i] === CONST.UNUSED) {
+			if (Game.usedShips[i] !== CONST.USED) {
 				return true;
 			}
 		}
