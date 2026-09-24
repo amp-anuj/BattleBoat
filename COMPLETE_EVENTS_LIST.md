@@ -27,7 +27,7 @@
 | **Tutorial Step** | Step, "Step Name" | Individual tutorial step tracked |
 | **Tutorial Skipped** | None | Player skips tutorial |
 | **Tutorial Completed** | None | Player completes tutorial |
-| **Ships Placed Randomly** | None | Random ship placement used |
+| **Ships Placed Randomly** | trigger_source, pre_placed_count | Random ship placement used |
 | **Probability Heatmap Shown** | None | AI probability heatmap displayed |
 | **Probability Heatmap Hidden** | None | AI probability heatmap hidden |
 | **Statistics Reset** | None | Player resets game statistics |

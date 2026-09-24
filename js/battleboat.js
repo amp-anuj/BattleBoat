@@ -53,10 +53,58 @@
 	//       the individual ship object.
 	// These numbers correspond to CONST.AVAILABLE_SHIPS
 	// 0) 'carrier' 1) 'battleship' 2) 'destroyer' 3) 'submarine' 4) 'patrolboat'
-	// This variable is only used when DEBUG_MODE === true.
-	Game.usedShips = [CONST.UNUSED, CONST.UNUSED, CONST.UNUSED, CONST.UNUSED, CONST.UNUSED];
+	// Declared before Game.usedShips so the array is initialized with real values
+	// (not undefined from referencing CONST.UNUSED before assignment).
 	CONST.USED = 1;
 	CONST.UNUSED = 0;
+	Game.usedShips = [CONST.UNUSED, CONST.UNUSED, CONST.UNUSED, CONST.UNUSED, CONST.UNUSED];
+
+	// Dead-click rescue: when players stall on grid placement (no ship selected,
+	// unresolved cell, or illegal drop), surface an inline nudge toward random
+	// placement after 2 failures within 10 seconds.
+	var placementDeadClicks = [];
+	var PLACEMENT_RESCUE_WINDOW_MS = 10000;
+	var PLACEMENT_RESCUE_THRESHOLD = 2;
+
+	function hasUnplacedShips() {
+		for (var i = 0; i < Game.usedShips.length; i++) {
+			if (Game.usedShips[i] !== CONST.USED) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	function clearPlacementDeadClicks() {
+		placementDeadClicks = [];
+	}
+
+	function recordPlacementDeadClick() {
+		var now = Date.now();
+		placementDeadClicks.push(now);
+		placementDeadClicks = placementDeadClicks.filter(function (timestamp) {
+			return now - timestamp <= PLACEMENT_RESCUE_WINDOW_MS;
+		});
+		if (placementDeadClicks.length >= PLACEMENT_RESCUE_THRESHOLD) {
+			showPlacementRescue();
+		}
+	}
+
+	function showPlacementRescue() {
+		var el = document.getElementById('placement-rescue');
+		if (!el || !hasUnplacedShips()) {
+			return;
+		}
+		el.setAttribute('class', 'placement-rescue placement-rescue--visible');
+	}
+
+	function hidePlacementRescue() {
+		var el = document.getElementById('placement-rescue');
+		if (!el) {
+			return;
+		}
+		el.setAttribute('class', 'placement-rescue hidden');
+	}
 
 	// Game Statistics
 	function Stats() {
@@ -337,7 +385,16 @@
 		// `this` is the grid container (delegated listener). Fall back to the
 		// stored reference in case the listener is ever re-bound to a cell.
 		var self = (this && this.self) || (e.target && e.target.self);
-		if (!self || !self.placingOnGrid) {
+		if (!self) {
+			return;
+		}
+
+		// Clicks with no ship selected (or after placement is done) still count
+		// as dead clicks so we can surface the rescue nudge for stalled players.
+		if (!self.placingOnGrid) {
+			if (hasUnplacedShips()) {
+				recordPlacementDeadClick();
+			}
 			return;
 		}
 
@@ -366,6 +423,7 @@
 		});
 
 		if (!cell) {
+			recordPlacementDeadClick();
 			return;
 		}
 
@@ -377,6 +435,8 @@
 			// Don't screw up the direction if the user tries to place again.
 			var successful = self.humanFleet.placeShip(x, y, Game.placeShipDirection, Game.placeShipType);
 			if (successful) {
+				clearPlacementDeadClicks();
+				hidePlacementRescue();
 				amplitude.track('Ship Placed', {
 					Ship: Game.placeShipType,
 					Success: true,
@@ -396,6 +456,7 @@
 					var el = document.getElementById('rotate-button');
 					el.addEventListener(transitionEndEventName(), (function () {
 						el.setAttribute('class', 'hidden');
+						document.getElementById('place-randomly').setAttribute('class', 'hidden');
 						if (gameTutorial.showTutorial) {
 							document.getElementById('start-game').setAttribute('class', 'highlight');
 						} else {
@@ -408,6 +469,7 @@
 				// Illegal placement: give the click visible feedback so it
 				// never looks like a silent no-op.
 				flashRejectCell(cell);
+				recordPlacementDeadClick();
 				amplitude.track('Ship Placed', {
 					Ship: Game.placeShipType,
 					Success: false,
@@ -536,13 +598,46 @@
 		self.resetFogOfWar();
 		self.init();
 	};
-	// Debugging function used to place all ships and just start
+	// Fills any remaining unplaced ships randomly, then reveals Start Game so
+	// the player still confirms before gameplay begins.
 	Game.prototype.placeRandomly = function (e) {
-		e.target.removeEventListener(e.type, arguments.callee);
-		e.target.self.humanFleet.placeShipsRandomly();
-		e.target.self.readyToPlay = true;
-		document.getElementById('roster-sidebar').setAttribute('class', 'hidden');
-		this.setAttribute('class', 'hidden');
+		var button = e.currentTarget || e.target;
+		var self = button.self;
+		if (!self || !hasUnplacedShips()) {
+			return;
+		}
+
+		var triggerSource = button.getAttribute('data-trigger-source') || 'button';
+		var prePlacedCount = 0;
+		for (var i = 0; i < Game.usedShips.length; i++) {
+			if (Game.usedShips[i] === CONST.USED) {
+				prePlacedCount++;
+			}
+		}
+
+		self.humanFleet.placeShipsRandomly();
+
+		// Sync roster UI with the ships that were just filled in
+		for (var j = 0; j < CONST.AVAILABLE_SHIPS.length; j++) {
+			document.getElementById(CONST.AVAILABLE_SHIPS[j]).setAttribute('class', 'placed');
+			Game.usedShips[j] = CONST.USED;
+		}
+
+		self.placingOnGrid = false;
+		Game.placeShipDirection = 0;
+		Game.placeShipType = '';
+		Game.placeShipCoords = [];
+
+		document.getElementById('rotate-button').setAttribute('class', 'hidden');
+		document.getElementById('place-randomly').setAttribute('class', 'hidden');
+		document.getElementById('start-game').removeAttribute('class');
+		hidePlacementRescue();
+		clearPlacementDeadClicks();
+
+		amplitude.track('Ships Placed Randomly', {
+			trigger_source: triggerSource,
+			pre_placed_count: prePlacedCount
+		});
 	};
 	// Ends placing the current ship
 	Game.prototype.endPlacing = function (shipType) {
@@ -598,9 +693,9 @@
 		}
 		document.getElementById('rotate-button').removeAttribute('class');
 		document.getElementById('start-game').setAttribute('class', 'hidden');
-		if (DEBUG_MODE) {
-			document.getElementById('place-randomly').removeAttribute('class');
-		}
+		document.getElementById('place-randomly').removeAttribute('class');
+		hidePlacementRescue();
+		clearPlacementDeadClicks();
 	};
 	Game.prototype.showRestartSidebar = function () {
 		var sidebar = document.getElementById('restart-sidebar');
@@ -698,7 +793,14 @@
 		resetButton.addEventListener('click', Game.stats.resetStats, false);
 		var randomButton = document.getElementById('place-randomly');
 		randomButton.self = this;
+		randomButton.setAttribute('data-trigger-source', 'button');
 		randomButton.addEventListener('click', this.placeRandomly, false);
+		var rescueButton = document.getElementById('placement-rescue-action');
+		if (rescueButton) {
+			rescueButton.self = this;
+			rescueButton.setAttribute('data-trigger-source', 'rescue_prompt');
+			rescueButton.addEventListener('click', this.placeRandomly, false);
+		}
 		this.computerFleet.placeShipsRandomly();
 	};
 

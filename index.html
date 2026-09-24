@@ -193,7 +193,11 @@
 				</ul>
 				<button id="rotate-button" data-direction="0">Rotate Ship</button>
 				<button id="start-game" class="hidden">Start Game</button>
-				<button id="place-randomly" class="hidden">Place Randomly and Start</button>
+				<button id="place-randomly" data-trigger-source="button">Place Randomly</button>
+				<div id="placement-rescue" class="placement-rescue hidden" role="status" aria-live="polite">
+					<p class="placement-rescue-text">Stuck? Click Place Randomly &amp; Start</p>
+					<button type="button" id="placement-rescue-action" data-trigger-source="rescue_prompt">Place Randomly &amp; Start</button>
+				</div>
 			</div>
 			<div id="amp-panel">
 				<h2>Amplitude</h2>
