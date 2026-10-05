@@ -45,6 +45,12 @@
 		const nativeDeviceId = getUrlParam('amp_device_id');
 		const nativeUserId = getUrlParam('amp_user_id');
 		const nativeSessionId = getUrlParam('amp_session_id');
+
+		// Synthetic traffic (synthetic-traffic/run.mjs) passes a stable identity
+		// so the same person can return on a later day. These are not a WebView.
+		const synthDeviceId = getUrlParam('synth_device_id');
+		const synthUserId = getUrlParam('synth_user_id');
+		const synthCohort = getUrlParam('synth_cohort');
 		
 		// Log identity linking status
 		if (nativeDeviceId) {
@@ -75,6 +81,8 @@
 		if (nativeDeviceId) {
 			amplitudeConfig.deviceId = nativeDeviceId;
 			console.log('✅ Using native device ID for user linking:', nativeDeviceId);
+		} else if (synthDeviceId) {
+			amplitudeConfig.deviceId = synthDeviceId;
 		}
 		
 		// Use native session ID if passed from native app
@@ -84,8 +92,16 @@
 		}
 		
 		// Initialize Amplitude with native user ID if available
-		const userId = nativeUserId || null;
+		const userId = nativeUserId || synthUserId || null;
 		window.amplitude.init("909b2239fab57efd4268eb75dbc28d30", userId, amplitudeConfig);
+
+		// Tag synthetic sessions before the game script fires its first event.
+		if (synthUserId || synthDeviceId) {
+			const synthIdentify = new amplitude.Identify();
+			synthIdentify.set('traffic_source', 'synthetic');
+			if (synthCohort) synthIdentify.set('synth_cohort', synthCohort);
+			amplitude.identify(synthIdentify);
+		}
 		
 		if (nativeUserId) {
 			console.log('✅ Initialized with native user ID:', nativeUserId);
@@ -158,11 +174,10 @@
 					engagement.gs.show(payload.nudge);
 				}
 
+				// Random placement is now available to everyone, so this variant
+				// no longer gates the button; it is only read for exposure.
 				const qsVariant = experiment.variant('quick-start-placement');
 				console.log('Quick start variant:', qsVariant.value);
-				if (qsVariant.value === 'treatment') {
-					document.getElementById('place-randomly').removeAttribute('class');
-				}
 			});
 			
 

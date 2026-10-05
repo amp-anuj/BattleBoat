@@ -1,0 +1,45 @@
+name: Daily synthetic traffic
+
+on:
+  schedule:
+    # 13:00 UTC is 9:00am EDT and 8:00am EST.
+    - cron: '0 13 * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: synthetic-traffic
+  cancel-in-progress: false
+
+jobs:
+  play:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: synthetic-traffic/package-lock.json
+
+      - name: Install Playwright
+        working-directory: synthetic-traffic
+        run: npm ci && npx playwright install --with-deps chromium
+
+      - name: Generate traffic
+        working-directory: synthetic-traffic
+        run: node run.mjs --daily
+
+      - name: Save roster
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add synthetic-traffic/roster.json
+          if git diff --cached --quiet; then
+            echo "Roster unchanged"
+          else
+            git commit -m "Update synthetic traffic roster"
+            git push
+          fi

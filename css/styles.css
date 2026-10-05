@@ -173,7 +173,7 @@ h1 {
   display: flex;
   justify-content: center;
   gap: 10px;
-  padding-bottom: 48px; /* keep footer clear of absolute sidebars */
+  padding-bottom: 72px; /* keep footer clear of absolute sidebars and the rescue nudge */
 }
 
 /* ── Sidebars ─────────────────────────────────────────────── */
@@ -518,6 +518,7 @@ button:active { transform: translateY(0); box-shadow: none; }
 
 /* ── Grid Containers ──────────────────────────────────────── */
 .grid-container {
+  position: relative;
   width: 442px;
   flex-shrink: 0;
 }
@@ -674,8 +675,17 @@ button:active { transform: translateY(0); box-shadow: none; }
 }
 
 /* ── Responsive ───────────────────────────────────────────── */
+/* The full layout needs 870px + two 188px sidebar gutters (~1250px). Below
+   that, narrow the container to one grid and stack the grids vertically so
+   they stay inside it; otherwise the flex row overflows sideways and the
+   absolutely positioned sidebars land on top of the grid cells. */
 @media (max-width: 1300px) {
   .container { width: 440px; }
+  .game-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
   .grid-container:last-child { margin-left: 0; }
 }
 

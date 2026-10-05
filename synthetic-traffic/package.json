@@ -1,0 +1,15 @@
+{
+  "name": "battleboat-synthetic-traffic",
+  "private": true,
+  "type": "module",
+  "description": "Drives the Battleboat web app in real browsers to generate synthetic Amplitude traffic.",
+  "scripts": {
+    "setup": "npx playwright install chromium",
+    "start": "node run.mjs",
+    "daily": "node run.mjs --daily",
+    "headed": "node run.mjs --headed --sessions 1 --concurrency 1"
+  },
+  "devDependencies": {
+    "playwright": "^1.49.0"
+  }
+}

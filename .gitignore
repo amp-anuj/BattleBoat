@@ -36,6 +36,9 @@ BattleboatIOS/DerivedData/
 .vscode/
 .idea/
 
+# Synthetic traffic tooling
+synthetic-traffic/node_modules/
+
 # Logs
 npm-debug.log*
 yarn-debug.log*
