@@ -1,6 +1,6 @@
 {
-  "lastRunDate": "2026-10-13",
-  "nextId": 43,
+  "lastRunDate": "2026-10-14",
+  "nextId": 47,
   "users": [
     {
       "userId": "synth-0001",
@@ -62,8 +62,8 @@
       "userId": "synth-0009",
       "deviceId": "34ca7968-f177-4307-baef-45bcc3d3fb01",
       "firstSeen": "2026-10-05",
-      "lastSeen": "2026-10-11",
-      "sessions": 5
+      "lastSeen": "2026-10-14",
+      "sessions": 6
     },
     {
       "userId": "synth-0010",
@@ -76,8 +76,8 @@
       "userId": "synth-0011",
       "deviceId": "1e78f628-11f8-45e5-8925-c30d7cee1c13",
       "firstSeen": "2026-10-06",
-      "lastSeen": "2026-10-13",
-      "sessions": 6
+      "lastSeen": "2026-10-14",
+      "sessions": 7
     },
     {
       "userId": "synth-0012",
@@ -118,8 +118,8 @@
       "userId": "synth-0017",
       "deviceId": "daaa6d3e-a7ae-4923-8e4e-842ed87a778a",
       "firstSeen": "2026-10-07",
-      "lastSeen": "2026-10-08",
-      "sessions": 2
+      "lastSeen": "2026-10-14",
+      "sessions": 3
     },
     {
       "userId": "synth-0018",
@@ -160,8 +160,8 @@
       "userId": "synth-0023",
       "deviceId": "2a37dc11-f30b-4f8b-b16d-4b15fd1c2a08",
       "firstSeen": "2026-10-09",
-      "lastSeen": "2026-10-10",
-      "sessions": 3
+      "lastSeen": "2026-10-14",
+      "sessions": 4
     },
     {
       "userId": "synth-0024",
@@ -230,8 +230,8 @@
       "userId": "synth-0033",
       "deviceId": "ea59dd75-ec0c-44d9-b548-8c71bedb1aa5",
       "firstSeen": "2026-10-11",
-      "lastSeen": "2026-10-11",
-      "sessions": 2
+      "lastSeen": "2026-10-14",
+      "sessions": 4
     },
     {
       "userId": "synth-0034",
@@ -258,8 +258,8 @@
       "userId": "synth-0037",
       "deviceId": "037e39c4-4e5b-4d32-af5a-0af625f511af",
       "firstSeen": "2026-10-12",
-      "lastSeen": "2026-10-13",
-      "sessions": 3
+      "lastSeen": "2026-10-14",
+      "sessions": 5
     },
     {
       "userId": "synth-0038",
@@ -295,18 +295,37 @@
       "firstSeen": "2026-10-13",
       "lastSeen": "2026-10-13",
       "sessions": 2
+    },
+    {
+      "userId": "synth-0043",
+      "deviceId": "bb3f78d3-cbdb-485e-ab9f-b521fa4467cb",
+      "firstSeen": "2026-10-14",
+      "lastSeen": "2026-10-14",
+      "sessions": 2
+    },
+    {
+      "userId": "synth-0044",
+      "deviceId": "59cbd8d1-b3ac-441a-9cc1-9a9ba61d6941",
+      "firstSeen": "2026-10-14",
+      "lastSeen": "2026-10-14",
+      "sessions": 2
+    },
+    {
+      "userId": "synth-0045",
+      "deviceId": "e7479fd7-d117-4bd5-8893-6a4d3cb1274d",
+      "firstSeen": "2026-10-14",
+      "lastSeen": null,
+      "sessions": 0
+    },
+    {
+      "userId": "synth-0046",
+      "deviceId": "60f097c6-6d3f-45de-8044-298c9fe39849",
+      "firstSeen": "2026-10-14",
+      "lastSeen": "2026-10-14",
+      "sessions": 1
     }
   ],
   "plan": [
-    {
-      "userId": "synth-0020",
-      "returning": true,
-      "sessionsPlanned": 1,
-      "sessionsDone": 0,
-      "personas": [
-        "quick"
-      ]
-    },
     {
       "userId": "synth-0037",
       "returning": true,
@@ -318,45 +337,45 @@
       ]
     },
     {
-      "userId": "synth-0011",
+      "userId": "synth-0009",
       "returning": true,
       "sessionsPlanned": 1,
       "sessionsDone": 1,
-      "personas": [
-        "abandon"
-      ]
-    },
-    {
-      "userId": "synth-0019",
-      "returning": true,
-      "sessionsPlanned": 1,
-      "sessionsDone": 1,
-      "personas": [
-        "abandon"
-      ]
-    },
-    {
-      "userId": "synth-0018",
-      "returning": true,
-      "sessionsPlanned": 1,
-      "sessionsDone": 0,
       "personas": [
         "quick"
       ]
     },
     {
-      "userId": "synth-0010",
+      "userId": "synth-0011",
+      "returning": true,
+      "sessionsPlanned": 1,
+      "sessionsDone": 1,
+      "personas": [
+        "manual"
+      ]
+    },
+    {
+      "userId": "synth-0033",
       "returning": true,
       "sessionsPlanned": 2,
       "sessionsDone": 2,
       "personas": [
-        "manual",
-        "stuck"
+        "quick",
+        "bounce"
       ]
     },
     {
-      "userId": "synth-0039",
-      "returning": false,
+      "userId": "synth-0017",
+      "returning": true,
+      "sessionsPlanned": 1,
+      "sessionsDone": 1,
+      "personas": [
+        "bounce"
+      ]
+    },
+    {
+      "userId": "synth-0023",
+      "returning": true,
       "sessionsPlanned": 2,
       "sessionsDone": 1,
       "personas": [
@@ -365,32 +384,41 @@
       ]
     },
     {
-      "userId": "synth-0040",
+      "userId": "synth-0043",
+      "returning": false,
+      "sessionsPlanned": 2,
+      "sessionsDone": 2,
+      "personas": [
+        "abandon",
+        "manual"
+      ]
+    },
+    {
+      "userId": "synth-0044",
       "returning": false,
       "sessionsPlanned": 2,
       "sessionsDone": 2,
       "personas": [
         "manual",
-        "manual"
+        "abandon"
       ]
     },
     {
-      "userId": "synth-0041",
+      "userId": "synth-0045",
+      "returning": false,
+      "sessionsPlanned": 1,
+      "sessionsDone": 0,
+      "personas": [
+        "stuck"
+      ]
+    },
+    {
+      "userId": "synth-0046",
       "returning": false,
       "sessionsPlanned": 1,
       "sessionsDone": 1,
       "personas": [
         "quick"
-      ]
-    },
-    {
-      "userId": "synth-0042",
-      "returning": false,
-      "sessionsPlanned": 2,
-      "sessionsDone": 2,
-      "personas": [
-        "bounce",
-        "abandon"
       ]
     }
   ]
