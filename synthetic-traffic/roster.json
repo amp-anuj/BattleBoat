@@ -1,6 +1,6 @@
 {
-  "lastRunDate": "2026-10-15",
-  "nextId": 51,
+  "lastRunDate": "2026-10-16",
+  "nextId": 55,
   "users": [
     {
       "userId": "synth-0001",
@@ -104,8 +104,8 @@
       "userId": "synth-0015",
       "deviceId": "7beb6eac-eabf-46eb-8503-ac3ff2c78214",
       "firstSeen": "2026-10-07",
-      "lastSeen": "2026-10-15",
-      "sessions": 3
+      "lastSeen": "2026-10-16",
+      "sessions": 5
     },
     {
       "userId": "synth-0016",
@@ -160,8 +160,8 @@
       "userId": "synth-0023",
       "deviceId": "2a37dc11-f30b-4f8b-b16d-4b15fd1c2a08",
       "firstSeen": "2026-10-09",
-      "lastSeen": "2026-10-14",
-      "sessions": 4
+      "lastSeen": "2026-10-16",
+      "sessions": 5
     },
     {
       "userId": "synth-0024",
@@ -209,8 +209,8 @@
       "userId": "synth-0030",
       "deviceId": "4e640254-7b53-4dc1-a3a4-aa223e50b57c",
       "firstSeen": "2026-10-10",
-      "lastSeen": "2026-10-12",
-      "sessions": 2
+      "lastSeen": "2026-10-16",
+      "sessions": 3
     },
     {
       "userId": "synth-0031",
@@ -251,8 +251,8 @@
       "userId": "synth-0036",
       "deviceId": "72ae4c2a-bf7b-481a-9531-3936bf1f7098",
       "firstSeen": "2026-10-12",
-      "lastSeen": "2026-10-12",
-      "sessions": 1
+      "lastSeen": "2026-10-16",
+      "sessions": 2
     },
     {
       "userId": "synth-0037",
@@ -351,49 +351,69 @@
       "firstSeen": "2026-10-15",
       "lastSeen": "2026-10-15",
       "sessions": 1
+    },
+    {
+      "userId": "synth-0051",
+      "deviceId": "bda7dca6-414c-410f-93c2-0414514a9f72",
+      "firstSeen": "2026-10-16",
+      "lastSeen": null,
+      "sessions": 0
+    },
+    {
+      "userId": "synth-0052",
+      "deviceId": "ca742408-2c54-44e8-ad62-b063f048734a",
+      "firstSeen": "2026-10-16",
+      "lastSeen": "2026-10-16",
+      "sessions": 1
+    },
+    {
+      "userId": "synth-0053",
+      "deviceId": "59998f5f-d506-49e4-b887-6e40ae9fb9df",
+      "firstSeen": "2026-10-16",
+      "lastSeen": "2026-10-16",
+      "sessions": 2
+    },
+    {
+      "userId": "synth-0054",
+      "deviceId": "161da550-e0a1-490c-bc87-faac0b0e5f2c",
+      "firstSeen": "2026-10-16",
+      "lastSeen": "2026-10-16",
+      "sessions": 2
     }
   ],
   "plan": [
     {
-      "userId": "synth-0044",
-      "returning": true,
-      "sessionsPlanned": 1,
-      "sessionsDone": 0,
-      "personas": [
-        "quick"
-      ]
-    },
-    {
-      "userId": "synth-0019",
-      "returning": true,
-      "sessionsPlanned": 2,
-      "sessionsDone": 1,
-      "personas": [
-        "quick",
-        "quick"
-      ]
-    },
-    {
-      "userId": "synth-0039",
-      "returning": true,
-      "sessionsPlanned": 1,
-      "sessionsDone": 1,
-      "personas": [
-        "manual"
-      ]
-    },
-    {
       "userId": "synth-0027",
       "returning": true,
       "sessionsPlanned": 2,
+      "sessionsDone": 0,
+      "personas": [
+        "quick",
+        "quick"
+      ]
+    },
+    {
+      "userId": "synth-0023",
+      "returning": true,
+      "sessionsPlanned": 2,
       "sessionsDone": 1,
       "personas": [
         "quick",
-        "manual"
+        "bounce"
       ]
     },
     {
       "userId": "synth-0015",
+      "returning": true,
+      "sessionsPlanned": 2,
+      "sessionsDone": 2,
+      "personas": [
+        "abandon",
+        "quick"
+      ]
+    },
+    {
+      "userId": "synth-0030",
       "returning": true,
       "sessionsPlanned": 1,
       "sessionsDone": 1,
@@ -402,17 +422,25 @@
       ]
     },
     {
-      "userId": "synth-0016",
+      "userId": "synth-0036",
       "returning": true,
-      "sessionsPlanned": 2,
+      "sessionsPlanned": 1,
       "sessionsDone": 1,
       "personas": [
-        "manual",
         "quick"
       ]
     },
     {
-      "userId": "synth-0047",
+      "userId": "synth-0013",
+      "returning": true,
+      "sessionsPlanned": 1,
+      "sessionsDone": 0,
+      "personas": [
+        "quick"
+      ]
+    },
+    {
+      "userId": "synth-0051",
       "returning": false,
       "sessionsPlanned": 1,
       "sessionsDone": 0,
@@ -421,31 +449,31 @@
       ]
     },
     {
-      "userId": "synth-0048",
+      "userId": "synth-0052",
       "returning": false,
       "sessionsPlanned": 1,
       "sessionsDone": 1,
       "personas": [
-        "quick"
+        "manual"
       ]
     },
     {
-      "userId": "synth-0049",
+      "userId": "synth-0053",
       "returning": false,
       "sessionsPlanned": 2,
       "sessionsDone": 2,
       "personas": [
         "abandon",
-        "manual"
+        "quick"
       ]
     },
     {
-      "userId": "synth-0050",
+      "userId": "synth-0054",
       "returning": false,
       "sessionsPlanned": 2,
-      "sessionsDone": 1,
+      "sessionsDone": 2,
       "personas": [
-        "stuck",
+        "quick",
         "quick"
       ]
     }
