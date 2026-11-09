@@ -65,6 +65,21 @@
 	var placementDeadClicks = [];
 	var PLACEMENT_RESCUE_WINDOW_MS = 10000;
 	var PLACEMENT_RESCUE_THRESHOLD = 2;
+	// Mobile grid placement: defer single taps so double-tap can rotate in place.
+	var GRID_DOUBLE_TAP_WINDOW_MS = 300;
+	var PLACEMENT_TOUCH_DEFER_MS = 275;
+	var placementTouchState = {
+		lastTapTime: 0,
+		pendingTimer: null
+	};
+
+	function usesTouchPlacementGrid() {
+		try {
+			return window.matchMedia('(pointer: coarse)').matches;
+		} catch (err) {
+			return 'ontouchstart' in window;
+		}
+	}
 
 	function hasUnplacedShips() {
 		for (var i = 0; i < Game.usedShips.length; i++) {
@@ -381,39 +396,18 @@
 	};
 	// Creates click event listeners on the human player's grid to handle
 	// ship placement after the user has selected a ship name
-	Game.prototype.placementListener = function (e) {
-		// `this` is the grid container (delegated listener). Fall back to the
-		// stored reference in case the listener is ever re-bound to a cell.
-		var self = (this && this.self) || (e.target && e.target.self);
-		if (!self) {
-			return;
-		}
-
-		// Clicks with no ship selected (or after placement is done) still count
-		// as dead clicks so we can surface the rescue nudge for stalled players.
-		if (!self.placingOnGrid) {
-			if (hasUnplacedShips()) {
-				recordPlacementDeadClick();
-			}
-			return;
-		}
-
-		// Resolve the intended cell. A direct hit on a `.grid-cell` is the
-		// common case; clicks landing in the inter-cell gutters or rounded
-		// corners hit the container instead, so we snap to the nearest cell by
-		// geometry. This is the fix for the silent dead-click bug where such
-		// clicks previously produced no placement and no telemetry.
-		var cell = closestGridCell(e.target);
+	Game.prototype.resolvePlacementCell = function (target, clientX, clientY) {
+		var cell = closestGridCell(target);
 		var usedFallback = false;
 		if (!cell) {
-			cell = self.nearestGridCell(e.clientX, e.clientY);
+			cell = this.nearestGridCell(clientX, clientY);
 			usedFallback = !!cell;
 		}
+		return { cell: cell, usedFallback: usedFallback };
+	};
+	Game.prototype.attemptShipPlacement = function (cell, usedFallback) {
+		var self = this;
 
-		// Instrumentation: fire on every placement click while a ship is
-		// selected so attempt-vs-success (and the gutter-click rate via
-		// "Used Fallback") is measurable, independent of Rage/Dead Click
-		// autocapture.
 		amplitude.track('Ship Placement Attempted', {
 			Ship: Game.placeShipType,
 			"Cell Resolved": !!cell,
@@ -427,58 +421,122 @@
 			return;
 		}
 
-		{
-			// Extract coordinates from the resolved cell
-			var x = parseInt(cell.getAttribute('data-x'), 10);
-			var y = parseInt(cell.getAttribute('data-y'), 10);
+		var x = parseInt(cell.getAttribute('data-x'), 10);
+		var y = parseInt(cell.getAttribute('data-y'), 10);
 
-			// Don't screw up the direction if the user tries to place again.
-			var successful = self.humanFleet.placeShip(x, y, Game.placeShipDirection, Game.placeShipType);
-			if (successful) {
-				clearPlacementDeadClicks();
-				hidePlacementRescue();
-				amplitude.track('Ship Placed', {
-					Ship: Game.placeShipType,
-					Success: true,
-					X: x,
-					Y: y,
-				});
-				// Done placing this ship
-				self.endPlacing(Game.placeShipType);
+		var successful = self.humanFleet.placeShip(x, y, Game.placeShipDirection, Game.placeShipType);
+		if (successful) {
+			clearPlacementDeadClicks();
+			hidePlacementRescue();
+			amplitude.track('Ship Placed', {
+				Ship: Game.placeShipType,
+				Success: true,
+				X: x,
+				Y: y,
+			});
+			self.endPlacing(Game.placeShipType);
 
-				// Remove the helper arrow
-				if (gameTutorial.currentStep === 2) {
-					gameTutorial.nextStep();
-				}
-
-				self.placingOnGrid = false;
-				if (self.areAllShipsPlaced()) {
-					var el = document.getElementById('rotate-button');
-					el.addEventListener(transitionEndEventName(), (function () {
-						el.setAttribute('class', 'hidden');
-						document.getElementById('place-randomly').setAttribute('class', 'hidden');
-						if (gameTutorial.showTutorial) {
-							document.getElementById('start-game').setAttribute('class', 'highlight');
-						} else {
-							document.getElementById('start-game').removeAttribute('class');
-						}
-					}), false);
-					el.setAttribute('class', 'invisible');
-				}
-			} else {
-				// Illegal placement: give the click visible feedback so it
-				// never looks like a silent no-op.
-				flashRejectCell(cell);
-				recordPlacementDeadClick();
-				amplitude.track('Ship Placed', {
-					Ship: Game.placeShipType,
-					Success: false,
-					X: x,
-					Y: y,
-				});
+			if (gameTutorial.currentStep === 2) {
+				gameTutorial.nextStep();
 			}
 
+			self.placingOnGrid = false;
+			if (placementTouchState.pendingTimer) {
+				clearTimeout(placementTouchState.pendingTimer);
+				placementTouchState.pendingTimer = null;
+			}
+			placementTouchState.lastTapTime = 0;
+			if (self.areAllShipsPlaced()) {
+				var el = document.getElementById('rotate-button');
+				el.addEventListener(transitionEndEventName(), (function () {
+					el.setAttribute('class', 'hidden');
+					document.getElementById('place-randomly').setAttribute('class', 'hidden');
+					if (gameTutorial.showTutorial) {
+						document.getElementById('start-game').setAttribute('class', 'highlight');
+					} else {
+						document.getElementById('start-game').removeAttribute('class');
+					}
+				}), false);
+				el.setAttribute('class', 'invisible');
+			}
+		} else {
+			flashRejectCell(cell);
+			recordPlacementDeadClick();
+			amplitude.track('Ship Placed', {
+				Ship: Game.placeShipType,
+				Success: false,
+				X: x,
+				Y: y,
+			});
 		}
+	};
+	Game.prototype.placementListener = function (e) {
+		var self = (this && this.self) || (e.target && e.target.self);
+		if (!self) {
+			return;
+		}
+
+		if (!self.placingOnGrid) {
+			if (hasUnplacedShips()) {
+				recordPlacementDeadClick();
+			}
+			return;
+		}
+
+		var resolved = self.resolvePlacementCell(e.target, e.clientX, e.clientY);
+		self.attemptShipPlacement(resolved.cell, resolved.usedFallback);
+	};
+	Game.prototype.placementTouchListener = function (e) {
+		var self = (this && this.self) || (e.target && e.target.self);
+		if (!self) {
+			return;
+		}
+
+		if (!self.placingOnGrid) {
+			if (hasUnplacedShips()) {
+				recordPlacementDeadClick();
+			}
+			return;
+		}
+
+		var touch = e.changedTouches[0];
+		if (!touch) {
+			return;
+		}
+
+		var resolved = self.resolvePlacementCell(e.target, touch.clientX, touch.clientY);
+		var now = Date.now();
+		var isDoubleTap = placementTouchState.lastTapTime > 0 &&
+			(now - placementTouchState.lastTapTime) <= GRID_DOUBLE_TAP_WINDOW_MS;
+
+		if (isDoubleTap) {
+			if (placementTouchState.pendingTimer) {
+				clearTimeout(placementTouchState.pendingTimer);
+				placementTouchState.pendingTimer = null;
+			}
+			placementTouchState.lastTapTime = 0;
+			self.applyShipRotation('grid_double_tap');
+			if (resolved.cell) {
+				var x = parseInt(resolved.cell.getAttribute('data-x'), 10);
+				var y = parseInt(resolved.cell.getAttribute('data-y'), 10);
+				self.clearPlacementPreview();
+				self.showPlacementPreviewAt(x, y);
+			}
+			e.preventDefault();
+			return;
+		}
+
+		placementTouchState.lastTapTime = now;
+		if (placementTouchState.pendingTimer) {
+			clearTimeout(placementTouchState.pendingTimer);
+		}
+		placementTouchState.pendingTimer = setTimeout(function () {
+			placementTouchState.pendingTimer = null;
+			placementTouchState.lastTapTime = 0;
+			if (self.placingOnGrid) {
+				self.attemptShipPlacement(resolved.cell, resolved.usedFallback);
+			}
+		}, PLACEMENT_TOUCH_DEFER_MS);
 	};
 	// Finds the human grid cell whose center is closest to the given viewport
 	// coordinates. Used to recover the intended cell when a click lands in the
@@ -512,34 +570,55 @@
 	// Creates mouseover event listeners that handles mouseover on the
 	// human player's grid to draw a phantom ship implying that the user
 	// is allowed to place a ship there
+	Game.prototype.clearPlacementPreview = function () {
+		if (!Game.placeShipCoords.length) {
+			return;
+		}
+		var classes;
+		for (var j = 0; j < Game.placeShipCoords.length; j++) {
+			var el = document.querySelector('.grid-cell-' + Game.placeShipCoords[j].x + '-' + Game.placeShipCoords[j].y);
+			if (!el) {
+				continue;
+			}
+			classes = el.getAttribute('class');
+			if (classes.indexOf(' grid-ship') > -1) {
+				classes = classes.replace(' grid-ship', '');
+				el.setAttribute('class', classes);
+			}
+		}
+	};
+	Game.prototype.showPlacementPreviewAt = function (x, y) {
+		if (!this.placingOnGrid) {
+			return;
+		}
+		var classes;
+		var fleetRoster = this.humanFleet.fleetRoster;
+
+		for (var i = 0; i < fleetRoster.length; i++) {
+			var shipType = fleetRoster[i].type;
+
+			if (Game.placeShipType === shipType &&
+				fleetRoster[i].isLegal(x, y, Game.placeShipDirection)) {
+				fleetRoster[i].create(x, y, Game.placeShipDirection, true);
+				Game.placeShipCoords = fleetRoster[i].getAllShipCells();
+
+				for (var j = 0; j < Game.placeShipCoords.length; j++) {
+					var el = document.querySelector('.grid-cell-' + Game.placeShipCoords[j].x + '-' + Game.placeShipCoords[j].y);
+					classes = el.getAttribute('class');
+					if (classes.indexOf(' grid-ship') < 0) {
+						classes += ' grid-ship';
+						el.setAttribute('class', classes);
+					}
+				}
+			}
+		}
+	};
 	Game.prototype.placementMouseover = function (e) {
 		var self = e.target.self;
 		if (self.placingOnGrid) {
 			var x = parseInt(e.target.getAttribute('data-x'), 10);
 			var y = parseInt(e.target.getAttribute('data-y'), 10);
-			var classes;
-			var fleetRoster = self.humanFleet.fleetRoster;
-
-			for (var i = 0; i < fleetRoster.length; i++) {
-				var shipType = fleetRoster[i].type;
-
-				if (Game.placeShipType === shipType &&
-					fleetRoster[i].isLegal(x, y, Game.placeShipDirection)) {
-					// Virtual ship
-					fleetRoster[i].create(x, y, Game.placeShipDirection, true);
-					Game.placeShipCoords = fleetRoster[i].getAllShipCells();
-
-					for (var j = 0; j < Game.placeShipCoords.length; j++) {
-						var el = document.querySelector('.grid-cell-' + Game.placeShipCoords[j].x + '-' + Game.placeShipCoords[j].y);
-						classes = el.getAttribute('class');
-						// Check if the substring ' grid-ship' already exists to avoid adding it twice
-						if (classes.indexOf(' grid-ship') < 0) {
-							classes += ' grid-ship';
-							el.setAttribute('class', classes);
-						}
-					}
-				}
-			}
+			self.showPlacementPreviewAt(x, y);
 		}
 	};
 	// Creates mouseout event listeners that un-draws the phantom ship
@@ -547,32 +626,35 @@
 	Game.prototype.placementMouseout = function (e) {
 		var self = e.target.self;
 		if (self.placingOnGrid) {
-			for (var j = 0; j < Game.placeShipCoords.length; j++) {
-				var el = document.querySelector('.grid-cell-' + Game.placeShipCoords[j].x + '-' + Game.placeShipCoords[j].y);
-				classes = el.getAttribute('class');
-				// Check if the substring ' grid-ship' already exists to avoid adding it twice
-				if (classes.indexOf(' grid-ship') > -1) {
-					classes = classes.replace(' grid-ship', '');
-					el.setAttribute('class', classes);
-				}
-			}
+			self.clearPlacementPreview();
 		}
+	};
+	Game.prototype.applyShipRotation = function (rotationSource) {
+		var rotateButton = document.getElementById('rotate-button');
+		var direction = parseInt(rotateButton.getAttribute('data-direction'), 10);
+		if (direction === Ship.DIRECTION_VERTICAL) {
+			rotateButton.setAttribute('data-direction', '1');
+			Game.placeShipDirection = Ship.DIRECTION_HORIZONTAL;
+		} else if (direction === Ship.DIRECTION_HORIZONTAL) {
+			rotateButton.setAttribute('data-direction', '0');
+			Game.placeShipDirection = Ship.DIRECTION_VERTICAL;
+		}
+		var props = {
+			Ship: Game.placeShipType
+		};
+		if (rotationSource) {
+			props['Rotation Source'] = rotationSource;
+		}
+		amplitude.track('Ship Rotated', props);
 	};
 	// Click handler for the Rotate Ship button
 	Game.prototype.toggleRotation = function (e) {
-		// Toggle rotation direction
-		var direction = parseInt(e.target.getAttribute('data-direction'), 10);
-		if (direction === Ship.DIRECTION_VERTICAL) {
-			e.target.setAttribute('data-direction', '1');
-			Game.placeShipDirection = Ship.DIRECTION_HORIZONTAL;
-		} else if (direction === Ship.DIRECTION_HORIZONTAL) {
-			e.target.setAttribute('data-direction', '0');
-			Game.placeShipDirection = Ship.DIRECTION_VERTICAL;
+		var game = e.target.self;
+		if (game) {
+			game.applyShipRotation();
+		} else {
+			Game.prototype.applyShipRotation();
 		}
-		amplitude.track('Ship Rotated', {
-			Ship: Game.placeShipType
-		});
-
 	};
 	// Click handler for the Start Game button
 	Game.prototype.startGame = function (e) {
@@ -782,9 +864,14 @@
 			humanCells[k].addEventListener('mouseout', this.placementMouseout, false);
 		}
 		humanGrid.self = this;
-		humanGrid.addEventListener('click', this.placementListener, false);
+		if (usesTouchPlacementGrid()) {
+			humanGrid.addEventListener('touchend', this.placementTouchListener, false);
+		} else {
+			humanGrid.addEventListener('click', this.placementListener, false);
+		}
 
 		var rotateButton = document.getElementById('rotate-button');
+		rotateButton.self = this;
 		rotateButton.addEventListener('click', this.toggleRotation, false);
 		var startButton = document.getElementById('start-game');
 		startButton.self = this;
