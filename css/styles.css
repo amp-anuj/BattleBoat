@@ -361,6 +361,26 @@ button:active { transform: translateY(0); box-shadow: none; }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* ── Combat target recovery (resolved-cell clicks) ────────── */
+.combat-target-recovery {
+  margin-top: 10px;
+  padding: 10px 12px;
+  text-align: center;
+  background: rgba(232, 65, 14, 0.12);
+  border: 1px solid rgba(232, 65, 14, 0.45);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-coral);
+  animation: placement-rescue-in 0.28s ease-out;
+}
+.combat-target-recovery.hidden { display: none; }
+.combat-target-recovery-text {
+  margin: 0;
+  font-size: 0.78rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--amp-text);
+}
+
 #reset-stats {
   background: transparent;
   border-color: var(--amp-border);
