@@ -121,6 +121,23 @@
 		el.setAttribute('class', 'placement-rescue hidden');
 	}
 
+	// Inline recovery when combat players re-select a resolved enemy cell.
+	function showCombatTargetRecovery() {
+		var el = document.getElementById('combat-target-recovery');
+		if (!el) {
+			return;
+		}
+		el.setAttribute('class', 'combat-target-recovery combat-target-recovery--visible');
+	}
+
+	function hideCombatTargetRecovery() {
+		var el = document.getElementById('combat-target-recovery');
+		if (!el) {
+			return;
+		}
+		el.setAttribute('class', 'combat-target-recovery hidden');
+	}
+
 	// Game Statistics
 	function Stats() {
 		this.shotsTaken = 0;
@@ -351,6 +368,13 @@
 			Hit: result === CONST.TYPE_HIT,
 			"Consecutive Hits": self.consecutiveHits,
 		});
+		if (self.readyToPlay && !Game.gameOver) {
+			if (result === null) {
+				showCombatTargetRecovery();
+			} else {
+				hideCombatTargetRecovery();
+			}
+		}
 		if (result !== null && !Game.gameOver) {
 			Game.stats.incrementShots();
 			if (result === CONST.TYPE_HIT) {
@@ -780,6 +804,7 @@
 		clearPlacementDeadClicks();
 	};
 	Game.prototype.showRestartSidebar = function () {
+		hideCombatTargetRecovery();
 		var sidebar = document.getElementById('restart-sidebar');
 		sidebar.setAttribute('class', 'highlight');
 
@@ -833,6 +858,7 @@
 		Game.placeShipCoords = [];
 
 		this.resetRosterSidebar();
+		hideCombatTargetRecovery();
 
 		// Add a click listener for the Grid.shoot() method for all cells
 		// Only add this listener to the computer's grid
